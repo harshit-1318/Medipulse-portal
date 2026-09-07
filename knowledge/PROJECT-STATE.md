@@ -1,5 +1,15 @@
 # Frontend Project State
 
+- Final Module Polish & Barrel/Test Completion (Sep 8 2026):
+	- Completed architecture standardization, subfolder barrels, and test coverage across the remaining modules: `site-settings`, `prescriptions`, `account`, `users`, and `surveys`.
+	- Added symmetrical subfolder barrels for `src/components/site-settings/`: `components/index.ts`, `filters/index.ts`, `form/index.ts`, `hooks/index.ts`, `table/index.ts`, `utils/index.ts`, and updated root `site-settings/index.ts`.
+	- Added unit test suite for `site-settings`: `src/components/site-settings/__tests__/siteStatusConfig.test.ts` (4/4 tests PASS).
+	- Added unit test suite for `prescriptions`: `src/components/prescriptions/__tests__/formatPrescriptionDate.test.ts` (6/6 tests PASS) along with its subfolder barrels.
+	- Added unit test suite for `account`: `src/components/account/__tests__/AccountForm.test.tsx` (2/2 tests PASS) along with `account/components/index.ts` barrel.
+	- Relocated misplaced tests in `surveys` and `users` into dedicated `__tests__/` directories (`useSurveyFilters.test.ts`, `UserRow.test.tsx`, `PasswordFields.test.tsx`).
+	- Fully organized `users` barrels (`components/`, `hooks/`, `pages/`, `utils/`, and root `index.ts`).
+	- Verified: 100% Vitest pass rate (90/90 test files, 619/619 tests PASS); `npm run typecheck` clean (0 errors); all files < 100 LOC.
+
 - Multi-Module Architecture Standardization & Barrel Completion (Sep 7 2026):
 	- Audited and standardized 6 component modules: `customers`, `dashboard`, `docman-jobs`, `email-queue`, `layout`, `leads` (141 total files).
 	- Layout LOC Compliance: Refactored `adminNavConfig.ts` (106 -> 48 LOC) with `menus/activityLogsMenu.ts`, and split `SidebarGroup.test.tsx` (123 LOC) into `SidebarGroup.render.test.tsx` and `SidebarGroup.roles.test.tsx`.
