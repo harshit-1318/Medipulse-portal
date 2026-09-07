@@ -6,7 +6,7 @@ export * from './useInternalNotes';
 export * from './useOrderDetails';
 export * from './useOrderDetailsFlags';
 export * from './useOrderDetailsPage';
-export * from './useResyncFromShopify';
+export * from './useResyncOrder';
 export * from './useScrState';
 export * from './useVideoRecordings';
 export * from './communicationDispatcher';

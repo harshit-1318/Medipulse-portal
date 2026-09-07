@@ -2,7 +2,7 @@ import { useSiteSettings } from "./hooks/useSiteSettings";
 import { QueryProvider } from "@/components/common/QueryProvider";
 import { SiteSettingsHeader } from "./form/SiteSettingsHeader";
 import { GeneralSettingsSection } from "./form/GeneralSettingsSection";
-import { ShopifySettingsSection } from "./form/ShopifySettingsSection";
+import { StoreSettingsSection } from "./form/StoreSettingsSection";
 import { StatusSettingsSection } from "./form/StatusSettings/StatusSettingsSection";
 import { SiteSettingsFooter } from "./form/SiteSettingsFooter";
 
@@ -43,9 +43,9 @@ function SiteSettingsContent({ siteId }: Props) {
                     />
                 </div>
 
-                {/* Right Column: Shopify Integrations */}
+                {/* Right Column: Store Integrations */}
                 <div className="w-full">
-                    <ShopifySettingsSection form={form} handleChange={handleChange} />
+                    <StoreSettingsSection form={form} handleChange={handleChange} />
                 </div>
 
                 {/* Bottom Full Width: Master Integrations & Status */}

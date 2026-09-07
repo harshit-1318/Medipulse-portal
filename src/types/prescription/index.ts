@@ -1,6 +1,7 @@
 export interface Prescription {
     id: string;
     shopifyOrderId: string;
+    storeOrderId?: string;
     pharmacistName: string | null;
     pharmacistEmail: string | null;
     pharmacistRegNo: string | null;

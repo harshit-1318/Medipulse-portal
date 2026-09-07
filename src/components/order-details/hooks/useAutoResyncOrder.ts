@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { shouldAutoResyncOrder } from "../utils";
 import { useUserInfo } from '@/store';
-import { useResyncFromShopify } from "./useResyncFromShopify";
+import { useResyncOrder } from "./useResyncOrder";
 import {
     getFirstDefinedEnvValue,
     isEnvFlagEnabled,
@@ -35,7 +35,7 @@ export function useAutoResyncOrder(order: any, orderId: string) {
         role === "customer_support";
     const hasAutoResyncedRef = useRef(false);
 
-    const resyncState = useResyncFromShopify();
+    const resyncState = useResyncOrder();
     const shouldAutoResync = isAutoResyncEnabled && canResync && shouldAutoResyncOrder(order?.orderInfo?.resyncedAt);
 
     useEffect(() => {

@@ -71,8 +71,8 @@ export const SiteInfoPanel: React.FC<Props> = ({ site, loadingSite }) => {
                 />
                 <SiteDetailItem 
                     icon={<Link2 size={18} />} 
-                    label="SHOP URL" 
-                    value={site?.shop || (site?.shopifyUrl ? site.shopifyUrl : '')} 
+                    label="STORE URL" 
+                    value={site?.shop || site?.storeUrl || site?.shopifyUrl || ''} 
                     loading={loadingSite} 
                     external 
                     iconBg="bg-emerald-50 text-emerald-600"

@@ -1,5 +1,6 @@
 export interface GlobalSearchOrder {
   shopify_order_id: number;
+  store_order_id?: number;
   order_name: string;
   email: string;
   customerName: string;

@@ -11,6 +11,7 @@ export function SourceBreakdown({ bySource, legacyEvents, total }: SourceBreakdo
     const colors: Record<string, string> = {
         user: "bg-indigo-100 text-indigo-700 border-indigo-200",
         system: "bg-amber-100 text-amber-700 border-amber-200",
+        store: "bg-emerald-100 text-emerald-700 border-emerald-200",
         shopify: "bg-emerald-100 text-emerald-700 border-emerald-200",
     };
     const enrichedTotal = (bySource ?? []).reduce((s, r) => s + r.count, 0);
@@ -25,9 +26,10 @@ export function SourceBreakdown({ bySource, legacyEvents, total }: SourceBreakdo
                 {(bySource ?? []).map((s) => {
                     const pct = enrichedTotal > 0 ? Math.round((s.count / enrichedTotal) * 100) : 0;
                     const cls = colors[s.source] ?? "bg-slate-100 text-slate-700 border-slate-200";
+                    const displaySource = s.source === "shopify" ? "store" : s.source;
                     return (
                         <div key={s.source} className={`flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-semibold ${cls}`}>
-                            <span className="capitalize">{s.source}</span>
+                            <span className="capitalize">{displaySource}</span>
                             <span className="font-bold">{s.count.toLocaleString()}</span>
                             <span className="font-normal opacity-70">({pct}%)</span>
                         </div>

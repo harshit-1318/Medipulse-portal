@@ -49,9 +49,9 @@ export function ActivityDashboardTiles({ days, totals }: ActivityDashboardTilesP
             <StatTile
                 label="System Events"
                 value={totals.systemEvents}
-                sub="source = system/shopify"
+                sub="source = system/store"
                 icon={<Cpu size={16} />}
-                tooltip="Background job events (email sends, Shopify webhooks). Only counts source='system' or source='shopify'."
+                tooltip="Background job events (email sends, store webhooks). Counts source='system' or store events."
             />
             <StatTile
                 label="Legacy Events"

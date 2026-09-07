@@ -13,6 +13,7 @@ export interface IOrder {
   isParked?: boolean;
   tags?: string[];
   shopify_order_id?: string;
+  store_order_id?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -29,6 +30,7 @@ const OrderSchema = new Schema<IOrder>(
     isParked: { type: Boolean, default: false },
     tags: { type: [String], default: [] },
     shopify_order_id: { type: String },
+    store_order_id: { type: String },
     items: [
       {
         name: { type: String },

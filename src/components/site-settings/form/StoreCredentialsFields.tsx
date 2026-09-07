@@ -1,19 +1,19 @@
 import React from "react";
 import { Eye, EyeOff, KeyRound, Lock, ShieldAlert } from "lucide-react";
 
-interface ShopifyCredentialsFieldsProps {
+interface StoreCredentialsFieldsProps {
     form: any;
     handleChange: (e: React.ChangeEvent<any>) => void;
     showTokens: Record<string, boolean>;
     toggleToken: (name: string) => void;
 }
 
-export function ShopifyCredentialsFields({
+export function StoreCredentialsFields({
     form,
     handleChange,
     showTokens,
     toggleToken,
-}: ShopifyCredentialsFieldsProps) {
+}: StoreCredentialsFieldsProps) {
     const renderSensitiveInput = (label: string, name: string, icon: React.ReactNode) => (
         <div className="space-y-1.5">
             <label className="text-[12px] font-black text-slate-500 uppercase tracking-widest ml-1 flex justify-between">

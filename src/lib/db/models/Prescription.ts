@@ -3,6 +3,7 @@ import mongoose, { Schema } from 'mongoose';
 export interface IPrescription {
   _id?: string;
   shopifyOrderId?: string;
+  storeOrderId?: string;
   orderNumber?: string;
   customerId?: string;
   patientName?: string;
@@ -24,6 +25,7 @@ export interface IPrescription {
 const PrescriptionSchema = new Schema<IPrescription>(
   {
     shopifyOrderId: { type: String, default: '' },
+    storeOrderId: { type: String, default: '' },
     orderNumber: { type: String, default: '' },
     customerId: { type: String, default: '' },
     patientName: { type: String, default: '' },

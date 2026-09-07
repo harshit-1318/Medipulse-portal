@@ -21,7 +21,7 @@ export const ProductFilterInput: React.FC<ProductFilterInputProps> = ({
                         value={tempProductId}
                         onChange={(e) => setTempProductId(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddProductId())}
-                        placeholder="Type Shopify Product ID..."
+                        placeholder="Type Product ID..."
                         className="w-full h-11 px-4 rounded-xl bg-slate-50 border border-slate-200 text-[14px] font-bold text-slate-700 hover:border-slate-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none"
                     />
                 </div>
