@@ -1,7 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { useSurveyFilters, type UseSurveyFiltersProps } from './useSurveyFilters';
-
+import { useSurveyFilters, type UseSurveyFiltersProps } from '../hooks/useSurveyFilters';
 
 const makeProps = (overrides: Partial<UseSurveyFiltersProps> = {}): UseSurveyFiltersProps => {
     return {
