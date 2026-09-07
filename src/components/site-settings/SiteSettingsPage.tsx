@@ -22,7 +22,7 @@ function SiteSettingsContent({ siteId }: Props) {
         return (
             <div className="space-y-6 animate-pulse p-4">
                 <div className="h-10 bg-slate-200 rounded-xl w-48" />
-                <div className="h-[600px] bg-slate-100 rounded-2xl w-full" />
+                <div className="h-150 bg-slate-100 rounded-2xl w-full" />
             </div>
         );
     }
