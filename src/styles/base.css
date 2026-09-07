@@ -1,0 +1,50 @@
+body {
+    @apply antialiased text-text-primary bg-[#fafcff] leading-relaxed;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #0f172a;
+}
+
+/* Global Pointer Cursor for Interactive Elements */
+button:not(:disabled),
+a,
+select:not(:disabled),
+input[type="button"]:not(:disabled),
+input[type="submit"]:not(:disabled),
+input[type="checkbox"]:not(:disabled),
+input[type="radio"]:not(:disabled),
+[role="button"]:not([aria-disabled="true"]):not(:disabled),
+[role="tab"]:not([aria-disabled="true"]):not(:disabled),
+[type="button"]:not(:disabled),
+[type="submit"]:not(:disabled) {
+    cursor: pointer;
+}
+
+button:disabled,
+input:disabled,
+select:disabled,
+a.disabled,
+.cursor-not-allowed {
+    cursor: not-allowed;
+}

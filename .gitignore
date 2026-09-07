@@ -1,0 +1,44 @@
+# Dependencies
+/node_modules
+/.pnpm
+/.yarn
+
+# Next.js Build Output
+/.next/
+/out/
+/dist/
+/.turbo/
+tsconfig.tsbuildinfo
+
+# Generated types
+next-env.d.ts
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment files
+.env*.local
+.env.development
+.env.production
+.env
+
+# System & IDE files
+.DS_Store
+*.pem
+.idea/
+.vscode/
+node_modules_list.txt
+node_modules_names.txt
+
+# Logs
+*.log
+
+# Test coverage
+coverage/
+
+# Database Backups & Dumps (Sensitive)
+/backups/
+

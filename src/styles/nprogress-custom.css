@@ -1,0 +1,18 @@
+@import "nprogress/nprogress.css";
+
+/* Brand Colored Progress Bar */
+#nprogress .bar {
+    background: linear-gradient(to right, #00A3A0, #0099A1, #00CFCA) !important;
+    height: 4px !important;
+}
+
+/* Fancy Peg Glow */
+#nprogress .peg {
+    box-shadow: 0 0 10px #00CFCA, 0 0 5px #00CFCA !important;
+}
+
+/* Spinner Colors (though disabled in config, good to have) */
+#nprogress .spinner-icon {
+    border-top-color: #00CFCA !important;
+    border-left-color: #00CFCA !important;
+}

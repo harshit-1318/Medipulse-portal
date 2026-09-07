@@ -1,0 +1,131 @@
+@theme {
+    --font-sans: "Inter", "Roboto", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+    --font-inter: "Inter", sans-serif;
+
+    /* Text Colors */
+    --color-text-primary: #111827;
+    --color-text-secondary: #6B7280;
+
+    /* Brand Colors */
+    --color-brand-cyan: #00CFCA;
+    --color-brand-teal: #0099A1;
+    --color-brand-ocean: #00A3A0;
+
+    /* Custom Shadows */
+    --shadow-premium: 0 32px 64px -16px rgba(0, 0, 0, 0.06);
+    --shadow-brand: 0 12px 24px -8px rgba(0, 207, 202, 0.25);
+    --shadow-brand-hover: 0 16px 32px -6px rgba(0, 207, 202, 0.35);
+
+    --shadow-input-focus: 0 8px 20px -6px rgba(0, 207, 202, 0.1);
+
+    --radius-4xl: 2rem;
+
+    /* Animations */
+    --animate-pulse-slow: pulse-slow 8s ease-in-out infinite;
+    --animate-float: float 6s ease-in-out infinite;
+    --animate-shake: shake 0.4s ease-in-out;
+    --animate-glow: glow-pulse 2.5s ease-in-out infinite;
+    --animate-organic: organic-move 20s ease-in-out infinite;
+    --animate-shimmer: shimmer 3s infinite;
+    --animate-light-leak: light-leak 15s ease-in-out infinite;
+
+    @keyframes pulse-slow {
+
+        0%,
+        100% {
+            opacity: 0.3;
+            transform: scale(1);
+        }
+
+        50% {
+            opacity: 0.6;
+            transform: scale(1.1);
+        }
+    }
+
+    @keyframes float {
+
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-20px);
+        }
+    }
+
+    @keyframes shake {
+
+        0%,
+        100% {
+            transform: translateX(0);
+        }
+
+        25% {
+            transform: translateX(-4px);
+        }
+
+        75% {
+            transform: translateX(4px);
+        }
+    }
+
+    @keyframes glow-pulse {
+
+        0%,
+        100% {
+            box-shadow: 0 0 5px rgba(0, 207, 202, 0.2), 0 0 10px rgba(0, 207, 202, 0.1);
+        }
+
+        50% {
+            box-shadow: 0 0 20px rgba(0, 207, 202, 0.4), 0 0 30px rgba(0, 207, 202, 0.2);
+        }
+    }
+
+    @keyframes organic-move {
+        0% {
+            transform: translate(0, 0) rotate(0deg) scale(1);
+        }
+
+        33% {
+            transform: translate(40px, -60px) rotate(4deg) scale(1.15);
+        }
+
+        66% {
+            transform: translate(-30px, 30px) rotate(-8deg) scale(0.85);
+        }
+
+        100% {
+            transform: translate(0, 0) rotate(0deg) scale(1);
+        }
+    }
+
+    @keyframes shimmer {
+        from {
+            transform: translateX(-100%);
+        }
+
+        to {
+            transform: translateX(100%);
+        }
+    }
+
+    @keyframes light-leak {
+
+        0%,
+        100% {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 0.12;
+        }
+
+        50% {
+            transform: translate(-45%, -55%) scale(1.15);
+            opacity: 0.22;
+        }
+    }
+}
+
+@utility wrap-break-word {
+    overflow-wrap: break-word;
+}

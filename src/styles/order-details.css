@@ -1,0 +1,227 @@
+/* Order Detail UI Improvements */
+
+@layer components {
+
+  /* Consistent Card Layout */
+  .order-detail-card {
+    @apply relative rounded-2xl p-4 border border-slate-100 bg-white shadow-sm overflow-hidden transition-all duration-300 font-sans;
+  }
+
+  .order-detail-card:hover {
+    @apply shadow-md border-slate-200;
+  }
+
+  /* Improved Section Headers */
+  .section-header {
+    @apply flex items-center gap-3 mb-2;
+  }
+
+  .section-icon-wrapper {
+    @apply h-8 w-8 rounded-lg flex items-center justify-center shadow-sm border transition-transform duration-300 group-hover:scale-105 [&>svg]:w-4 [&>svg]:h-4;
+  }
+
+  /* Default/Communication */
+  .bg-rose-soft {
+    @apply bg-rose-50 text-rose-600 border-rose-100/50;
+  }
+
+  /* BMI */
+  .bg-blue-soft {
+    @apply bg-blue-50 text-blue-600 border-blue-100/50;
+  }
+
+  /* Patient Answers */
+  .bg-emerald-soft {
+    @apply bg-emerald-50 text-emerald-600 border-emerald-100/50;
+  }
+
+  /* Verification */
+  .bg-amber-soft {
+    @apply bg-amber-50 text-amber-600 border-amber-100/50;
+  }
+
+  /* Prescription */
+  .bg-purple-soft {
+    @apply bg-purple-50 text-purple-600 border-purple-100/50;
+  }
+
+  /* SCR Review */
+  .bg-orange-soft {
+    @apply bg-orange-50 text-orange-600 border-orange-100/50;
+  }
+
+  /* Activity Traces */
+  .bg-slate-soft {
+    @apply bg-slate-50 text-slate-600 border-slate-100/50;
+  }
+
+  .section-title-container {
+    @apply space-y-0.5 flex flex-col;
+  }
+
+  .section-title {
+    @apply text-[16px] font-semibold text-text-primary leading-tight;
+  }
+
+  .section-subtitle {
+    @apply text-[11px] font-medium text-text-secondary uppercase tracking-wider leading-none;
+  }
+
+  /* Status Badges */
+  .status-badge {
+    @apply px-3 py-1.5 rounded-lg text-[10.5px] font-bold uppercase tracking-wider shadow-sm flex items-start gap-2 transition-all duration-200 min-h-[30px] whitespace-normal w-fit;
+  }
+
+  .status-badge-dot {
+    @apply h-2 w-2 rounded-full shrink-0;
+  }
+
+  .badge-success {
+    @apply bg-emerald-50/80 text-emerald-700 border border-emerald-200/50;
+  }
+
+  .badge-success .status-badge-dot {
+    @apply bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)];
+  }
+
+  .badge-warning {
+    @apply bg-amber-50/80 text-amber-700 border border-amber-200/50;
+  }
+
+  .badge-warning .status-badge-dot {
+    @apply bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.4)];
+  }
+
+  .badge-error {
+    @apply bg-rose-50/80 text-rose-700 border border-rose-200/50;
+  }
+
+  .badge-error .status-badge-dot {
+    @apply bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.4)];
+  }
+
+  .badge-neutral {
+    @apply bg-slate-50/80 text-slate-600 border border-slate-200/50;
+  }
+
+  .badge-neutral .status-badge-dot {
+    @apply bg-slate-400;
+  }
+
+  .badge-info {
+    @apply bg-blue-50/80 text-blue-700 border border-blue-200/50;
+  }
+
+  .badge-info .status-badge-dot {
+    @apply bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.4)];
+  }
+
+  /* Label -> Value Layout */
+  .info-row {
+    @apply flex items-center justify-between py-2 border-b border-slate-100/60 last:border-0;
+  }
+
+  .info-label {
+    @apply text-[13px] font-medium text-text-secondary shrink-0;
+  }
+
+  .info-value {
+    @apply text-[13px] font-semibold text-text-primary tracking-tight text-right truncate min-w-0 flex-1 ml-4;
+  }
+
+  .consultation-row {
+    @apply grid grid-cols-1 md:grid-cols-[1fr_auto] items-start py-3.5 px-4 border-b border-slate-100/60 hover:bg-slate-50/30 transition-all duration-200 last:border-0 rounded-xl gap-3 md:gap-12 w-full;
+  }
+
+  .consultation-label {
+    @apply text-[13.5px] font-bold text-slate-700 leading-snug pr-4 min-w-0 wrap-break-word;
+  }
+
+  .consultation-answer-wrapper {
+    @apply flex flex-col items-end pt-0.5 min-w-0 max-w-full md:max-w-[480px] ml-auto;
+  }
+
+  .consultation-group-header {
+    @apply flex items-center gap-3 pt-6 pb-2 px-1 first:pt-2;
+  }
+
+  .consultation-group-title {
+    @apply text-[12px] font-extrabold text-slate-400 uppercase tracking-widest;
+  }
+
+  .consultation-group-line {
+    @apply h-px flex-1 bg-slate-100;
+  }
+
+  /* Activity Timeline */
+  .timeline-container {
+    @apply relative pl-8 space-y-8 before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-[2px] before:bg-slate-100;
+  }
+
+  .timeline-item {
+    @apply relative;
+  }
+
+  .timeline-dot {
+    @apply absolute -left-8 top-1.5 h-6 w-6 rounded-full bg-white border-4 border-slate-100 z-10 flex items-center justify-center transition-all duration-300;
+  }
+
+  .timeline-item:hover .timeline-dot {
+    @apply border-brand-cyan scale-110;
+  }
+
+  .timeline-content {
+    @apply flex flex-col gap-1;
+  }
+
+  .timeline-event {
+    @apply text-[14px] font-semibold text-text-primary;
+  }
+
+  .timeline-meta {
+    @apply text-[12px] font-medium text-text-secondary flex items-center gap-3;
+  }
+
+  .timeline-actor {
+    @apply text-brand-teal;
+  }
+
+  /* Urgent Horizontal Ribbon */
+  .urgent-ribbon-horizontal {
+    @apply inline-flex items-center gap-1.5 h-6 px-3 bg-rose-600 text-white text-[10px] font-black uppercase tracking-widest relative ml-3;
+    @apply rounded-l-md shadow-[0_4px_12px_-2px_rgba(225,29,72,0.4)] transition-all duration-300;
+    clip-path: polygon(0% 0%, 96% 0%, 100% 50%, 96% 100%, 0% 100%);
+  }
+
+  .urgent-ribbon-horizontal:hover {
+    @apply bg-rose-700 -translate-y-0.5 shadow-[0_6px_16px_-2px_rgba(225,29,72,0.5)];
+  }
+
+  /* Pro Urgent Badge with Animation */
+  @keyframes shine {
+    0% { transform: translateX(-100%) skewX(-20deg); }
+    20%, 100% { transform: translateX(200%) skewX(-20deg); }
+  }
+
+  .badge-pro-urgent {
+    @apply relative overflow-hidden flex items-center bg-linear-to-r from-rose-600 to-red-600 text-white pl-2 pr-3.5 py-1 rounded-r-sm shadow-[0_4px_12px_rgba(225,29,72,0.35)] border border-white/10 shrink-0 transition-transform duration-300 hover:scale-105;
+    clip-path: polygon(0% 0%, 100% 0%, 90% 50%, 100% 100%, 0% 100%);
+  }
+
+  .badge-pro-urgent::after {
+    content: '';
+    @apply absolute top-0 left-0 w-1/2 h-full bg-linear-to-r from-transparent via-white/20 to-transparent pointer-events-none;
+    animation: shine 4s infinite ease-in-out;
+  }
+
+  .badge-pro-parked {
+    @apply relative overflow-hidden flex items-center bg-linear-to-r from-yellow-500 to-yellow-400 text-yellow-900 pl-2 pr-3.5 py-1 rounded-r-sm shadow-[0_4px_12px_rgba(234,179,8,0.35)] border border-yellow-300/30 shrink-0 transition-transform duration-300 hover:scale-105;
+    clip-path: polygon(0% 0%, 100% 0%, 90% 50%, 100% 100%, 0% 100%);
+  }
+
+  .badge-pro-parked::after {
+    content: '';
+    @apply absolute top-0 left-0 w-1/2 h-full bg-linear-to-r from-transparent via-white/20 to-transparent pointer-events-none;
+    animation: shine 4s infinite ease-in-out;
+  }
+}

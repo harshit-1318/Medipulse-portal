@@ -1,0 +1,13 @@
+export { apiClient } from './apiClient';
+export * as ordersApi from './services/orders';
+export * as customerApi from './services/customer';
+export * as leadApi from './services/lead/leadService';
+export * as surveyApi from './services/survey/surveyService';
+export * as prescriptionApi from './services/prescription/prescriptionService';
+export * as siteApi from './services/site/siteService';
+export * as userApi from './services/user/userService';
+export * as dashboardApi from './services/dashboard/dashboardService';
+export * as activityLogApi from './services/activity-log/service';
+export * as emailQueueApi from './services/email-queue/emailQueueService';
+export * as globalSearchApi from './services/globalSearch/globalSearchService';
+export * as superAdminApi from './services/super-admin/superAdminService';

@@ -1,0 +1,33 @@
+.glass-card {
+    @apply bg-white/40 backdrop-blur-2xl border border-white/60 shadow-premium;
+}
+
+.glass-input {
+    @apply bg-white/30 backdrop-blur-xl border border-white/40 focus:bg-white/60 focus:border-brand-cyan focus:shadow-input-focus transition-all duration-300;
+}
+
+.shimmer-border {
+    position: relative;
+    overflow: hidden;
+}
+
+.shimmer-border::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+    transform: translateX(-100%);
+    animation: shimmer 3s infinite;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-slate-200 rounded-full hover:bg-slate-300 transition-colors;
+}

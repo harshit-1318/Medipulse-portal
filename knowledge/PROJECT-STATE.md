@@ -1,0 +1,798 @@
+# Frontend Project State
+
+- Live Browser & Localhost Automated Verification (Sep 7 2026):
+	- Executed interactive automated browser sessions on `http://localhost:3000` covering all 8 roles (Super Admin, Admin, Prescriber, Pharmacist, Pharmacy Staff, Customer Support, Driver, Customer).
+	- Successfully recorded browser execution video artifact (`localhost_auth_demo`) and verified UI rendering on `/super-dashboard` and `/dashboard`.
+	- Verified fast login (~150-250ms) and instant logout cookie invalidation across all roles.
+- Phase 6 Final End-to-End Verification & Database RBAC Audit (Sep 7 2026):
+	- Re-verified complete authentication lifecycle from clean session state: Login -> Authentication -> Correct Dashboard -> Role Permissions -> Restricted Routes -> Logout -> Protected Route Blocked -> Re-login.
+	- MongoDB Atlas database check: verified exactly 8 unique users (0 duplicates, 0 orphaned foreign keys, 0 stale sessions), matching application RBAC specification.
+	- Purged transient test-injected accounts and configured automatic cleanup in security test suites.
+	- Verified: Full Vitest suite passed 100% (89/89 test files, 609/609 tests passed); `npm run typecheck` clean (0 errors).
+- Phase 5 Cross-Role RBAC Security Verification (Sep 7 2026):
+	- Executed cross-role authorization matrix testing across all 8 roles (Role A -> Role B route navigation, direct URL manipulation, forbidden API mutations).
+	- Hardened Edge proxy (`src/proxy.ts`): decoded JWT claims directly to derive `effectiveRole` and `isSuperAdmin`, preventing client-side cookie manipulation (`role=super_admin`) from escalating privileges.
+	- Validated backend API security: verified `verifyApiAuth` cryptographically checks HMAC-SHA256 signatures, rejecting tampered tokens with 401 Unauthorized and unauthorized roles with 403 Forbidden.
+	- Verified complete session termination: logout clears auth cookies (`Max-Age=0`) and terminates access immediately.
+	- Verified: 42/42 cross-role security tests passed (100% PASS).
+- Phase 4 Automated 5-Step Lifecycle Testing (Sep 7 2026):
+	- Verified full 5-step lifecycle (Login -> Dashboard -> Route & API Permissions -> Logout -> Re-Login) for all 8 roles.
+	- Discovered and fixed route evaluation order in `src/proxy.ts`: moved RBAC route checks ahead of child route rewrites (`/orders` -> `/orders/all`), preventing unauthorized customers/users from bypassing restrictions.
+	- Validated backend API security: verified `requireSuperAdmin` and `requiredRoles` guards reject unauthorized role tokens with 403 Forbidden.
+	- Verified: 40/40 dedicated lifecycle test cases passed across all 8 roles (100% PASS); `npm run typecheck` passed (0 errors).
+- Phase 3 Fresh Roles & Users Creation (Sep 7 2026):
+	- Created a completely fresh set of 8 distinct application users representing all supported roles in MongoDB Atlas.
+	- Super Admin updated with new unique display name `Harshit Kumar` (`kumarharshit370@gmail.com`).
+	- Fresh role users created with unique names and emails under `@medipulse.io` (`admin.vance`, `dr.watson`, `marcus.sterling`, `chloe.bennett`, `liam.reynolds`, `david.miller`, `clara.oswald`).
+	- 100% of passwords stored with bcrypt cryptographic hashing (`$2b$10$...`), 0 plaintext passwords, 0 duplicates.
+	- Verified: Full Vitest test suite passed 100% (87/87 files, 538/538 tests) validating live authentication across all 8 roles.
+- Phase 2 Existing Users & Role Data Cleanup (Sep 7 2026):
+	- Created and verified full JSON backup of all users at `backups/users_backup_2026-09-07T11-39-45-188Z.json`.
+	- Audited foreign-key dependencies across all collections: confirmed zero orphaned dependencies in orders, prescriptions, surveys, or leads.
+	- Performed targeted removal of 9 non-super-admin test/application users (`admin.test`, `pharmacist.test`, `pharmacy.staff.test`, `support.test`, `driver.test`, `customer.test`, `samridhi`, `test.doctor`, `sarah.jenkins.e2e`).
+	- Preserved primary Super Admin (`kumarharshit370@gmail.com`) tied to system profile and pricing settings.
+	- Verified database integrity post-cleanup: unique index `email_1` healthy, exactly 1 Super Admin user remaining.
+- Phase 1 Security Hardening & RBAC Consistency Cleanup (Sep 7 2026):
+	- Hashed legacy plaintext passwords for `test.doctor@medipulse.io` and `sarah.jenkins.e2e@medipulse.io` using `bcryptjs` (salt rounds 10), ensuring 100% of user accounts in MongoDB Atlas are cryptographically hashed.
+	- Standardized schema consistency by setting explicit `is_super_admin: false` on `samridhi571@gmail.com`.
+	- Removed hardcoded email check (`kumarharshit370@gmail.com`) in `SidebarLogo.tsx`, establishing clean reliance on verified RBAC claims (`is_super_admin` / `effectiveRole`).
+	- Verified: Full Vitest suite passed (87/87 files, 538/538 tests, 100%), `npm run typecheck` passed (0 errors).
+- Complete White-Label Rebranding to "MediPulse" (Sep 7 2026):
+	- Safely transitioned entire application identity from legacy client brand to independent white-label healthcare tech brand ("MediPulse").
+	- Created modern high-contrast SVG vector logos (`public/rxLogo.svg` for light theme, `public/rxLogoDark.svg` for dark theme, `public/favicon.svg` for favicon) featuring a medical pulse cross brandmark.
+	- Replaced client metadata, titles, and alt text across `src/app/layout.tsx`, `src/utils/branding/branding.ts`, `SidebarLogo.tsx`, `Footer.tsx`, and `AvatarSection.tsx`.
+	- Sanitized sample API data, order prefixes (`MP-1001`, `MP-1002`), and email addresses (`@medipulse.io`) across all route handlers and MongoDB test fixtures.
+	- Verified: 100% test pass rate across all 87 test files (538 tests) with `npx tsc --noEmit` clean (0 errors).
+- Complete Role/User Authentication & RBAC Authorization Flow (Sep 6 2026):
+	- Audited and verified all 8 application roles across MongoDB Atlas, Next.js 16 Edge proxy, REST API handlers, and client navigation:
+		1. Super Admin 👑 (`super_admin`): full universal access, `/super-dashboard` redirect, all tabs & operations.
+		2. Admin 🛡️ (`admin`): admin dashboard, user management, queue monitor, orders, CRM leads, surveys.
+		3. Prescriber 🩺 (`prescriber`): clinical dashboard, orders, prescriptions, customer consultations, re-sync.
+		4. Pharmacist 💊 (`pharmacist`): pharmacy dashboard, orders, prescriptions, customer reviews.
+		5. Pharmacy Staff 💊/📋 (`pharmacy_staff`): dispensing dashboard, orders, prescriptions.
+		6. Customer Support 🎧 (`customer_support`): support dashboard, orders, customer CRM leads.
+		7. Driver 🚚 (`driver`): delivery dashboard, dispatched orders.
+		8. User / Customer 👤 (`customer` / `user`): personal portal, profile & order history.
+	- Hardened password security: added bcryptjs hashing in `src/app/api/users/userHelpers.ts` for all user creations and updates.
+	- Granular permissions mapping in `src/app/api/auth/login/permissions.ts` dynamically assigned into JWT and cookie payloads on login.
+	- Role-based server-edge route authorization in `src/proxy.ts` and `src/proxyRoutes.ts`, rejecting unauthorized direct URL navigation with redirection to `/dashboard`.
+	- Enforced contextual `DashboardHeader.tsx` greeting and subtitle tailored to each authenticated role.
+	- Expanded role choices in `useUserForm.ts` to include all 8 valid roles.
+	- Verified: Live HTTP matrix test passed 100% across all 8 roles and edge cases; `npx tsc --noEmit` passed (0 errors); `npm test` passed 100% (81/81 test suites, 502/502 tests).
+
+- Super Admin Full Visibility & Universal Navigation Access (Sep 6 2026):
+	- Enabled complete visibility across all portal features for Super Admin accounts:
+		- Unlocked Orders Filters (`/orders/all`, `/orders/urgent`, `/orders/parked`, Customer Orders, Status, Documents, Product Types, Categories), Prescriptions (`/prescriptions`), and Customers (`/customers`) by removing restrictive `NON_SUPER_ADMIN_ROLES` in `src/components/layout/sidebar/constants.ts`.
+		- Added `super_admin` role to Docman Jobs (`/docman-jobs`), Surveys (`/surveys`), and Leads / CRM (`/leads`) in `src/components/layout/sidebar/adminNavConfig.ts`.
+		- Added Queue Monitor (`/queue-monitor`) with Mail icon under Admin section in `src/components/layout/sidebar/adminNavConfig.ts`.
+		- Implemented universal authorization fallback in `src/components/layout/sidebar/components/SidebarGroup.tsx` so `super_admin` can view all navigation items across the entire app (preventing duplicate standard `/dashboard`).
+		- Updated and expanded unit tests in `src/components/layout/sidebar/__tests__/SidebarGroup.test.tsx` (all 8 tests passing).
+	- Verified: `npx tsc --noEmit` passed (0 errors), `npx vitest run src/components/layout/sidebar/__tests__/` passed 100% (5/5 files, 18/18 tests).
+
+- Comprehensive Website E2E Audit & Next.js 16 Proxy Migration (`src/proxy.ts`) (Sep 5 2026):
+	- Converted deprecated `src/middleware.ts` to Next.js 16 `src/proxy.ts` convention with `export function proxy(request: NextRequest)` and enhanced public route matching.
+	- Created unit test suite `src/proxy.test.ts` with 14 comprehensive tests (100% pass).
+	- Fixed User Form / Role Selector dropdown styling: unified colors with brand medical teal (`#00A294` / `teal-50` / `teal-900`) and replaced purple/indigo gradients.
+	- Resolved `/orders` routing to automatically redirect to `/orders/all`.
+	- Implemented `src/app/api/orders/[id]/route.ts` to support seamless Order Details loading without 404/not found errors.
+	- Fixed Leads CRM API (`/api/leads` and `/api/leads/stats`) to align with `LeadsResponse` contract, restoring lead counts and table items.
+	- Corrected SurveyJS Creator CSS imports to `survey-core/survey-core.min.css` in `IsolatedSurveyCreator.tsx`.
+	- Unified Sites Directory and Super Dashboard chart accents with brand teal tokens.
+	- Verified: `npx tsc --noEmit` passed (0 errors), `npm test` passed 100% of unit tests (81/81 files, 495/495 tests), and full automated browser E2E verification passed across all 12 modules.
+
+- Polished User Management UI & Fixed SidebarLogo hydration mismatch (Sep 1 2026):
+	- Elevated User Management page (`src/components/users/pages/UsersListPage.tsx`) UI with cohesive brand teal gradient accents, cleaner search/filter inputs, aligned table columns, rich avatars, and non-wrapping role pills.
+	- Refined action buttons in `src/components/users/components/UserRowActions.tsx` with rounded borders, smooth micro-interactions, and disabled state for Super Admin.
+	- Fixed hydration mismatch on `SidebarLogo.tsx` by deferring `homeUrl` dynamic path to post-mount state.
+	- Verified: `npx tsc --noEmit` passed (0 errors), `npm test` passed 100% of unit tests (80/80 files, 481/481 tests).
+
+- Added Super Admin recognition for `kumarharshit370@gmail.com` (Sep 1 2026):
+	- Configured `src/app/api/auth/login/route.ts` to assign `role: 'super_admin'`, `is_super_admin: true`, and set role/username cookies for `kumarharshit370@gmail.com`.
+	- Updated `src/store/user/userStore.ts` and `src/components/auth/login/hooks/useLoginFormSubmit.ts` to recognize `kumarharshit370@gmail.com` as super admin across storage and state restores.
+	- Added username-based super admin resolution in Next.js middleware `src/middleware.ts`.
+	- Verified: `npx tsc --noEmit` passed (0 errors), `npm test` passed 100% of unit tests (80/80 files, 481/481 tests).
+
+- Fixed Sidebar SSR React hydration mismatch error on dashboard layout (Sep 1 2026):
+	- Resolved issue where `useSidebarState` evaluated client cookie/store role synchronously before hydration (`resolvedRole || 'user'`), causing server render (`user` role, no Admin section) and client initial render (`admin`/`super_admin` role, Admin section present) to mismatch in `SidebarGroup`.
+	- Corrected `effectiveRole` calculation to use `isSuperPath ? 'super_admin' : 'user'` prior to `mounted === true`, deferring authenticated dynamic role evaluation until post-hydration.
+	- Created unit tests in `src/components/layout/sidebar/__tests__/useSidebarState.test.ts`.
+	- Verified: `npx tsc --noEmit` passed (0 errors), `npm test` passed 100% of unit tests (80/80 files, 481/481 tests).
+
+- Fixed Site Filter dropdown width truncation on User Management page (Sep 1 2026):
+	- Expanded site select dropdown width from fixed `md:w-56` (224px) to `md:w-72` (288px) in `src/components/users/components/UserFilters.tsx` (94 LOC).
+	- Added tooltip title and adjusted padding (`pl-9 pr-9`) so full site names like "Healthcare Local Portal" render cleanly without cutting off.
+	- Verified: `npx tsc --noEmit` passed (0 errors), `npm test` passed (79/79 files, 477/477 tests).
+
+- Fixed Sidebar full logo text visibility & high contrast rendering (Sep 1 2026):
+	- Resolved issue where `/rxLogoDark.svg` (white text) on white sidebar background caused the brand text to be invisible.
+	- Updated `src/app/api/sites/get-info-by-domain/route.ts` default logo to `/rxLogo.svg` (crisp navy/black text on light backgrounds).
+	- Hardened `src/components/layout/sidebar/components/SidebarLogo.tsx` (73 LOC) to automatically use high-contrast `/rxLogo.svg` for light sidebar themes.
+	- Verified with targeted unit test `SidebarLogo.test.tsx` and full suite (79/79 files, 477/477 tests pass).
+
+- Fixed `/users/create` 405 Method Not Allowed error & added full user management API routes (Aug 31 2026):
+	- Added `POST` handler in `src/app/api/users/route.ts` (57 LOC) for creating users with duplicate email validation and site/role assignment in MongoDB Atlas.
+	- Extracted `src/app/api/users/userHelpers.ts` (53 LOC) for reusable query building and doc mappers.
+	- Added `src/app/api/users/[id]/route.ts` (43 LOC) supporting `GET`, `PATCH`, `PUT`, and `DELETE` operations for single user management.
+	- Updated `src/lib/db/models/User.ts` (30 LOC) with `password`, `site_id`, `sites`, and `is_super_admin` schema fields.
+	- Exported `createUser` in `src/api/services/user/userService.ts` (77 LOC) and extracted `src/components/users/hooks/useUserFormActions.ts` (54 LOC) for `src/components/users/hooks/useUserForm.ts` (58 LOC).
+	- 100% of created and modified source files are strictly < 80 LOC (well below the 100 LOC target).
+	- Added comprehensive unit tests in `src/api/services/user/userService.test.ts` (12/12 pass).
+	- Verified: `npx tsc --noEmit` passed (0 errors), `npm test` passed 100% of unit tests (79/79 files, 477/477 tests).
+
+- Comprehensive Modular Refactoring across `src/components/` (Aug 31 2026):
+	- `src/components/account/`: Moved sub-components (`AccountForm.tsx`, `AvatarSection.tsx`, `FormActions.tsx`, etc.) to `components/`.
+	- `src/components/order-details/`: Moved `OrderDetailsPage.test.tsx` to `__tests__/`.
+	- `src/components/leads/`: Moved `LeadStatusBadge.tsx` to `components/`, `LeadDetailDrawer.tsx` to `lead-drawer/`, and `LeadStatusBadge.test.tsx` to `__tests__/`.
+	- `src/components/surveys/`: Moved `SurveyStatusBadge.tsx` and `SurveysHeader.tsx` to `components/`, `SurveysTable.tsx` to `table/`, `SendSurveyModal.tsx` to `modal/`, and `SurveyStatusBadge.test.tsx` to `__tests__/`.
+	- `src/components/site-settings/`: Moved `sites-columns.tsx` & `sites-table.tsx` to `table/`, and `sites-filters.tsx` to `filters/`.
+	- `src/components/customers/` & `src/components/prescriptions/`: Moved header components to `components/` and table components to `table/`.
+	- `src/components/orders-table/`: Moved `useDropdown.ts` & `useOrderTableEffects.ts` to `hooks/`, and `UrgentOrdersContent.test.tsx` to `__tests__/`.
+	- Updated central `src/components/index.ts` to use module barrel exports.
+	- Verified: `npx tsc --noEmit` passed (0 errors), `npx vitest run` passed 100% of unit tests (78/78 files, 465/465 tests).
+
+- Fixed `StickmanAvatar` module import error in `useWalkAnimation.ts` (Aug 27 2026):
+	- Extracted `getStickmanScale` from `StickmanAvatar.tsx` into a pure TypeScript utility file `stickmanScale.ts`.
+	- Updated `useWalkAnimation.ts`, `StickmanAvatar.tsx`, and `BmiGauge.tsx` to import `getStickmanScale` from `./stickmanScale`.
+	- Resolved TypeScript language server "Cannot find module './StickmanAvatar'" error caused by a pure `.ts` hook importing from a React JSX `.tsx` component.
+	- Added unit tests in `stickmanScale.test.ts` (100% pass).
+
+- Completion of All 4 Phases for Remaining Files (< 100 LOC target) (Aug 27 2026):
+	- Completed Phase 1 (Site Settings & Form Components):
+		- `ShopifySettingsSection.tsx` (138 ➔ 67 LOC): extracted `ShopifyCredentialsFields.tsx`.
+		- `GeneralSettingsSection.tsx` (133 ➔ 87 LOC): extracted `GeneralBrandingFields.tsx`.
+		- `SenderOverridesSection.tsx` (125 ➔ 46 LOC): extracted `templateEntries.ts`.
+		- `formStateMapper.ts` (123 ➔ 80 LOC): extracted `defaultFormState.ts`.
+		- `useUsersList.ts` (125 ➔ 109 LOC): extracted `useSortingStateSync.ts`.
+		- `CustomSelect.tsx` (130 ➔ 91 LOC): extracted `useCustomSelectNav.ts`.
+	- Completed Phase 2 (Order Details, SCR & Info Cards):
+		- `LastPreviousOrderSection.tsx` (137 ➔ 109 LOC): extracted `LastOrderLookupButton.tsx`.
+		- `ScrViewMode.tsx` (125 ➔ 99 LOC): extracted `ScrFlagRow.tsx`.
+		- `PrescriptionDetailsCard.tsx` (123 ➔ 99 LOC): extracted `PrescriptionRowItem.tsx`.
+		- `ClinicalMeasurements.tsx` (120 ➔ 73 LOC): extracted `PreviousMeasurements.tsx`.
+		- `ConsultationSection.tsx` (120 ➔ 99 LOC): extracted `useConsultationActiveProduct.ts`.
+		- `OrderDetailsMainContent.tsx` (120 ➔ 112 LOC): extracted `tagsUtils.ts`.
+		- `BmiGauge.tsx` (118 ➔ 99 LOC): extracted `BmiProfileSegments.ts`.
+	- Completed Phase 3 (Surveys, Docman Jobs & Super Admin):
+		- `SurveysTable.tsx` (136 ➔ 104 LOC): extracted `useSurveysTableMutations.ts`.
+		- `ActivityDashboardSection.tsx` (134 ➔ 109 LOC): extracted `BrowserOSDeviceSection.tsx`.
+		- `SurveyViewPage.tsx` (132 ➔ 99 LOC): extracted `SurveyViewHeader.tsx`.
+		- `SurveyBuilderPage.tsx` (126 ➔ 99 LOC): extracted `IsolatedSurveyCreator.tsx`.
+		- `PublicSurveyPage.tsx` (125 ➔ 47 LOC): extracted `usePublicSurveySession.ts`.
+		- `SurveyResponseDetail.tsx` (123 ➔ 109 LOC): extracted `ResponseField.tsx`.
+		- `DocmanJobRow.tsx` (138 ➔ 109 LOC): extracted `DocmanJobActions.tsx`.
+	- Completed Phase 4 (Layout, API Services, Search & Table Rows):
+		- `SidebarNavItem.tsx` (138 ➔ 109 LOC): extracted `SidebarSubNavList.tsx`.
+		- `userService.ts` (131 ➔ 99 LOC): extracted `userParams.ts`.
+		- `useBmiStatus.ts` (131 ➔ 99 LOC): extracted `bmiGaugePosition.ts`.
+		- `core.ts` (127 ➔ 80 LOC): extracted `enrichOrdersList.ts`.
+		- `GlobalSearchResults.tsx` (122 ➔ 98 LOC): extracted `SearchCategoryGroup.tsx`.
+		- `UserDetailPage.tsx` (122 ➔ 64 LOC): extracted `UserActivitySection.tsx`.
+		- `CustomerRow.tsx` (121 ➔ 96 LOC): extracted `customerDateUtils.ts`.
+		- `UrgentActionButton.tsx` (121 ➔ 99 LOC): extracted `UrgentSuccessToast.tsx`.
+		- `buildParams.ts` (120 ➔ 80 LOC): extracted `orderParamsNormalizer.ts`.
+		- `ActivityTable.tsx` (120 ➔ 96 LOC): extracted `useActivityTableReactTable.ts`.
+	- Verified: `npm run typecheck` passed (0 errors), `npm test` passed (67/67 test files, 490/490 unit tests).
+	- Completed Phase 1 (Layout & Navigation):
+		- `SidebarNavItem.tsx` (184 lines ➔ 129 lines): extracted `useSidebarFlyoutHover.ts`.
+		- `SearchBar.tsx` (174 lines ➔ 96 lines): extracted `useGlobalSearchModal.ts`.
+		- `constants.ts` (160 lines ➔ 58 lines): extracted `adminNavConfig.ts`, `types.ts`.
+		- `UserRow.tsx` (174 lines ➔ 102 lines): extracted `UserRowActions.tsx`.
+	- Completed Phase 2 (Surveys, Users & Form Components):
+		- `SurveyResponsesPage.tsx` (175 lines ➔ 109 lines): extracted `SurveyResponsesTable.tsx`.
+		- `UserDetailPage.tsx` (174 lines ➔ 112 lines): extracted `UserDetailHeader.tsx`.
+		- `UserActivitySummary.tsx` (172 lines ➔ 139 lines): extracted `MethodologyNotice.tsx`, `CustomRangePicker.tsx`.
+		- `CustomSelect.tsx` (162 lines ➔ 119 lines): extracted `CustomSelectDropdown.tsx`.
+	- Completed Phase 3 (Order Details, Activity Log & Drawers):
+		- `ConsultationQuestions.tsx` (171 lines ➔ 96 lines): extracted `QuestionRowItem.tsx`.
+		- `ActivityTableRow.tsx` (165 lines ➔ 96 lines): extracted `ActivityExpandedRow.tsx`.
+		- `ActivityDashboardSection.tsx` (157 lines ➔ 132 lines): extracted `ActivityDashboardChartsGroup.tsx`.
+		- `LeadDetailDrawer.tsx` (154 lines ➔ 109 lines): extracted `LeadDrawerHeader.tsx`.
+	- Completed Phase 4 (Orders Table, Email Queue & Service Utilities):
+		- `client.ts` (183 lines ➔ 47 lines): extracted `interceptors.ts`.
+		- `superAdminService.ts` (173 lines ➔ 115 lines): extracted `superAdminActivityService.ts`.
+		- `measurement.ts` (168 lines ➔ 122 lines): extracted `prevMeasurements.ts`.
+		- `OrderFilters.tsx` (160 lines ➔ 66 lines): extracted `useActiveOrderFilters.ts`.
+		- `OrderColumns.tsx` (157 lines ➔ 108 lines): extracted `OrderIdCell.tsx`.
+		- `EmailQueueMonitorPage.tsx` (150 lines ➔ 99 lines): extracted `EmailQueueTable.tsx`.
+		- `status.ts` (151 lines ➔ 57 lines): extracted `docsStatus.ts`.
+		- `useCommunicationActions.ts` (150 lines ➔ 118 lines): extracted `communicationDispatcher.ts`.
+		- `ActivityLogsSection.tsx` (153 lines ➔ 87 lines): extracted `ActivityLogItem.tsx`.
+		- `ConsultationSection.tsx` (151 lines ➔ 115 lines): extracted `useSortedConsultationProducts.ts`.
+		- `IdentityCard.tsx` (152 lines ➔ 98 lines): extracted `AgeVerificationRows.tsx`.
+		- `SiteFiltersForm.tsx` (150 lines ➔ 109 lines): extracted `StatusDropdown.tsx`.
+		- `useSurveyBuilder.ts` (152 lines ➔ 67 lines): extracted `surveyMutations.ts`.
+	- 100% of source files in `src/` are now strictly < 150 LOC!
+	- Verified: `npm run typecheck` passed (0 errors), `npm test` passed (67/67 test files, 490/490 unit tests).
+
+- Modularized top large components into clean sub-components under ~100-140 LOC (Aug 27 2026):
+	- `PublicSurveyPage.tsx` (199 lines ➔ 126 lines): split into `PublicSurveyScreens.tsx`.
+	- `useUserForm.ts` (190 lines ➔ 125 lines): split into `useUserFormLoaders.ts`.
+	- `SendSurveyModal.tsx` (185 lines ➔ 30 lines): split into `SendSurveyModalContent.tsx`.
+	- `ActivityTableBody.tsx` (180 lines ➔ 112 lines): split into `ActivityTablePlaceholders.tsx`.
+	- `SuperAdminDashboardPage.tsx` (180 lines ➔ 109 lines): split into `SitesOverviewTable.tsx`.
+	- `LeadsPage.tsx` (179 lines ➔ 109 lines): split into `LeadsTable.tsx`.
+	- `OrderDetailsMainContent.tsx` (234 lines ➔ 98 lines): split into `useAutoResyncOrder.ts`, `ResyncSection.tsx`.
+	- `site-settings/hooks/utils.ts` (231 lines ➔ 9 lines): split into `formStateMapper.ts`, `payloadBuilder.ts`.
+	- `BmiGauge.tsx` (222 lines ➔ 108 lines): split into `StickmanAvatar.tsx`, `useWalkAnimation.ts`.
+	- `SurveysTable.tsx` (221 lines ➔ 125 lines): split into `SurveyEmptyState.tsx`, `SurveyActionMenu.tsx`.
+	- `ConsultationSection.tsx` (220 lines ➔ 132 lines): split into `ClinicalMeasurements.tsx`.
+	- `useUsersList.ts` (211 lines ➔ 132 lines): split into `useUsersData.ts`.
+	- `ContactCard.tsx` (203 lines ➔ 73 lines): split into `LastPreviousOrderSection.tsx`.
+
+- Fixed Activity Logs `/activity-log/list/filters` 500 error (Aug 27 2026):
+	- Added Next.js App Router API route handlers `src/app/api/activity-log/list/filters/route.ts`, `src/app/api/activity-log/user-summary/route.ts`, and `src/app/api/activity-log/route.ts`.
+	- Returns MongoDB Atlas activity logs and safe fallback structures.
+
+- Fixed `/users` page SSR React hydration mismatch error (Aug 27 2026):
+	- Deferred `isSuperAdmin` calculation in `src/components/users/hooks/useUsersList.ts` to `useEffect` post-hydration.
+	- Resolves HTML DOM divergence between server render and client initial hydration.
+
+- Fixed `/account` page SSR React hydration mismatch error (Aug 27 2026):
+	- Deferred client user state evaluation in `src/components/account/AvatarSection.tsx` to `useEffect` post-hydration.
+	- Ensures initial SSR HTML matches client hydration HTML for avatar and username elements.
+
+- Fixed `/super-dashboard` 500 API errors & sidebar hydration mismatch (Aug 27 2026):
+	- Added API routes `src/app/api/super-admin/dashboard-stats/route.ts` and `src/app/api/sites/route.ts`.
+	- Updated `src/app/api/super-admin/activity-dashboard/route.ts` to return full `ActivityDashboard` structure.
+	- Added defensive array checks in `src/components/super-admin/ActivityDashboardSection.tsx`.
+	- Deferred role filtering in `src/components/layout/Sidebar.tsx` to post-hydration mounted state.
+
+- Refactored `IdleSessionManager.tsx` into modular files (Aug 27 2026):
+	- Extracted custom hook `src/components/auth/hooks/useIdleSession.ts` for timer management, event listeners, and activity tracking.
+	- Created pure presentation modal `src/components/auth/IdleWarningModal.tsx`.
+	- Reduced `src/components/auth/IdleSessionManager.tsx` to a clean ~20-line composition wrapper.
+	- Verified with unit tests (`IdleSessionManager.test.tsx` 5/5 pass) and TypeScript (`tsc --noEmit`).
+
+- Fixed `/api/orders/dashboard-stats` 500 error & refactored `dashboardService` (Aug 27 2026):
+	- Added Next.js App Router route handler `src/app/api/orders/dashboard-stats/route.ts` calculating total, on-hold, uploaded document, and urgent order stats from MongoDB.
+	- Standardized `src/api/services/dashboardService.ts` to use `apiClient.get` and removed broken `transformResponse` override.
+	- Added unit tests in `src/api/services/dashboardService.test.ts`.
+
+- Fixed Tailwind CSS `w-[280px]` arbitrary value warning in `Sidebar.tsx` (Aug 27 2026):
+	- Replaced `w-[280px]` with standard Tailwind scale utility class `w-70` in `src/components/layout/Sidebar.tsx`.
+
+- Fixed React `useEffect` dependency array size warning in `Sidebar.tsx` (Aug 27 2026):
+	- Converted `isMounted` state to `useRef(false)` in `src/components/layout/Sidebar.tsx`.
+	- Keeps `useEffect` dependency array size strictly `[isCollapsed]` across renders and HMR updates.
+
+- Fixed `getOrders` API endpoint routing & candidate fallback (Aug 27 2026):
+	- Added candidate endpoint fallbacks (`[primaryEndpoint, "/orders"]`) in `src/api/services/orders/fetchers/core.ts` so 404/405 errors gracefully fall back to `/orders`.
+	- Added Next.js API route handlers `src/app/api/orders/order-list/route.ts` and `src/app/api/orders/search/route.ts` delegating to the base `/api/orders` handler.
+
+- Fixed Sidebar SSR React hydration mismatch error (Aug 27 2026):
+	- Deferred `localStorage` reading in `src/components/layout/Sidebar.tsx` to `useEffect` post-hydration.
+	- Ensures initial SSR render and client hydration render match 100% before applying saved collapsed state.
+
+- Fixed login auth response token parsing and site header initialization (Aug 27 2026):
+	- Added `response.token` parsing fallback in `src/components/auth/login/LoginForm.tsx`.
+	- Added `/auth/login` and `/auth/signup` to `publicEndpoints` in `src/lib/api/client.ts` to prevent missing `X-SITE-ID` warnings on unauthenticated endpoints.
+	- Added site initialization call in `src/components/providers/QueryProvider.tsx`.
+	- Added `POST` handler to `src/app/api/sites/get-info-by-domain/route.ts` and token fields to `src/app/api/auth/login/route.ts`.
+
+- Fixed login ambient glow pulse animation duration conflict (Aug 27 2026):
+	- Updated `src/app/(auth)/login/page.tsx` line 36 from `duration-[8000ms]` to `[animation-duration:8000ms]`.
+	- Resolved CSS property collision where `duration-[8000ms]` and `duration-500` both set `transition-duration`.
+	- Correctly applies an 8-second slow pulse animation while maintaining 500ms theme transition effects.
+
+- Redesigned Login Page UI & added Light/Dark Mode toggle (Aug 27 2026):
+	- Created `ThemeToggle.tsx` with Sun/Moon toggle button at top right of `/login`.
+	- Supports Light Mode (white glass card `bg-white/95`, high contrast dark slate text) and Dark Mode (dark glassmorphism `bg-slate-900/85`, ambient background glow, high contrast white text).
+	- State is stored in `localStorage` (`medipulse-theme`).
+	- Cleaned up white background box from `public/logo.png` and enhanced `Logo.tsx` drop-shadow glow styling.
+	- Added `ThemeToggle.test.tsx` (all 65 test files and 485 tests pass).
+
+- Fixed stale top-level status mismatch in orders list using raw Shopify fallback (May 1 2026):
+	- Edge case observed on real order `#110794`: list showed `UNFULFILLED` while details/Shopify showed fulfilled.
+	- Root issue: some list payloads carry stale top-level `status` while the authoritative value only exists in `raw_data.fulfillment_status`.
+	- `src/api/services/orders/utils/status.ts`:
+		- `resolveRawOrderStatus()` now checks `raw_data.fulfillment_status` / `raw_data.fulfillmentStatus` (and nested `raw_data.order`) before falling back to stale `status`.
+		- `on_hold` precedence still wins if any status source reports it.
+	- Added regression coverage:
+		- `src/api/services/orders/utils/status.test.ts`
+		- `src/api/services/orders/utils/mapper.test.ts`
+	- Validation:
+		- targeted pass: `npm test -- src/api/services/orders/utils/status.test.ts src/api/services/orders/utils/mapper.test.ts`.
+
+- Fixed order-list vs order-details status mismatch in edge cases (May 1 2026):
+	- Root issue: order list mapper prioritized fulfillment status only, while order details treats `on_hold` as authoritative if either status source reports it.
+	- `src/api/services/orders/utils/status.ts`:
+		- added `resolveRawOrderStatus(order)`.
+		- status resolution now mirrors order-details precedence and reads nested `orderInfo` status fields.
+	- `src/api/services/orders/utils/mapper.ts` now maps list status via `normalizeStatus(resolveRawOrderStatus(order))`.
+	- Added regression tests:
+		- `src/api/services/orders/utils/status.test.ts`
+		- `src/api/services/orders/utils/mapper.test.ts`
+	- Validation:
+		- targeted pass: `npm test -- src/api/services/orders/utils/status.test.ts src/api/services/orders/utils/mapper.test.ts`.
+
+- Super-admin dashboard bug fixes + new widgets (May 2 2026):
+  - Fixed `DailySparkline` blank bars: removed inner wrapper div; bars now direct flex children of h-24 so height:% resolves correctly.
+  - Fixed "Unique Users = 1,856": renamed to `uniqueStaff`, backed by new backend facet that filters source='user' before counting distinct emails.
+  - Fixed "System Events = 14k": split into `systemEvents` (source=system/shopify) and `legacyEvents` (null source, pre-enrichment).
+  - Fixed "Source unknown 98%": null entries filtered server-side; `SourceBreakdown` shows legacy note with % of total.
+  - New `HourlyChart`: 24-bar UTC hour-of-day distribution.
+  - New Comms Sent tile + Communication Actions section (7 prescriber action types, COMM_ACTION_LABELS mapping).
+  - New Activity by Site section (bySite data with site names).
+  - Updated `ActivityDashboardTotals`: `uniqueStaff`, `legacyEvents`, `commActionsSent`.
+  - Updated `ActivityDashboard`: `byHour`, `bySite`, `commActions` arrays.
+  - commit: `0878bfe`
+
+- Super-admin activity log dashboard (May 1 2026):
+	- `src/api/services/superAdminService.ts` — added `ActivityDashboard` interface and `getActivityDashboard(days?)` function calling `GET /super-admin/activity-dashboard`.
+	- `src/components/super-admin/ActivityDashboardSection.tsx` — new self-contained React component:
+		- Period selector (7 / 30 / 90 days) + refresh button.
+		- 5 stat tiles: total events, unique users, user actions, system events, failed logins.
+		- Daily sparkline bar chart (events per day trend).
+		- Top action types — horizontal bar list.
+		- Event source breakdown (user/system/shopify pills with %).
+		- Browser, OS, Device type — 3-column horizontal bar lists.
+		- Most active users — horizontal bar list (top 10).
+		- Recent successful logins table (email, IP, browser/OS, timestamp).
+		- Recent failed logins table (email, IP, timestamp) with red accent.
+	- `src/components/super-admin/SuperAdminDashboardPage.tsx` — `ActivityDashboardSection` added below the sites list.
+	- Pure CSS/Tailwind charts — zero new npm dependencies.
+	- Validation: no TypeScript errors; backend 795/800 tests pass.
+	- `src/api/services/activity-log/service.ts` — added `logActivity(payload)` export (POST /activity-log, fire-and-forget).
+	- `src/components/order-details/hooks/useCommunicationActions.ts` — calls `logActivity` after each successful action:
+		- `video` → `action_type: 'video_consultation_sent'`
+		- `in_person_video` → `action_type: 'in_person_video_consultation_sent'`
+		- `prescription` → `action_type: 'prescription_reminder_sent'`
+		- `document` → `action_type: 'document_reminder_sent'`
+		- `email_customer` (via `handleSendMessage`) → `action_type: 'customer_message_sent'`
+		- `email_gp` (via `handleSendGpEmail`) → `action_type: 'gp_email_sent'`
+		- `six_month` → `action_type: 'six_month_review_sent'`
+	- `view` = `'order_details'`, `object_guid` = internal order `orderId`, user fields sourced from `useUserStore`.
+	- Errors swallowed in `logActivity` so they never block the UI action.
+	- Validation: 130/130 order-details tests + 31/31 activity-log tests pass.
+
+- Fixed silent auto-logout risk when tab was hidden/backgrounded during idle timeout window (May 1 2026):
+	- Root issue: idle threshold could be crossed while tab was hidden, causing users to be logged out on next interaction without reliably seeing the warning modal.
+	- `src/components/auth/IdleSessionManager.tsx` now defers warning display until the tab is visible, and pauses warning timeout while hidden.
+	- Warning timeout starts/resumes only when the warning is actually visible to the user.
+	- Added regression test in `src/components/auth/IdleSessionManager.test.tsx`:
+		- `defers warning while tab is hidden and only starts warning timeout once visible`.
+	- Validation:
+		- targeted pass: `npm test -- src/components/auth/IdleSessionManager.test.tsx -- --maxWorkers=1`.
+
+- Updated user activity summary to show unique orders viewed (Apr 30 2026):
+	- `Orders Viewed` card in `UserActivitySummary` now uses backend `uniqueOrdersViewed` instead of summed `order_viewed` events.
+	- Activity-log summary service/types now parse and default `uniqueOrdersViewed` safely.
+	- Added targeted API-service coverage:
+		- `src/api/services/activity-log/activity-log.test.ts`
+		- success path asserts unique-orders parsing,
+		- error path asserts safe defaults (`uniqueOrdersViewed: 0`).
+	- Validation:
+		- targeted pass: `npm test -- src/api/services/activity-log/activity-log.test.ts`.
+
+- Added post-auto-logout return-to-page restoration on next login (Apr 30 2026):
+	- New utility: `src/utils/authRedirect.ts`.
+	- Idle auto-logout now saves current in-app URL to session storage before redirecting to `/login`.
+	- Successful login now consumes the saved redirect and returns user to the same page, with safe fallback to role dashboard when no saved path exists.
+	- Added safety validation for internal paths only (rejects `/login`, `/register`, and external-style paths such as `//...`).
+	- Added targeted tests:
+		- `src/utils/authRedirect.test.ts`
+		- `src/components/auth/login/LoginForm.actions.test.tsx` (saved redirect restore)
+	- Validation:
+		- targeted pass: `npm test -- src/utils/authRedirect.test.ts src/components/auth/login/LoginForm.actions.test.tsx src/components/auth/IdleSessionManager.test.tsx`.
+
+- Switched collapsed sidebar flyout to portal-based rendering to escape stacking contexts (Apr 30 2026 follow-up):
+	- Symptom: even extreme z-index values still left flyout visually behind content on some pages.
+	- Root cause: flyout remained constrained by parent stacking contexts; z-index tuning inside the same tree was not always sufficient.
+	- Fix:
+		- `src/components/layout/sidebar/SidebarNavItem.tsx` now renders collapsed flyout via `createPortal(..., document.body)` with `position: fixed` and dynamic anchor-based coordinates.
+		- Added hover/focus open + delayed close handling to keep pointer transitions stable between trigger and portal flyout.
+		- Added viewport reposition handling on scroll/resize while flyout is open.
+	- Test update:
+		- `src/components/layout/sidebar/SidebarNavItem.test.tsx` now verifies collapsed flyout appears on hover.
+	- Validation:
+		- targeted pass: `npm test -- src/components/layout/sidebar/SidebarNavItem.test.tsx src/components/layout/sidebar/SidebarGroup.test.tsx src/components/layout/Sidebar.test.tsx`.
+
+- Increased sidebar/flyout z-index to resolve persistent behind-pane overlap (Apr 30 2026 follow-up):
+	- Symptom: collapsed submenu hover rendered but could still appear behind main pane on some pages.
+	- Fix:
+		- `src/components/layout/Sidebar.tsx`: sidebar shell z-index increased to `1000`.
+		- `src/components/layout/sidebar/SidebarNavItem.tsx`: collapsed flyout z-index increased to `1100`.
+	- Validation:
+		- targeted pass: `npm test -- src/components/layout/Sidebar.test.tsx src/components/layout/sidebar/SidebarNavItem.test.tsx src/components/layout/sidebar/SidebarGroup.test.tsx`.
+
+- Fixed collapsed flyout still rendering behind main pane (Apr 29 2026 follow-up):
+	- Symptom: submenu hover worked, but flyout stayed visually behind dashboard content.
+	- Root cause: sidebar/main-pane stacking contexts were too close; flyout z-index alone was insufficient in some page compositions.
+	- Fixes:
+		- `src/components/layout/Sidebar.tsx`: set explicit elevated sidebar layer with `style={{ zIndex: 140 }}`.
+		- `src/layouts/DashboardLayout.astro`: set main pane to base layer (`relative z-0`).
+	- Validation:
+		- targeted pass: `npm test -- src/components/layout/Sidebar.test.tsx src/components/layout/sidebar/SidebarNavItem.test.tsx src/components/layout/sidebar/SidebarGroup.test.tsx`.
+
+- Fixed collapsed sidebar flyout layering/hover-chain issue (Apr 29 2026 follow-up):
+	- Symptom: hover showed flyout shadow, but submenu content still appeared hidden/inaccessible.
+	- Root causes:
+		- hover gap between parent item and flyout caused intermittent hover-chain break.
+		- flyout needed explicit high z-index to stay above surrounding content layers.
+	- Fix:
+		- `src/components/layout/sidebar/SidebarNavItem.tsx`:
+			- removed flyout left gap (`ml-3` -> `ml-0`) to keep hover chain continuous.
+			- set explicit `style={{ zIndex: 120 }}` on collapsed flyout container.
+	- Validation:
+		- targeted pass: `npm test -- src/components/layout/sidebar/SidebarNavItem.test.tsx src/components/layout/sidebar/SidebarGroup.test.tsx src/components/layout/Sidebar.test.tsx`.
+
+- Fixed collapsed sidebar flyout clipping regression (Apr 29 2026 follow-up):
+	- Symptom: collapsed-mode submenu flyouts were still not visible on hover.
+	- Root cause: parent containers clipped flyouts via `overflow-x-hidden` and section-level `overflow-hidden`.
+	- Fixes:
+		- `src/components/layout/Sidebar.tsx`: sidebar scroll container now uses `overflow-x-visible` in collapsed mode.
+		- `src/components/layout/sidebar/SidebarGroup.tsx`: section wrapper now uses `overflow-visible` in collapsed mode.
+	- Added regression test:
+		- `src/components/layout/sidebar/SidebarGroup.test.tsx` verifies collapsed mode uses `overflow-visible`.
+	- Validation:
+		- targeted pass: `npm test -- src/components/layout/Sidebar.test.tsx src/components/layout/sidebar/SidebarNavItem.test.tsx src/components/layout/sidebar/SidebarGroup.test.tsx`.
+
+- Fixed collapsed sidebar submenu visibility + collapse-state persistence (Apr 29 2026):
+	- Root issues:
+		- In collapsed mode, menu items with children had no visible submenu on hover.
+		- Sidebar collapsed state reset to expanded after browser refresh.
+	- Updated sidebar behavior:
+		- Added collapsed-mode flyout for child navigation on hover/focus in `src/components/layout/sidebar/SidebarNavItem.tsx`.
+		- Kept expanded-mode click-to-toggle behavior unchanged.
+		- Added localStorage persistence for collapsed mode in `src/components/layout/Sidebar.tsx` using key `sidebar-collapsed`.
+	- Added targeted tests:
+		- `src/components/layout/Sidebar.test.tsx`
+		- `src/components/layout/sidebar/SidebarNavItem.test.tsx`
+	- Validation:
+		- targeted pass: `npm test -- src/components/layout/Sidebar.test.tsx src/components/layout/sidebar/SidebarNavItem.test.tsx`.
+
+- Added site-driven favicon from Site Settings small icon URL (Apr 29 2026):
+	- Root issue: browser tab icon remained static (`/favicon.svg`) even when site branding provided `Small Icon URL`.
+	- Added favicon utility: `src/utils/favicon.ts`:
+		- `resolveFaviconUrl()` for safe fallback behavior.
+		- `applySiteFavicon()` to update/create `<link rel="icon">` at runtime.
+	- Wired favicon updates into site initialization flow in `src/store/siteStore.ts`:
+		- after fresh site-info fetch,
+		- and when reusing persisted site info for the current domain.
+	- Added targeted tests: `src/utils/favicon.test.ts`.
+	- Validation:
+		- targeted pass: `npm test -- src/utils/favicon.test.ts`.
+
+- Switched login/sidebar branding from static constants to site settings branding fields (Apr 29 2026):
+	- Root issue: frontend logos were hardcoded via `BRANDING.LOGO_URL` and `BRANDING.LOGO_ICON_URL`, so site-specific branding from Site Settings was not reflected.
+	- Updated components:
+		- `src/components/common/Logo.tsx` now uses `siteInfo.logo` with fallback to static branding.
+		- `src/components/layout/sidebar/SidebarLogo.tsx` now uses:
+			- full logo: `siteInfo.logo`
+			- collapsed icon: `siteInfo.small_icon_url`
+			- both with fallback to static defaults.
+	- Added targeted tests:
+		- `src/components/common/Logo.test.tsx`
+		- `src/components/layout/sidebar/SidebarLogo.test.tsx`
+	- Validation:
+		- targeted pass: `npm test -- src/components/common/Logo.test.tsx src/components/layout/sidebar/SidebarLogo.test.tsx`.
+
+- Enabled order-details bottom Re-Sync button for prescriber role and verified backend gate (Apr 29 2026):
+	- Frontend role gate in `OrderDetailsMainContent` now includes `prescriber` in `canResync`.
+	- Added targeted role-visibility coverage in `OrderDetailsMainContent.test.tsx`:
+		- prescriber sees `Re-Sync from Shopify` button,
+		- non-medical `user` does not.
+	- Verified backend endpoint gate for `POST /orders/:id/resync-shopify` is already protected by `@Roles(...ROLE_GROUPS.ALL_MEDICAL)`, which includes `prescriber`.
+	- Validation:
+		- targeted pass: `npm test -- src/components/order-details/sections/OrderDetailsMainContent.test.tsx`.
+
+- Added global idle-session timeout flow on protected dashboard pages (Apr 29 2026):
+	- New global client-side monitor `src/components/auth/IdleSessionManager.tsx` mounted from `src/layouts/DashboardLayout.astro`.
+	- Behavior:
+		- If no activity (mouse, keyboard, scroll, touch, pointer) for 15 minutes, show warning popup: `Are you still active?`.
+		- If still no activity for 1 additional minute while warning is visible, force logout via `userStore.actions.logout()`.
+		- Any activity while warning is visible resets idle timers and hides the popup.
+	- Debugging:
+		- Added `[IDLE_DEBUG]` console logs for timer start, warning display, warning timeout logout, resume activity, and unmount cleanup.
+		- Debug flag key: `DEBUG_IDLE_TIMER` (checked via `isLocalStorageDebugFlagEnabled`).
+		- Added optional timeout override keys for fast manual testing:
+			- `DEBUG_IDLE_TIMEOUT_MS`
+			- `DEBUG_IDLE_WARNING_TIMEOUT_MS`
+		- Added per-event activity logs (`Activity detected` with event name) throttled to avoid console spam.
+	- Added targeted tests:
+		- `src/components/auth/IdleSessionManager.test.tsx`
+		- Covers warning display, timed auto-logout, and warning reset on activity.
+	- Validation:
+		- targeted pass: `npm test -- src/components/auth/IdleSessionManager.test.tsx`.
+
+- Added approximate active-hours visibility on `/users/:id` daily summary (Apr 29 2026):
+	- Summary response now reads per-day `activeMinutes`, `activeHoursApprox`, `sessionCount`, `firstActivityAt`, `lastActivityAt`.
+	- Added new stat card: `Active Hours (Approx)`.
+	- Added user-facing methodology help panel (`Show how Active Hours is calculated`) that explains every assumption and formula.
+	- Methodology text is driven by backend-supplied model metadata (`sessionGapMinutes`, `minimumSessionMinutes`, `dayBoundaryTimezone`) to avoid docs drift.
+	- Summary request now sends client timezone (`Intl.DateTimeFormat().resolvedOptions().timeZone`) and local-date keys for ranges, fixing cases where activity table showed records but "Today" summary appeared empty.
+	- Methodology now explicitly lists excluded actions from active-time math (currently login events).
+	- Daily tiles now also show `~X.XXh active` under action count.
+	- Files:
+		- `src/api/services/activity-log/types.ts`
+		- `src/api/services/activity-log/service.ts`
+		- `src/components/users/components/UserActivitySummary.tsx`
+
+- Fixed `/users/:id` hard-blocking overlay (no clicks/scroll) caused by forced filter modal state (Apr 29 2026):
+	- Root cause: `ActivityTable` on user detail was passed `filtersEnabled={true}` with a no-op setter, so the full-screen filter overlay stayed mounted.
+	- Symptoms: page appeared frozen; no buttons worked; body scrolling locked.
+	- Fix: manage `filtersEnabled` via local state and pass real `setFiltersEnabled` handler.
+	- File: `src/components/users/pages/UserDetailPage.tsx`.
+
+- Fixed `/users/:id` initial page hang and incorrect all-logs load on first open (Apr 29 2026):
+	- Root cause: `useActivityLogs` mounted before user email resolved, so first fetch ran with empty `search` and returned all logs.
+	- Resulting behavior: users saw an initial full-page loading/blocked interaction window and unfiltered activity rows before email seeding.
+	- Fix: extracted activity section into a child component that mounts only after `user.email` is available.
+	- `useActivityLogs` now starts with `defaultFilters: { search: userEmail }` so the first fetch is user-scoped.
+	- Removed two-step seed flow (`didSeedSearch` + post-mount filter mutation) from `UserDetailPage.tsx`.
+	- File: `src/components/users/pages/UserDetailPage.tsx`.
+
+- User daily activity summary panel on `/users/:id` (Apr 29 2026):
+	- New `UserActivitySummary` component at `src/components/users/components/UserActivitySummary.tsx`.
+	- Range picker: Today / Last 7 days / Last 30 days / Custom.
+	- 6 stat cards: Total, Orders Viewed, Status Changes, Reviews, Emails Sent, PDFs Generated.
+	- Collapsible full action-breakdown table with per-day columns for multi-day ranges.
+	- Daily totals row shown for multi-day views.
+	- Injected into `UserDetailPage.tsx` between profile cards and raw activity log table.
+	- Backend call: `GET /activity-log/user-summary?userEmail=&startDate=&endDate=`.
+	- New types: `UserActivitySummaryDay`, `UserActivitySummaryResponse` in `activity-log/types.ts`.
+	- New service fn: `getUserActivitySummary()` in `activity-log/service.ts`.
+
+- Visual improvements to BMI section on re-orders — delta badge + prev section distinction (Apr 29 2026):
+	- BMI delta badge enlarged: `text-sm font-bold px-4 py-2 rounded-xl border`, arrow icon bumped to `text-base`.
+	- Previous Consultation Measurements section wrapped in a muted card (`rounded-2xl border border-slate-200 bg-slate-50/60 p-4`) so it's visually distinct from the current-measurements block.
+	- Section title text dimmed to `text-text-secondary`; divider line has `opacity-50`.
+	- Files: `src/components/order-details/sections/Consultation/ConsultationSection.tsx`.
+
+- Reorder Order ID renders as a clickable link in Re-Order consultation section (Apr 29 2026):
+	- "Reorder Order ID" question in Re-Order Information group now renders as `<a href="/orders/view/{id}">` opening in a new tab.
+	- File: `src/components/order-details/sections/Consultation/ConsultationQuestions.tsx`.
+
+- Removed activity-log filters dark backdrop overlay (Apr 28 2026 follow-up):
+	- Removed `bg-slate-900/60 backdrop-blur-md` backdrop styling from activity-log filters modal container.
+	- Kept modal card behavior and close flow intact.
+	- Added accessible close button label (`aria-label="Close filters"`) in filters header.
+	- Added targeted modal test coverage:
+		- `src/components/activity-logs/filters/ActivityFiltersModal.test.tsx`
+	- Validation:
+		- targeted pass: `npm test -- src/components/activity-logs/filters/ActivityFiltersModal.test.tsx src/components/activity-logs/filters/useActivityFilters.test.ts`.
+
+- Fixed users edit password visibility and users-page overlay regression (Apr 28 2026 follow-up):
+	- Added super-admin-only password visibility toggle in user edit form (show/hide eye control).
+	- Kept non-super-admin behavior unchanged (password remains masked; no visibility toggle).
+	- Resolved persistent full-screen initialization overlay in users routes by removing duplicate per-page `QueryProvider` wrappers and relying on the app-level provider in `Layout.astro`.
+	- Added targeted tests:
+		- `src/components/users/components/UserForm/PasswordFields.test.tsx`
+	- Validation:
+		- targeted pass: `npm test -- src/components/users/components/UserForm/PasswordFields.test.tsx src/components/users/components/UserRow.test.tsx`.
+
+- Added super-admin all-sites Activity Logs with optional site filter (Apr 28 2026 follow-up):
+	- Activity Logs now keep `siteId` in filter/URL state and forward selected site to the backend params builder.
+	- Super admin no longer applies an implicit site filter in UI state; logs load in all-sites mode by default.
+	- Added Site dropdown to Activity Log filters (includes `All Sites` + fetched site list) for optional narrowing.
+	- Added targeted tests:
+		- `src/api/services/activity-log/activity-log.test.ts`
+		- `src/components/activity-logs/filters/useActivityFilters.test.ts`
+	- Validation:
+		- targeted pass: `npm test -- src/api/services/activity-log/activity-log.test.ts src/components/activity-logs/filters/useActivityFilters.test.ts`.
+
+- Fixed users view/edit/disable regressions (Apr 28 2026 follow-up):
+	- User detail activity table no longer pollutes page URL with `?search=...` from seeded activity search.
+	- `useActivityLogs` now supports `syncToUrl` flag; user detail page uses `syncToUrl: false`.
+	- User edit form now correctly preselects role and site by normalizing `findById` response shape and using site `_id` values (not `site_key`) in selectors/payload.
+	- Disable action now requires two-step verification in list row:
+		1) confirmation dialog with user details,
+		2) email re-entry verification before API call.
+	- Validation:
+		- `npm test -- src/components/users/components/UserRow.test.tsx`.
+
+- Fixed user detail page 404 from wrong endpoint path (Apr 28 2026 follow-up):
+	- Root cause: frontend `findById` used `/user/:id` while backend exposes `/users/:id`.
+	- Fix: `userService.findById` now prefers `/users/:id` and keeps `/user/:id` as compatibility fallback.
+	- File: `src/api/services/userService.ts`.
+
+- Fixed users normal search via backend API support (Apr 28 2026 follow-up):
+	- Root cause: backend users list endpoint was not applying `search/page/limit/sort` query params.
+	- Fix: backend `GET /users` now supports server-side `search`, pagination, and sorting; frontend users hook now relies on API totals/results directly.
+	- File: `src/components/users/hooks/useUsersList.ts`.
+
+- Added user disable/enable actions and user activity detail view (Apr 28 2026):
+	- Users list row actions now include `View`, `Edit`, and `Disable/Enable`.
+	- Disable/Enable updates user `is_active` via user update endpoint and blocks super-admin disable from list actions.
+	- Added dedicated user detail route `/users/:id` with user profile summary and activity history table.
+	- User activity detail initializes activity search using selected user's email for user-scoped history.
+	- Added targeted user row test coverage:
+		- `src/components/users/components/UserRow.test.tsx`.
+
+- Improved user/site listing consistency and user edit access (Apr 28 2026 follow-up):
+	- Added `Actions` column to Users list with per-row `Edit` action (`/users/:id/edit`) so admin/super_admin can update password and profile details from list view.
+	- Hardened Users list created-date rendering with safe fallback (`—`) to prevent `Invalid Date` output.
+	- Refined Super Admin dashboard sites list styling to align with existing table design system (header card, accent line, table density, hover states).
+	- Added quick actions on super-admin dashboard for `Manage Users` and `Manage Sites`.
+
+- Refined activity-log subgrouping for no-order login/auth records (Apr 28 2026 follow-up):
+	- `orderId` values that are empty-like (`""`, whitespace, `"0"`, `"null"`, `"undefined"`) are now treated as missing order ids.
+	- Instead of rendering `Order #0`, missing-order records are subgrouped by user identity label (`userEmail`, fallback `userName`) at the bottom of the table.
+	- Preserved clickable order subgroup links for real order ids.
+	- Updated targeted render test to cover `orderId="0"` and user-based fallback subgrouping.
+	- Validation:
+		- targeted pass: `npm test -- src/components/activity-logs/table/ActivityTableBody.test.tsx`.
+
+- Made Activity Logs subgroup order headers directly navigable (Apr 28 2026 follow-up):
+	- Updated subgroup header rendering so the order number is a link to `/orders/view/<orderId>`.
+	- Link opens in a new tab (`target=_blank`, `rel=noopener noreferrer`) to preserve current activity-log context.
+	- Extended `ActivityTableBody` test coverage to assert link href and new-tab attributes.
+	- Validation:
+		- targeted pass: `npm test -- src/components/activity-logs/table/ActivityTableBody.test.tsx`.
+
+- Added order-id sub-grouping in Activity Logs table for easier per-order traceability (Apr 28 2026):
+	- Implemented render-layer opt-in subgrouping in `ActivityTableBody` to partition visible rows by order id with group headers: `Order #<id> (count)`.
+	- Added fallback group `No Order ID (count)` rendered after all concrete order groups.
+	- Enabled subgrouping by default through `ActivityLogsContent`, covering both routes:
+		- `/activity-logs`
+		- `/activity-logs/email-history`
+	- Kept shared table safety by making subgrouping opt-in at `ActivityTable` level; non-activity consumers are unchanged unless they pass the new prop.
+	- Added targeted rendering tests:
+		- `src/components/activity-logs/table/ActivityTableBody.test.tsx`
+	- Validation:
+		- targeted pass: `npm test -- src/components/activity-logs/table/ActivityTableBody.test.tsx src/api/services/activity-log/activity-log.test.ts`.
+
+- Replaced queue-centric navigation with activity-log email history navigation (Apr 28 2026):
+	- Removed `Email Queue` item from sidebar Admin section.
+	- Converted `Activity Logs` into a submenu with:
+		- `All Activity` -> `/activity-logs`
+		- `Email History` -> `/activity-logs/email-history`
+	- Added new page `src/pages/activity-logs/email-history.astro` using the existing Activity Logs table, prefiltered to `email_sent` for historical sent-email visibility.
+	- Extended activity logs component/hook to support configurable default action and storage key so email history state is isolated from general activity log state.
+	- Added `/activity-logs` to protected routes in `src/middleware.ts` so both activity routes require auth.
+	- Validation:
+		- targeted pass: `npm test -- src/components/layout/sidebar/SidebarGroup.test.tsx src/components/activity-logs/utils/filterConstants.test.ts`.
+
+- Added explicit Activity Logs action filter for skipped emails (Apr 28 2026):
+	- Added `Email Skipped` action option (`email_skipped`) to activity-log filter dropdown.
+	- Added action-chip mapping for `email_skipped` so rows render as `Email Skipped` instead of generic email label.
+	- Added targeted tests:
+		- `src/components/activity-logs/utils/filterConstants.test.ts`
+	- Validation:
+		- targeted pass: `npm test -- src/components/activity-logs/utils/filterConstants.test.ts`.
+
+- Fixed missing DOB on Order Details contact card by aligning normalization with backend payload (Apr 28 2026):
+	- Root cause: `normalizeCustomerInfo` read DOB only from consultation questions and ignored backend `customerInfo.dob`.
+	- Fix: prefer `response.customerInfo.dob` first, then fallback to consultation-question extraction.
+	- Added targeted tests:
+		- `src/components/order-details/utils/customerNormalization.test.ts`
+	- Validation:
+		- targeted pass: `npm test -- src/components/order-details/utils/customerNormalization.test.ts`.
+
+- Added dedicated Email Queue Monitor UI for queue debugging (Apr 28 2026):
+	- New protected page: `src/pages/queue-monitor/index.astro`.
+	- New React monitor view: `src/components/email-queue/EmailQueueMonitorPage.tsx`.
+	- New API service: `src/api/services/emailQueueService.ts` (calls `GET /email/queue/overview`).
+	- Added sidebar Admin menu entry: `Email Queue` -> `/queue-monitor`.
+	- Added middleware protection for `/queue-monitor` in `src/middleware.ts`.
+	- Added tests:
+		- `src/api/services/emailQueueService.test.ts`
+		- `src/components/email-queue/EmailQueueMonitorPage.test.tsx`
+	- Validation:
+		- targeted queue tests passed,
+		- full frontend suite passed: 42 files, 298 tests.
+
+- Resolved order-details auto-resync deployment incident (Apr 28 2026):
+	- Symptom: `[AUTO_RESYNC_DEBUG]` reported `autoResyncEnv: undefined` and auto-resync stayed skipped.
+	- Root cause: env var was first set on the wrong app while testing was on `staging.medipulse.co.uk` served by `medipulse-frontend-staging`.
+	- Resolution: set `PUBLIC_AUTO_RESYNC=true` on `medipulse-frontend-staging` and verify with `heroku config --app medipulse-frontend-staging | findstr AUTO_RESYNC`.
+	- Prevention: always validate app-domain mapping before env updates (`heroku domains --app <app>`), then confirm vars on that exact app.
+- Added shared frontend env utility and standardized env instruction set:
+	- New utility: `src/utils/env.ts` with `getFirstDefinedEnvValue`, `isEnvFlagEnabled`, `isLocalStorageDebugFlagEnabled`.
+	- Added utility tests: `src/utils/env.test.ts`.
+	- Migrated order-details/env debug consumers to utility:
+		- `src/components/order-details/sections/OrderDetailsMainContent.tsx`
+		- `src/components/order-details/hooks/useResyncFromShopify.ts`
+		- `src/components/order-details/hooks/useVideoRecordings.ts`
+		- `src/api/apiClient.ts`
+	- Added env standards guide: `knowledge/ENV-VARIABLES-GUIDE.md` and linked from `knowledge/INDEX.md`.
+- Fixed Re-Order consultation group not showing for repeat customers:
+	- Root cause: `dataNormalization.ts` only checked `repeatedOrders`/`repeated_orders` aliases but the order details endpoint returns `repeat_count`.
+	- Fix: added `repeat_count`, `repeatCount`, `customerInfo.totalOrders`, `customer.total_orders`, `customer.orders_count` fallbacks to the `repeatedOrders` mapping in `dataNormalization.ts`.
+- Gated Re-Order Information consultation group behind `repeatedOrders > 0`:
+	- Section is hidden for first-time orders (`repeatedOrders === 0`).
+	- `repeatedOrders` prop threaded from `OrderDetailsMainContent` → `ConsultationSection` → `ConsultationQuestions`.
+	- Source: `order.repeatedOrders` already in normalized order data (`dataNormalization.ts`).
+- Added Re-Order Information group to Consultation Questions in Order Details:
+	- Consultation questions are now partitioned into three fixed groups: Default → GP Information → Re-Order Information.
+	- Re-Order group captures: `reorder`, `side effect`, `side_effect`, `changed since`, exact `change`.
+	- GP group captures: names containing `gp ` or starting with `gp_`.
+	- Order is enforced by upfront array partitioning (not header injection mid-map), so group order is always stable regardless of backend question order.
+	- Implemented in `src/components/order-details/sections/Consultation/ConsultationQuestions.tsx`.
+- Refined BMI gauge layout in Order Details to improve visual correctness:
+	- Stickman pointer is now rendered above the color bar to prevent overlap with category labels.
+	- Category labels (Underweight/Normal/Overweight/Obese+) are now positioned by gauge-zone centers rather than equal spacing.
+	- This resolves misalignment where labels appeared under the wrong color segment.
+- Fixed BMI gauge pointer/bar alignment regression in Order Details:
+	- Replaced legacy hardcoded pointer percentages with computed position mapping derived from the actual gauge segment geometry.
+	- Normal/Overweight/Obese pointer placement now stays inside the matching color zone for both standard and ethnicity-adjusted profiles.
+- Refined stickman body scaling so overweight/obese states are visibly thicker than normal while preserving smooth BMI-driven transitions.
+- Added regression coverage for pointer-zone alignment and thickness differentiation:
+	- `src/components/order-details/sections/bmi/BmiGauge.test.tsx`
+- Verified tests after fix:
+	- targeted: `npm test -- src/components/order-details/sections/bmi/BmiGauge.test.tsx`
+	- full: `npm test -- --reporter=dot`
+- Updated Order Details BMI gauge pointer to a lightweight stickman that remains anchored to the BMI position while scaling body thickness smoothly with BMI value.
+- Aligned BMI status badge color to match the exact active gauge zone color:
+	- Underweight: sky
+	- Normal: emerald
+	- Overweight: amber
+	- Obese: red
+	- Severely Obese (standard profile only): fuchsia
+- Kept BMI classification labels/thresholds unchanged, including `Severely Obese` for standard profile BMI 40+ and no severe label for ethnicity-adjusted profile.
+- Expanded BMI gauge tests to cover zone-color matching and stickman scale behavior:
+	- `src/components/order-details/sections/bmi/BmiGauge.test.tsx`
+- Verified tests:
+	- targeted: `npm test -- src/components/order-details/sections/bmi/BmiGauge.test.tsx`
+	- full: `npm test` (all test files passing)
+- Gated order-details auto re-sync behind frontend env flag:
+	- Auto re-sync now runs only when `VITE_AUTO_RESYNC=true` (also accepts `AUTO_RESYNC=true` if provided by runtime env injection).
+	- Even when enabled, it still only triggers when backend `resynced_at` is missing in the order-details payload.
+	- Added targeted component tests for enabled/disabled env behavior:
+		- `src/components/order-details/sections/OrderDetailsMainContent.test.tsx`
+- Updated order-details consultation tabs to show only clinical products (for example Mounjaro/Wegovy), excluding add-ons such as vitamins and needles.
+- Preserved consultation section behavior when no clinical products exist:
+	- tabs are hidden,
+	- existing "No consultation data found." empty state is shown.
+- Kept Mounjaro-first ordering within the filtered clinical tab set.
+- Added targeted tests for consultation tab filtering and clinical classification:
+	- `src/components/order-details/sections/Consultation/ConsultationSection.test.tsx`
+	- `src/components/order-details/utils/order.test.ts`
+- Added explicit BMI context note for staff when ethnicity answer is missing:
+	- BMI card now shows: "Using standard BMI thresholds (ethnicity not provided)."
+	- Note is only shown when no ethnicity answer exists, not for explicit standard options like White/Other/Prefer not to say.
+- Added tests for the missing-ethnicity note behavior and ethnicity-answer presence detection.
+- Implemented ethnicity-aware BMI classification in order details BMI assessment:
+	- Added consultation-driven BMI profile detection for website ethnicity options.
+	- Standard thresholds now include: Underweight (<18.5), Normal (18.5-24.9), Overweight (25-29.9), Obese (30-39.9), Severely Obese (40+).
+	- Lower-threshold profile for Asian/Black/Middle Eastern-related options now uses: Overweight (23-27.4), Obese (27.5+), with no Severely Obese label.
+	- Preserved BMI numeric calculation logic (height/weight parsing unchanged).
+- Refreshed BMI gauge/status visuals with higher-contrast semantic colors (sky/emerald/amber/red/fuchsia) to replace dull bands.
+- Added targeted tests for BMI profile mapping and threshold boundaries:
+	- `src/components/order-details/sections/bmi/bmiProfile.test.ts`
+	- `src/components/order-details/sections/bmi/BmiGauge.test.tsx`
+	- Regression confirmation in `src/components/order-details/utils/measurement.test.ts`
+- Refined Docs cell visual layout for readability by switching to a structured left-aligned block with fixed label/status columns (ID, Full Photo, Video).
+- Fixed intermittent dashboard "all zeros" state on expired sessions by hardening global 401 handling in `src/api/apiClient.ts`:
+	- Clear both cookie token and localStorage `accessToken` on unauthorized responses.
+	- Trigger immediate client logout redirect (single-flight) for protected page contexts instead of waiting for manual refresh.
+	- Skip forced redirect for auth page/auth endpoint failures to avoid breaking login error UX.
+- Added targeted tests for unauthorized redirect decision logic:
+	- `src/api/utils/unauthorized.test.ts`
+- Disabled DOCS column sorting in orders table UI after moving to per-item docs display (ID/Full Photo/Video), while preserving backend compatibility for legacy sort params.
+- Orders table Documents column now renders per-item stacked statuses (ID, Full Photo, Video) across order-list pages instead of a single Uploaded/Not Uploaded pill.
+- Added order mapper/status support for `documentItemsStatus` with backend-boolean first mapping and `orderDocumentFilter` fallback.
+- Preserved existing Uploaded/Not Uploaded semantics used by filters/pages (still based on ID + Full Photo only).
+- Added targeted tests:
+	- `src/api/services/orders/utils/status.test.ts` (new per-item status helper coverage)
+	- `src/api/services/orders/utils/mapper.test.ts` (documentItemsStatus mapping coverage)
+	- `src/components/orders-table/cells/DocsCell.test.tsx` (stacked docs rendering)
+- Created standalone frontend knowledge system with modular documentation.
+- Updated frontend agent instruction policy to require: feature-specific knowledge-first reading, knowledge updates before commit, tests before commit, and mandatory tests for new code paths.
+- Added gated frontend video diagnostics in API and hook layers for intermittent recording fetch issues:
+	- `src/api/apiClient.ts` logs request/response/error context for `/video/*` endpoints.
+	- `src/components/order-details/hooks/useVideoRecordings.ts` logs fetch lifecycle and fallback behavior.
+	- Toggle: enabled in dev by default, or set `localStorage.DEBUG_VIDEO_RECORDINGS = 'true'`.
+- Added View Video cache-busting in `useVideoRecordings`:
+	- by-order request now sends `_ts` query param and no-cache request headers to avoid stale `304` revalidation effects.
+
+## Active Risks
+- Queue monitor currently reads aggregate status from backend overview endpoint only (no per-site filter toggle yet); if multi-site operational filtering is needed, add explicit site selector + backend query support in a follow-up.
+- Clinical tab filtering currently relies on local `isClinicalProduct` category/keyword/SKU heuristics; if backend product taxonomy labels change, classification tests should be updated to prevent false positives/negatives.
+- Ethnicity logic depends on consultation answer text normalization; newly introduced labels from backend/forms should be added to matcher tests to avoid misclassification.
+- Sort direction mismatches if normalizeSortOrder() is skipped.
+- New protected pages can become public if middleware protectedRoutes is not updated.
+- Dual-endpoint customer list behavior can regress if initial-load detection is removed.
+- Debug logging can become noisy if local storage debug flag is left enabled in production browsing sessions.
+- Any API service that catches all errors and returns empty data can visually mask auth/session expiry if interceptor-based 401 logout behavior is bypassed.
+
+## Testing Status
+- Test framework: Vitest + jsdom + Testing Library.
+- Run command: npm test
+- Coverage threshold: no strict global minimum currently enforced.
+
+## Known Priority Docs
+- API-CLIENT-GUIDE.md
+- URL-SORT-FILTER-GUIDE.md
+- AUTH-MIDDLEWARE-GUIDE.md
+- TESTING_GUIDE.md

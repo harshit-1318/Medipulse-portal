@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" fill="none">
+  <defs>
+    <linearGradient id="mp-fav-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00a294" />
+      <stop offset="100%" stop-color="#0284c7" />
+    </linearGradient>
+  </defs>
+
+  <!-- Base Rounded Container -->
+  <rect width="128" height="128" rx="32" fill="url(#mp-fav-grad)" />
+
+  <!-- Medical Cross Accent -->
+  <rect x="54" y="28" width="20" height="72" rx="6" fill="#ffffff" fill-opacity="0.3" />
+  <rect x="28" y="54" width="72" height="20" rx="6" fill="#ffffff" fill-opacity="0.3" />
+
+  <!-- Heartbeat ECG Pulse Wave -->
+  <path d="M 24 64 L 44 64 L 54 40 L 64 88 L 74 52 L 84 70 L 92 64 L 104 64" 
+        stroke="#ffffff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+</svg>
