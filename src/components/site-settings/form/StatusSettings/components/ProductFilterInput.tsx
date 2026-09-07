@@ -33,13 +33,13 @@ export const ProductFilterInput: React.FC<ProductFilterInputProps> = ({
                     Add
                 </button>
             </div>
-            <p className="text-[12px] text-slate-400 font-medium italic mt-2 ml-[52px]">
+            <p className="text-[12px] text-slate-400 font-medium italic mt-2 ml-13">
                 EXAMPLE IDS: 9754295501109, 9750521839925...
             </p>
             
             {/* Display Added Product IDs */}
             {productIds && productIds.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-4 ml-[52px] pt-2">
+                <div className="flex flex-wrap gap-2 mt-4 ml-13 pt-2">
                     {productIds.split(',').map((id: string, index: number) => id.trim() && (
                         <div key={index} className="flex items-center gap-1.5 bg-indigo-50 border border-indigo-100 px-3 py-1.5 rounded-lg text-[14px] font-bold text-indigo-700 shadow-sm animate-in zoom-in-95 duration-200">
                             <span>{id.trim()}</span>
