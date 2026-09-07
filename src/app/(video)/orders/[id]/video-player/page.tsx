@@ -1,7 +1,7 @@
 'use client';
 
 import { use } from 'react';
-import VideoPlayerPage from '@/components/order-details/components/VideoPlayerPage';
+import { VideoPlayerPage } from '@/components/order-details/components';
 
 interface VideoPlayerRouteProps {
   params: Promise<{ id: string }>;

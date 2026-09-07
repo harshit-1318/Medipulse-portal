@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import { DocumentRow } from '../../components/DocumentRow';
+import { DocumentRow } from '../../components';
 
 describe('DocumentRow', () => {
     it('renders label and View button when document is available', () => {

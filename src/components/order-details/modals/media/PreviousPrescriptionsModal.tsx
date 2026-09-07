@@ -12,7 +12,7 @@ export function PreviousPrescriptionsModal({ urls, onClose }: PreviousPrescripti
             onClick={onClose}
         >
             <div 
-                className="bg-white rounded-[32px] shadow-[0_32px_64px_-16px_rgba(15,23,42,0.25)] w-full max-w-3xl overflow-hidden animate-in zoom-in-95 duration-300 transition-all border border-slate-100" 
+                className="bg-white rounded-4xl shadow-[0_32px_64px_-16px_rgba(15,23,42,0.25)] w-full max-w-3xl overflow-hidden animate-in zoom-in-95 duration-300 transition-all border border-slate-100" 
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="px-12 py-9 border-b border-slate-100 flex justify-between items-center bg-white/80 backdrop-blur-md sticky top-0 z-20">

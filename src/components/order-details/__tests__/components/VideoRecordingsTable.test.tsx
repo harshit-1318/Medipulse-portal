@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import { VideoRecordingsTable } from '../../components/VideoRecordingsTable';
+import { VideoRecordingsTable } from '../../components';
 
 describe('VideoRecordingsTable', () => {
     it('renders loading state when loading is true', () => {

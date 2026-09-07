@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import { ActionButton } from '../../components/ActionButton';
+import { ActionButton } from '../../components';
 
 describe('ActionButton', () => {
     it('renders icon, label and triggers onClick', () => {

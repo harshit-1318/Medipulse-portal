@@ -2,10 +2,13 @@ import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { IdentityCard } from '../../sections/DocumentPrescription/components/IdentityCard';
 
-// Mock child components so tests focus on age-verified logic only
-vi.mock('../../components/DocumentRow', () => ({
-    DocumentRow: () => null,
-}));
+vi.mock('@/components/order-details/components', async (importOriginal) => {
+    const actual = await importOriginal<Record<string, any>>();
+    return {
+        ...actual,
+        DocumentRow: () => null,
+    };
+});
 vi.mock('../../sections/DocumentPrescription/components/IdentityDocumentRows', () => ({
     IdentityDocumentRows: () => null,
 }));

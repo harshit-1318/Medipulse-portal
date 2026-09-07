@@ -61,7 +61,7 @@ export function DeclineModal({
                     <div>
                         <label className="block text-sm font-bold text-slate-700 mb-2">Internal Staff Note (private)</label>
                         <textarea 
-                            className="w-full border border-slate-200 rounded-xl bg-slate-50 p-4 font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-rose-200 focus:border-rose-400 transition-all min-h-[120px] resize-none"
+                            className="w-full border border-slate-200 rounded-xl bg-slate-50 p-4 font-semibold text-slate-700 outline-none focus:ring-2 focus:ring-rose-200 focus:border-rose-400 transition-all min-h-30 resize-none"
                             placeholder="Add reason for records..."
                             value={cancelStaffNote}
                             onChange={(e) => setCancelStaffNote(e.target.value)}

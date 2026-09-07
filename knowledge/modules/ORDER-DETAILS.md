@@ -90,3 +90,4 @@
 	- Added 4 dedicated unit test suites in `__tests__/components/` (`ActionButton.test.tsx`, `DocumentRow.test.tsx`, `Row.test.tsx`, `VideoRecordingsTable.test.tsx`), bringing module test total to 24 files and 231 passing tests.
 	- Reorganized `hooks/` from a flat 15-file directory into 5 domain subfolders (`clinical/`, `communication/`, `media/`, `order/`, `resync/`), each with a dedicated `index.ts` barrel, unified under root `hooks/index.ts` for clean developer ergonomics.
 	- Reorganized `modals/` from a flat 11-file directory into 4 domain subfolders (`communication/`, `decline/`, `feedback/`, `media/`) alongside `OrderDetailsModals.tsx` and root `modals/index.ts`.
+	- Reorganized `components/` from a flat directory into 2 domain subfolders (`common/` and `video/`), each with dedicated `index.ts` barrels, unified under root `components/index.ts` for clean developer ergonomics and full backward compatibility.

@@ -24,7 +24,7 @@ export function EmailGpModal({ onClose, onSend }: EmailGpModalProps) {
                     </div>
                     <div>
                         <label className="block text-sm font-semibold text-slate-500 mb-2 uppercase tracking-wide">Notes</label>
-                        <textarea id="gp-message" className="w-full border border-slate-200 rounded-xl bg-slate-50 p-4 font-medium text-slate-700 outline-none focus:ring-2 focus:ring-teal-100 min-h-[120px] px-5" placeholder="Enter additional notes..."></textarea>
+                        <textarea id="gp-message" className="w-full border border-slate-200 rounded-xl bg-slate-50 p-4 font-medium text-slate-700 outline-none focus:ring-2 focus:ring-teal-100 min-h-30 px-5" placeholder="Enter additional notes..."></textarea>
                     </div>
                 </div>
                 <div className="mt-8 flex justify-end gap-3">

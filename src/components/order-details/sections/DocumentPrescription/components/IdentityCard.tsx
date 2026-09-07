@@ -1,4 +1,4 @@
-import { DocumentRow } from "@/components/order-details/components/DocumentRow";
+import { DocumentRow } from "@/components/order-details/components";
 import type { ApiResponse } from "@/components/order-details/types";
 import { IdCard, Camera, Video } from "lucide-react";
 import { IdentityDocumentRows } from "./IdentityDocumentRows";

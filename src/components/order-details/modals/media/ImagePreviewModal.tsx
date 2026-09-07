@@ -33,7 +33,7 @@ export function ImagePreviewModal({
                 <button className="absolute -top-12 right-0 text-white hover:text-gray-300 p-2 text-xl font-bold flex items-center gap-1 cursor-pointer" onClick={() => setPreviewImg(null)}>
                     <X size={24} /> Close
                 </button>
-                <div className="relative overflow-hidden rounded-xl border border-white/20 shadow-2xl bg-black/40 flex items-center justify-center min-h-[300px]">
+                <div className="relative overflow-hidden rounded-xl border border-white/20 shadow-2xl bg-black/40 flex items-center justify-center min-h-75">
                     <img src={previewImg} alt="Preview" className="max-h-[80vh] w-auto object-contain rounded-lg" />
                     {imageList.length > 1 && (
                         <>

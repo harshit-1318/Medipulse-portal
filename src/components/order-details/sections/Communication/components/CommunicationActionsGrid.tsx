@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ActionButton } from "@/components/order-details/components/ActionButton";
+import { ActionButton } from "@/components/order-details/components";
 import type { ApiResponse } from "@/components/order-details/types";
 import { SendSurveyModal } from "@/components/surveys";
 

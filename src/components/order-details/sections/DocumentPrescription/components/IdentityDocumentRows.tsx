@@ -1,5 +1,5 @@
 import { FileText, Package, Clock } from "lucide-react";
-import { Row } from "../../../components/Row";
+import { Row } from "@/components/order-details/components";
 
 interface Props {
     customerDocuments: any;

@@ -24,7 +24,7 @@ export function EmailCustomerModal({ order, onClose, onSend }: EmailCustomerModa
                     </div>
                     <div className="space-y-1">
                         <label className="block text-[11px] font-medium text-text-secondary uppercase tracking-wider">Message</label>
-                        <textarea id="oc-message" className="w-full border border-slate-200 rounded-xl bg-slate-50 p-4 text-[13px] font-medium text-text-primary outline-none focus:ring-2 focus:ring-teal-100 min-h-[120px] resize-none" placeholder="Type your message to the customer here..."></textarea>
+                        <textarea id="oc-message" className="w-full border border-slate-200 rounded-xl bg-slate-50 p-4 text-[13px] font-medium text-text-primary outline-none focus:ring-2 focus:ring-teal-100 min-h-30 resize-none" placeholder="Type your message to the customer here..."></textarea>
                     </div>
                 </div>
                 <div className="mt-8 flex justify-end gap-3">

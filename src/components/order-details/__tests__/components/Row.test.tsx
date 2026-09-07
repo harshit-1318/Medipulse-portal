@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
-import { Row } from '../../components/Row';
+import { Row } from '../../components';
 
 describe('Row', () => {
     it('renders label and string value', () => {
