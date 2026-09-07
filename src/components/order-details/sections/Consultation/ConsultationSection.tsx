@@ -1,13 +1,16 @@
-import { useMemo } from 'react';
 import { Clock } from "lucide-react";
 import type { Product } from "@/components/order-details/types";
-import { useBmiStatus } from "../bmi/hooks/useBmiStatus";
-import { ConsultationTabs } from "./components/ConsultationTabs";
-import { ConsultationQuestions } from "./components/ConsultationQuestions";
-import { CurrentMeasurements, PreviousMeasurements } from "./components/ClinicalMeasurements";
-import { getBmiDisplay, getHeightDisplay, getWeightDisplay, getPrevBmiDisplay, getPrevHeightDisplay, getPrevWeightDisplay, hasPrevMeasurements } from "@/components/order-details/utils";
-import { useSortedConsultationProducts } from "./hooks/useSortedConsultationProducts";
-import { useConsultationActiveProduct } from "./hooks/useConsultationActiveProduct";
+import {
+    ConsultationTabs,
+    ConsultationQuestions,
+    CurrentMeasurements,
+    PreviousMeasurements,
+} from "./components";
+import {
+    useSortedConsultationProducts,
+    useConsultationActiveProduct,
+    useConsultationMeasurements,
+} from "./hooks";
 
 interface ConsultationSectionProps {
     products: Product[];
@@ -17,27 +20,19 @@ interface ConsultationSectionProps {
 export function ConsultationSection({ products, repeatedOrders = 0 }: ConsultationSectionProps) {
     const sortedProducts = useSortedConsultationProducts(products);
     const { activeProductId, setActiveProductId, activeProduct } = useConsultationActiveProduct(sortedProducts);
-
-    const bmiDisplay = activeProduct ? getBmiDisplay(activeProduct) : "-";
-    const heightDisplay = activeProduct ? getHeightDisplay(activeProduct) : "-";
-    const weightDisplay = activeProduct ? getWeightDisplay(activeProduct) : "-";
-    const { bmiStatus } = useBmiStatus(bmiDisplay);
-
-    const hasBmiData = heightDisplay !== "-" && weightDisplay !== "-";
-
-    const showPrevMeasurements = activeProduct ? hasPrevMeasurements(activeProduct) : false;
-    const prevBmiDisplay = activeProduct ? getPrevBmiDisplay(activeProduct) : "-";
-    const prevHeightDisplay = activeProduct ? getPrevHeightDisplay(activeProduct) : "-";
-    const prevWeightDisplay = activeProduct ? getPrevWeightDisplay(activeProduct) : "-";
-    const { bmiStatus: prevBmiStatus } = useBmiStatus(prevBmiDisplay);
-
-    const bmiDelta = useMemo(() => {
-        if (!showPrevMeasurements) return null;
-        const curr = parseFloat(bmiDisplay);
-        const prev = parseFloat(prevBmiDisplay);
-        if (isNaN(curr) || isNaN(prev)) return null;
-        return +(curr - prev).toFixed(2);
-    }, [bmiDisplay, prevBmiDisplay, showPrevMeasurements]);
+    const {
+        bmiDisplay,
+        heightDisplay,
+        weightDisplay,
+        bmiStatus,
+        hasBmiData,
+        showPrevMeasurements,
+        prevBmiDisplay,
+        prevHeightDisplay,
+        prevWeightDisplay,
+        prevBmiStatus,
+        bmiDelta,
+    } = useConsultationMeasurements(activeProduct);
 
     return (
         <div id="section-consultation" className="order-detail-card group">

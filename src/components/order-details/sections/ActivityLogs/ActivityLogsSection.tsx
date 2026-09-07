@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 import type { ActivityLog } from "@/components/order-details/types";
-import { ActivityLogItem } from "./components/ActivityLogItem";
+import { ActivityLogItem } from "./components";
 
 interface ActivityLogsSectionProps {
     activityLogs: ActivityLog[] | undefined;

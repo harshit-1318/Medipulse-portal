@@ -1,7 +1,6 @@
 import type { ApiResponse } from "@/components/order-details/types";
-import { getOrderStatusStyle, detectOrderStatus } from "@/components/order-details/utils/status";
-import { OrderHeaderActions } from "./components/OrderHeaderActions";
-import { CustomerMetaSummary } from "./components/CustomerMetaSummary";
+import { getOrderStatusStyle, detectOrderStatus } from "@/components/order-details/utils";
+import { OrderHeaderActions, CustomerMetaSummary } from "./components";
 
 interface OrderHeaderProps {
     orderInfo: ApiResponse["orderInfo"];

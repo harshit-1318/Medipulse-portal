@@ -1,7 +1,5 @@
 import type { ApiResponse } from "@/components/order-details/types";
-import { ContactCard } from "./components/ContactCard";
-import { CustomerCard } from "./components/CustomerCard";
-import { ProductsCard } from "./components/ProductsCard";
+import { ContactCard, CustomerCard, ProductsCard } from "./components";
 
 interface InfoCardsProps {
     orderInfo: ApiResponse["orderInfo"];

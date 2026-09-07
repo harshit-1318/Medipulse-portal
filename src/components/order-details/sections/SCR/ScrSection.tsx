@@ -1,5 +1,4 @@
-import { ScrViewMode } from "./components/ScrViewMode";
-import { ScrEditMode } from "./components/ScrEditMode";
+import { ScrViewMode, ScrEditMode } from "./components";
 
 interface ScrSectionProps {
     isReviewed: boolean;

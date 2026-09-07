@@ -1,4 +1,4 @@
-import { CommunicationActionsGrid } from "./components/CommunicationActionsGrid";
+import { CommunicationActionsGrid } from "./components";
 import type { ApiResponse } from "@/components/order-details/types";
 
 interface Props {

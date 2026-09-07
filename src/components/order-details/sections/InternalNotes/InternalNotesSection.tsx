@@ -1,9 +1,11 @@
 import { ClipboardList } from "lucide-react";
 import { useState } from "react";
-import { useInternalNotes } from "@/components/order-details/hooks/useInternalNotes";
-import { InternalNoteInput } from "./components/InternalNoteInput";
-import { InternalNoteItem } from "./components/InternalNoteItem";
-import { InternalNotesListState } from "./components/InternalNotesListState";
+import { useInternalNotes } from "@/components/order-details/hooks";
+import {
+    InternalNoteInput,
+    InternalNoteItem,
+    InternalNotesListState,
+} from "./components";
 
 interface InternalNotesSectionProps {
     orderId: string;

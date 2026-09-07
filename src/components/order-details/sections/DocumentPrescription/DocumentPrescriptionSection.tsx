@@ -1,6 +1,5 @@
 import type { ApiResponse } from "@/components/order-details/types";
-import { IdentityCard } from "./components/IdentityCard";
-import { PrescriptionDetailsCard } from "./components/PrescriptionDetailsCard";
+import { IdentityCard, PrescriptionDetailsCard } from "./components";
 
 interface DocumentPrescriptionSectionProps {
     order: ApiResponse;

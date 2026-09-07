@@ -1,9 +1,8 @@
-import type { BmiProfile } from "./utils/bmiProfile";
-import type { BmiStatus } from "./hooks/useBmiStatus";
-import { StickmanAvatar } from "./components/StickmanAvatar";
-import { getStickmanScale } from "./utils/stickmanScale";
-import { useWalkAnimation } from "./hooks/useWalkAnimation";
-import { getBmiGaugeMarkers } from "./utils/BmiProfileSegments";
+import type { BmiProfile } from "./utils";
+import type { BmiStatus } from "./hooks";
+import { StickmanAvatar } from "./components";
+import { getStickmanScale, getBmiGaugeMarkers } from "./utils";
+import { useWalkAnimation } from "./hooks";
 
 export { getStickmanScale };
 

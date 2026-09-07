@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Header from './VideoPlayer/Header';
-import Footer from './VideoPlayer/Footer';
-import InfoCards from './VideoPlayer/InfoCards';
-import VideoCard from './VideoPlayer/VideoCard';
-import { AnimatedBackground } from './VideoPlayer/AnimatedBackground';
-import { GlobalVideoStyles } from './VideoPlayer/GlobalVideoStyles';
+import {
+    Header,
+    Footer,
+    InfoCards,
+    VideoCard,
+    AnimatedBackground,
+    GlobalVideoStyles,
+} from './VideoPlayer';
 
 interface VideoPlayerPageProps {
     orderId: string;

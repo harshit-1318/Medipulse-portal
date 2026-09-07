@@ -1,5 +1,6 @@
 export * from './useAutoResyncOrder';
 export * from './useCommunicationActions';
+export * from './useCustomerMessaging';
 export * from './useGpAndAgeCommunication';
 export * from './useImageSlider';
 export * from './useInternalNotes';

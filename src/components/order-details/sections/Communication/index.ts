@@ -1,2 +1,2 @@
 export * from './CommunicationSection';
-export * from './components/CommunicationActionsGrid';
+export * from './components';

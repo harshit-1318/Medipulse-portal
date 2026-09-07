@@ -1,5 +1,6 @@
 export * from './OrderDetailsModals';
 export * from './DeclineModal';
+export * from './DeclineConfirmationStep';
 export * from './EmailCustomerModal';
 export * from './EmailGpModal';
 export * from './FullScreenLoader';
