@@ -44,10 +44,10 @@ export function PreviousPrescriptionsModal({ urls, onClose }: PreviousPrescripti
                         return (
                             <div 
                                 key={idx} 
-                                className="group/item flex items-center justify-between p-6 bg-white rounded-[24px] border border-slate-200/60 hover:border-brand-cyan/30 hover:shadow-xl hover:shadow-brand-cyan/5 transition-all duration-300 hover:-translate-y-0.5"
+                                className="group/item flex items-center justify-between p-6 bg-white rounded-3xl border border-slate-200/60 hover:border-brand-cyan/30 hover:shadow-xl hover:shadow-brand-cyan/5 transition-all duration-300 hover:-translate-y-0.5"
                             >
                                 <div className="flex items-center gap-5 min-w-0 pr-4">
-                                    <div className="w-12 h-12 rounded-[16px] bg-slate-50 text-slate-400 flex items-center justify-center group-hover/item:bg-brand-cyan/10 group-hover/item:text-brand-cyan transition-colors duration-300 shrink-0 border border-slate-100">
+                                    <div className="w-12 h-12 rounded-2xl bg-slate-50 text-slate-400 flex items-center justify-center group-hover/item:bg-brand-cyan/10 group-hover/item:text-brand-cyan transition-colors duration-300 shrink-0 border border-slate-100">
                                         <FileText size={22} strokeWidth={2} />
                                     </div>
                                     <div className="min-w-0 space-y-1">

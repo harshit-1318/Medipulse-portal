@@ -10,7 +10,7 @@ interface Props {
 export const IdentityDocumentRows: React.FC<Props> = ({ customerDocuments, sixMonthReview, handleViewPrescriptionList }) => {
     return (
         <>
-            <div className="flex flex-row items-center justify-between py-2 border-b border-gray-100 last:border-0 w-full shrink-0 min-h-[38px]">
+            <div className="flex flex-row items-center justify-between py-2 border-b border-gray-100 last:border-0 w-full shrink-0 min-h-9.5">
                 <div className="flex items-center gap-2 shrink-0">
                     <FileText size={16} strokeWidth={2.5} className="text-gray-400 shrink-0" />
                     <span className="text-text-secondary font-medium text-[13px] shrink-0">Previous Prescriptions</span>
@@ -28,7 +28,7 @@ export const IdentityDocumentRows: React.FC<Props> = ({ customerDocuments, sixMo
 
             <Row label="Total Pens Purchased" icon={<Package size={16} strokeWidth={2.5} />} value={sixMonthReview?.totalPens ?? 0} />
 
-            <div className="flex flex-row items-center justify-between py-2 border-b border-gray-100 last:border-0 w-full shrink-0 min-h-[38px]">
+            <div className="flex flex-row items-center justify-between py-2 border-b border-gray-100 last:border-0 w-full shrink-0 min-h-9.5">
                 <div className="flex items-center gap-2 shrink-0">
                     <Clock size={16} strokeWidth={2.5} className="text-gray-400 shrink-0" />
                     <span className="text-text-secondary font-medium text-[13px] shrink-0">6–Month Review Email</span>

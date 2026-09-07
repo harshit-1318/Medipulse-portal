@@ -25,7 +25,7 @@ export function VideoRecordingsTable({ recordings, loading, shopifyId, orderId }
                 </div>
                 <div className="space-y-1">
                     <h3 className="text-slate-900 font-semibold">No recordings available</h3>
-                    <p className="text-slate-400 text-sm font-medium max-w-[240px]">
+                    <p className="text-slate-400 text-sm font-medium max-w-60">
                         We couldn't find any customer recordings for this transaction.
                     </p>
                 </div>

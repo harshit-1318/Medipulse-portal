@@ -32,7 +32,7 @@ export function ContactCard({ orderInfo, customerInfo, formattedCreatedAt, lastP
             </div>
 
             <div className="space-y-1 flex-1 flex flex-col justify-start relative z-10 w-full">
-                <div className="flex flex-row items-center justify-between py-2 border-b border-gray-100 last:border-0 w-full min-h-[38px] group/row">
+                <div className="flex flex-row items-center justify-between py-2 border-b border-gray-100 last:border-0 w-full min-h-9.5 group/row">
                     <div className="flex items-center gap-2 shrink-0">
                         <Hash size={16} strokeWidth={2.5} className="text-gray-400 shrink-0" />
                         <span className="text-text-secondary font-medium text-[13px] shrink-0">Order ID</span>
@@ -42,7 +42,7 @@ export function ContactCard({ orderInfo, customerInfo, formattedCreatedAt, lastP
                     </span>
                 </div>
 
-                <div className="flex flex-row items-center justify-between py-2 border-b border-gray-100 last:border-0 w-full min-h-[38px] group/row">
+                <div className="flex flex-row items-center justify-between py-2 border-b border-gray-100 last:border-0 w-full min-h-9.5 group/row">
                     <div className="flex items-center gap-2 shrink-0">
                         <Calendar size={16} strokeWidth={2.5} className="text-gray-400 shrink-0" />
                         <span className="text-text-secondary font-medium text-[13px] shrink-0">Order Date</span>
@@ -51,7 +51,7 @@ export function ContactCard({ orderInfo, customerInfo, formattedCreatedAt, lastP
                 </div>
 
                 {dob && (
-                    <div className="flex flex-row items-center justify-between py-2 border-b border-gray-100 last:border-0 w-full min-h-[38px] group/row">
+                    <div className="flex flex-row items-center justify-between py-2 border-b border-gray-100 last:border-0 w-full min-h-9.5 group/row">
                         <div className="flex items-center gap-2 shrink-0">
                             <User size={16} strokeWidth={2.5} className="text-gray-400 shrink-0" />
                             <span className="text-text-secondary font-medium text-[13px] shrink-0">Date Of Birth</span>

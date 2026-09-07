@@ -12,9 +12,9 @@ interface DocumentRowProps {
 
 export function DocumentRow({ label, available, onView, fallbackText = "Not Uploaded", pendingText, icon }: DocumentRowProps) {
     return (
-        <div className="flex flex-row items-center justify-between py-2 border-b border-gray-100 last:border-0 w-full shrink-0 min-h-[38px]">
+        <div className="flex flex-row items-center justify-between py-2 border-b border-gray-100 last:border-0 w-full shrink-0 min-h-9.5">
             <div className="flex items-center gap-2 shrink-0">
-                {icon && <span className="text-gray-400 flex items-center justify-center shrink-0 [&>svg]:w-[16px] [&>svg]:h-[16px]">{icon}</span>}
+                {icon && <span className="text-gray-400 flex items-center justify-center shrink-0 [&>svg]:w-4 [&>svg]:h-4">{icon}</span>}
                 <span className="text-text-secondary font-medium text-[13px] shrink-0">{label}</span>
             </div>
 

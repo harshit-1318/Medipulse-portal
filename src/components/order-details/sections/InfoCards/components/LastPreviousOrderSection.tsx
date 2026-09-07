@@ -35,7 +35,7 @@ export function LastPreviousOrderSection({
             </div>
 
             {lastPreviousOrder.orderId && (
-                <div className="flex flex-row items-center justify-between py-2 border-b border-gray-100 last:border-0 w-full min-h-[38px] group/row">
+                <div className="flex flex-row items-center justify-between py-2 border-b border-gray-100 last:border-0 w-full min-h-9.5 group/row">
                     <div className="flex items-center gap-2 shrink-0">
                         <Hash size={16} strokeWidth={2.5} className="text-gray-400 shrink-0" />
                         <span className="text-text-secondary font-medium text-[13px] shrink-0">Order ID</span>
@@ -44,7 +44,7 @@ export function LastPreviousOrderSection({
                 </div>
             )}
 
-            <div className="flex flex-row items-center justify-between py-2 border-b border-gray-100 last:border-0 w-full min-h-[38px] group/row">
+            <div className="flex flex-row items-center justify-between py-2 border-b border-gray-100 last:border-0 w-full min-h-9.5 group/row">
                 <div className="flex items-center gap-2 shrink-0">
                     <Calendar size={16} strokeWidth={2.5} className="text-gray-400 shrink-0" />
                     <span className="text-text-secondary font-medium text-[13px] shrink-0">Order Date</span>
@@ -55,7 +55,7 @@ export function LastPreviousOrderSection({
             </div>
 
             {lastPreviousOrder.orderStatus.toLowerCase().includes('fulfilled') && lastPreviousOrder.dispatchedAt && (
-                <div className="flex flex-row items-center justify-between py-2 border-b border-gray-100 last:border-0 w-full min-h-[38px] group/row">
+                <div className="flex flex-row items-center justify-between py-2 border-b border-gray-100 last:border-0 w-full min-h-9.5 group/row">
                     <div className="flex items-center gap-2 shrink-0">
                         <Calendar size={16} strokeWidth={2.5} className="text-gray-400 shrink-0" />
                         <span className="text-text-secondary font-medium text-[13px] shrink-0">Fulfilled Date</span>
@@ -67,7 +67,7 @@ export function LastPreviousOrderSection({
             )}
 
             {lastPreviousOrder.orderStatus.toLowerCase().includes('cancelled') && lastPreviousOrder.cancelledAt && (
-                <div className="flex flex-row items-center justify-between py-2 border-b border-gray-100 last:border-0 w-full min-h-[38px] group/row">
+                <div className="flex flex-row items-center justify-between py-2 border-b border-gray-100 last:border-0 w-full min-h-9.5 group/row">
                     <div className="flex items-center gap-2 shrink-0">
                         <Calendar size={16} strokeWidth={2.5} className="text-gray-400 shrink-0" />
                         <span className="text-text-secondary font-medium text-[13px] shrink-0">Cancelled Date</span>
