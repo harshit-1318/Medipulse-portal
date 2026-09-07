@@ -1,39 +1,45 @@
-# 🏥 MediPulse Portal — Modern Healthcare & Pharmacy Operations
+<div align="center">
 
-[![Next.js 16](https://img.shields.io/badge/Next.js-16.0.0-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
-[![React 19.2](https://img.shields.io/badge/React-19.2.4-20232A?style=for-the-badge&logo=react)](https://reactjs.org/)
-[![TypeScript 5](https://img.shields.io/badge/TypeScript-5.9.3-3178C6?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
-[![Tailwind CSS 4](https://img.shields.io/badge/Tailwind_CSS-4.2-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
-[![MongoDB Atlas](https://img.shields.io/badge/MongoDB_Atlas-Mongoose_9-47A248?style=for-the-badge&logo=mongodb)](https://www.mongodb.com/atlas)
-[![Vitest](https://img.shields.io/badge/Vitest-Passed_480+-729B1B?style=for-the-badge&logo=vitest)](https://vitest.dev/)
+  <img src="./public/medipulse-logo.svg" alt="MediPulse Logo" width="340" />
 
-> **MediPulse Portal** is a production-grade, multi-tenant healthcare administration, prescription management, clinical survey builder, and audit portal built with Next.js 16 (App Router + Turbopack), React 19, TypeScript, Tailwind CSS 4, and MongoDB.
+  <br/><br/>
 
----
+  # MediPulse Portal
+  ### Modern Enterprise Healthcare & Pharmacy Operations Platform
 
-## 📑 Table of Contents
-- [✨ Key Features](#-key-features)
-- [🛠️ Technology Stack](#️-technology-stack)
-- [🏗️ System Architecture](#️-system-architecture)
-- [🚀 Quick Start & Installation](#-quick-start--installation)
-- [🔐 Environment Configuration](#-environment-configuration)
-- [📁 Directory Structure](#-directory-structure)
-- [👥 Role-Based Access Control (RBAC)](#-role-based-access-control-rbac)
-- [🧪 Testing & Quality Assurance](#-testing--quality-assurance)
-- [🚀 Deployment Guide](#-deployment-guide)
-- [📚 Documentation Index](#-documentation-index)
+  [![Next.js 16](https://img.shields.io/badge/Next.js-16.0.0-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
+  [![React 19.2](https://img.shields.io/badge/React-19.2.4-20232A?style=for-the-badge&logo=react)](https://reactjs.org/)
+  [![TypeScript 5](https://img.shields.io/badge/TypeScript-5.9.3-3178C6?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+  [![Tailwind CSS 4](https://img.shields.io/badge/Tailwind_CSS-4.2-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
+  [![MongoDB Atlas](https://img.shields.io/badge/MongoDB_Atlas-Mongoose_9-47A248?style=for-the-badge&logo=mongodb)](https://www.mongodb.com/atlas)
+  [![Vitest](https://img.shields.io/badge/Vitest-Passing_480+-729B1B?style=for-the-badge&logo=vitest)](https://vitest.dev/)
+
+  <p align="center">
+    <b>A production-grade, multi-tenant clinical management suite featuring prescription auditing, real-time order processing, dynamic survey creation, and strict role-based access control.</b>
+  </p>
+
+  <p align="center">
+    <a href="#-key-features">Key Features</a> •
+    <a href="#️-technology-stack">Tech Stack</a> •
+    <a href="#️-system-architecture">Architecture</a> •
+    <a href="#-quick-start--installation">Quick Start</a> •
+    <a href="#-api-reference">API Reference</a> •
+    <a href="#-deployment-guide">Deployment</a>
+  </p>
+
+</div>
 
 ---
 
 ## ✨ Key Features
 
-- 🩺 **Clinical Prescription Audit:** Review prescriptions, doctor approvals, medication logs, and clinical safety checks.
-- 📦 **Order Management:** Full order lifecycles (Pending, Clinical Review, Approved, Dispensed, Parked, Urgent, Shipped) with Shopify auto-resync.
-- 📝 **Dynamic Survey Builder:** Powered by SurveyJS (`survey-creator-react`), enabling custom medical questionnaires, clinical scoring, and patient response tracking.
-- 👥 **Multi-Tenant Administration:** Host-based multi-tenancy (`X-SITE-ID`, `X-SITE-KEY`, `X-SITE-HOST`) supporting distinct branding, themes, and configuration per clinic/pharmacy.
-- 📊 **Super Admin & Analytics Dashboards:** Real-time metrics, revenue monitoring, activity timeline charts, and audit trails.
-- 🔒 **Enterprise Security:** Next.js 16 Proxy Middleware, JWT validation, httpOnly cookie sessions, and strict Role-Based Access Control (RBAC).
-- 📜 **Full Activity Audit Logging:** Tracks order status modifications, internal notes, prescription verifications, and user actions.
+- 🩺 **Clinical Prescription Audit:** End-to-end clinical validation workflow with doctor approvals, contraindication checks, and dispensing verification.
+- 📦 **Order Lifecycle & Shopify Sync:** Unified management across 7 order states (*Pending, Clinical Review, Approved, Dispensed, Parked, Urgent, Shipped*) with bi-directional Shopify data synchronization.
+- 📝 **Dynamic Clinical Survey Builder:** Integrated SurveyJS (`survey-creator-react`) engine allowing clinical teams to design custom questionnaires, scoring rules, and view patient submissions.
+- 👥 **Multi-Tenant Administration:** Tenant isolation and domain-based routing via `X-SITE-ID`, `X-SITE-KEY`, and `X-SITE-HOST` headers with dynamic clinic branding.
+- 📊 **Executive & Operational Dashboards:** Real-time revenue telemetry, site performance statistics, prescriber workloads, and order throughput analytics.
+- 🔒 **Enterprise-Grade Security:** Next.js 16 Edge Auth Proxy (`src/proxy.ts`), JWT validation, httpOnly cookie sessions, and 8-tier Role-Based Access Control (RBAC).
+- 📜 **Full Forensic Audit Trails:** Chronological activity logging tracking prescription status changes, internal clinical notes, and user actions grouped by order ID.
 
 ---
 
@@ -41,16 +47,16 @@
 
 | Category | Technology | Description |
 | :--- | :--- | :--- |
-| **Framework** | Next.js 16 (App Router) | Hybrid Server Components, Turbopack, and Proxy Routing |
-| **UI Library** | React 19.2.4 | Modern hooks, concurrent rendering, and server actions |
-| **Language** | TypeScript 5.9.3 | Strict type definitions across frontend and backend |
-| **Database** | MongoDB Atlas & Mongoose 9 | Connection caching, indexing, and schema modeling |
-| **Styling** | Tailwind CSS 4.2.1 | Modern utility-first CSS with custom design tokens |
-| **State Management** | Zustand v5 & TanStack Query v5 | Client-side reactive stores and cached server data |
-| **Table Engine** | TanStack React Table v8 | Virtualized, sortable, and filterable data tables |
-| **Survey Engine** | SurveyJS v2.5 | Dynamic clinical survey creator & respondent UI |
-| **Icons & Motion** | Lucide React & Framer Motion | Crisp iconography and smooth UI micro-animations |
-| **Testing** | Vitest v4 & React Testing Library | Fast unit, component, and security audit tests |
+| **Framework** | Next.js 16 (App Router) | Hybrid Server/Client rendering, Turbopack, and Edge Proxying |
+| **UI Library** | React 19.2.4 | Modern React server components, hooks, and transitions |
+| **Language** | TypeScript 5.9.3 | Strict end-to-end type safety across client and server |
+| **Database** | MongoDB Atlas & Mongoose 9 | Scalable document storage with connection pooling & caching |
+| **Styling** | Tailwind CSS 4.2.1 | Modern utility-first CSS engine with design system tokens |
+| **State Management** | Zustand v5 & TanStack Query v5 | Client state stores and reactive server cache synchronization |
+| **Table Engine** | TanStack React Table v8 | Virtualized, multi-column sortable, and filterable data tables |
+| **Survey Engine** | SurveyJS v2.5 | Drag-and-drop clinical questionnaire designer & runtime |
+| **Icons & Motion** | Lucide React & Framer Motion | Accessible icons and smooth micro-interactions |
+| **Testing** | Vitest v4 & Testing Library | Fast unit, component, and multi-role lifecycle security tests |
 
 ---
 
@@ -61,21 +67,21 @@ Browser Client
    │
    ▼
 Next.js 16 Auth Proxy (src/proxy.ts)
-   ├── JWT Verification & Expiry Inspection
-   ├── Role Routing (Super Admin vs Clinical Roles)
-   └── Return URL Path Restoration
+   ├── Cryptographic JWT Verification & Role Derivation
+   ├── Multi-Tier Route Protection (Super Admin vs Clinical Staff)
+   └── Return URL Path Preservation
    │
    ▼
 App Router Layouts & Pages (src/app/)
    ├── Centralized Typed API Client (src/lib/api/client.ts)
-   │     ├── Bearer Token & Multi-Tenant Headers
+   │     ├── Bearer Token & Multi-Tenant Headers Injection
    │     └── Dynamic Host & Theme Detection
    │
-   ├── Next.js Route Handlers (src/app/api/*)
-   │     └── Native MongoDB Atlas Collections (Users, Orders, Surveys, Leads)
+   ├── Native Route Handlers (src/app/api/*)
+   │     └── Direct MongoDB Atlas Mongoose Models (Users, Orders, Surveys, Leads)
    │
    └── Fallback Rewrites (next.config.mjs)
-         └── External Backend Services (optional)
+         └── External Backend Microservices (Optional)
 ```
 
 ---
@@ -85,7 +91,7 @@ App Router Layouts & Pages (src/app/)
 ### Prerequisites
 * **Node.js** `>= 20.0.0`
 * **npm** `>= 10.0.0`
-* **MongoDB Atlas** database cluster (or local MongoDB)
+* **MongoDB Atlas** cluster connection string
 
 ### 1. Clone the Repository
 ```bash
@@ -98,12 +104,28 @@ cd Medipulse-portal
 npm install
 ```
 
-### 3. Setup Environment Variables
+### 3. Configure Environment Variables
 Copy the example environment template:
 ```bash
 cp .env.example .env.local
 ```
-Open `.env.local` and add your MongoDB Atlas connection string and secrets (see below).
+Update `.env.local` with your MongoDB URI and application keys:
+```bash
+# Backend & API Configuration
+NEXT_PUBLIC_API_BASE_URL=http://localhost:5000
+SERVER_API_BASE_URL=http://localhost:5000
+
+# MongoDB Atlas
+MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.example.mongodb.net/?appName=Cluster0
+
+# Multi-Tenant Site Defaults
+NEXT_PUBLIC_DEFAULT_SITE_HOST=portal.medipulse.co.uk
+NEXT_PUBLIC_SURVEY_TOKEN_HEADER=X-Survey-Token
+
+# Authentication & Security
+AUTH_COOKIE_NAME=token
+JWT_SECRET=your-secure-jwt-secret-key-at-least-32-chars-long
+```
 
 ### 4. Run Development Server
 ```bash
@@ -113,34 +135,51 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
-## 🔐 Environment Configuration
+## ⌨️ NPM Scripts Cheatsheet
 
-All environment variables are managed securely and kept out of version control. Use `.env.example` as a template:
+| Command | Action | Description |
+| :--- | :--- | :--- |
+| `npm run dev` | Development Server | Boots Next.js 16 with Turbopack on `http://localhost:3000` |
+| `npm run build` | Production Build | Creates optimized production build and validates 54 routes |
+| `npm run start` | Production Server | Runs the compiled production build locally |
+| `npm run typecheck` | Type Validation | Executes `tsc --noEmit` to verify TypeScript strictness |
+| `npm test` | Automated Tests | Runs the full test suite (480+ tests) using Vitest |
 
-```bash
-# ------------------------------------------------------------------------------
-# Backend & API Configuration
-# ------------------------------------------------------------------------------
-NEXT_PUBLIC_API_BASE_URL=http://localhost:5000
-SERVER_API_BASE_URL=http://localhost:5000
+---
 
-# ------------------------------------------------------------------------------
-# Database (MongoDB Atlas)
-# ------------------------------------------------------------------------------
-MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.example.mongodb.net/?appName=Cluster0
+## 🌐 Core REST API Reference
 
-# ------------------------------------------------------------------------------
-# Multi-Tenant Site Defaults
-# ------------------------------------------------------------------------------
-NEXT_PUBLIC_DEFAULT_SITE_HOST=portal.medipulse.co.uk
-NEXT_PUBLIC_SURVEY_TOKEN_HEADER=X-Survey-Token
+The portal includes integrated API routes backed by MongoDB Atlas:
 
-# ------------------------------------------------------------------------------
-# Authentication & Security
-# ------------------------------------------------------------------------------
-AUTH_COOKIE_NAME=token
-JWT_SECRET=your-secure-jwt-secret-key-at-least-32-chars-long
-```
+| Endpoint | Method | Role Access | Description |
+| :--- | :---: | :--- | :--- |
+| `/api/auth/login` | `POST` | Public | Authenticates credentials, sets httpOnly JWT & role cookies |
+| `/api/auth/logout` | `POST` | Authenticated | Clears session cookies and invalidates client session |
+| `/api/orders` | `GET` | Staff / Admin | Lists paginated orders with role-filtered customer data |
+| `/api/orders/[id]` | `GET`, `PUT` | Prescriber / Admin | Detailed order payload, clinical status updates, & re-sync |
+| `/api/prescriptions` | `GET`, `POST`| Prescriber / Pharm | Prescription audit tables and dispensing verification |
+| `/api/surveys` | `GET`, `POST`| Admin / Prescriber | SurveyJS form definitions and schema versioning |
+| `/api/surveys/[id]/responses` | `GET`, `POST` | Public / Staff | Submits patient questionnaire responses & review |
+| `/api/users` | `GET`, `POST`| Admin / SuperAdmin | User administration, multi-site assignments, and role toggles |
+| `/api/activity-log` | `GET` | Staff / Admin | Forensic audit logs categorized by order ID |
+| `/api/super-admin/dashboard-stats` | `GET` | Super Admin | Cross-tenant metrics, revenue statistics, & platform health |
+
+---
+
+## 👥 Role-Based Access Control (RBAC)
+
+The portal enforces granular permissions across 8 distinct user roles:
+
+| Role | Access Scope & Capabilities |
+| :--- | :--- |
+| **Super Admin** | Unrestricted access across all tenant sites, global user management, platform analytics, & site provisioning. |
+| **Admin** | Site-level management, order overrides, staff management, and operational reporting. |
+| **Prescriber** | Clinical reviews, prescription approvals, clinical note creation, and questionnaire evaluations. |
+| **Pharmacist** | Medication dispensing, prescription audits, pharmacy notes, and dispatching. |
+| **Pharmacy Staff**| Order packing, fulfillment tracking, and status progression. |
+| **Customer Support**| Order inquiries, ticket tracking, and patient communication. |
+| **Driver** | Delivery queue visibility, route status, and drop-off confirmations. |
+| **Customer** | View personal order progress and complete medical intake surveys. |
 
 ---
 
@@ -185,40 +224,6 @@ src/
 
 ---
 
-## 👥 Role-Based Access Control (RBAC)
-
-The portal enforces granular permissions across 8 distinct user roles:
-
-| Role | Permissions & Access Scope |
-| :--- | :--- |
-| **Super Admin** | Unrestricted access across all tenant sites, user creation, analytics, & global configs. |
-| **Admin** | Site-level administration, team management, order overrides, and reporting. |
-| **Prescriber** | Clinical reviews, prescription approvals, order re-sync, and questionnaire evaluations. |
-| **Pharmacist** | Medication dispensing, prescription audits, pharmacy notes, and dispatching. |
-| **Pharmacy Staff**| Order packing, status tracking, and fulfillment operations. |
-| **Customer Support**| Order inquiries, customer communication, and dispute handling. |
-| **Driver** | Delivery queue, route status, and drop-off confirmations. |
-| **Customer** | View individual orders and complete clinical surveys. |
-
----
-
-## 🧪 Testing & Quality Assurance
-
-The codebase includes an extensive automated test suite covering unit tests, component tests, and end-to-end security audits:
-
-```bash
-# Run Vitest test suite
-npm test
-
-# Run TypeScript compiler check (0 errors)
-npm run typecheck
-
-# Build for production
-npm run build
-```
-
----
-
 ## 🚀 Deployment Guide
 
 ### Deploying to Vercel (Recommended)
@@ -233,24 +238,24 @@ npm run build
    * `NEXT_PUBLIC_API_BASE_URL` *(if using external backend)*
 5. Click **Deploy**. Vercel will automatically compile with Turbopack and provision SSL.
 
-*(Tip: In MongoDB Atlas, ensure `0.0.0.0/0` is added to Network Access IP Whitelist to allow Vercel serverless connections).*
+> **Important MongoDB Atlas Note:** In MongoDB Atlas, navigate to **Network Access ➔ IP Access List** and ensure `0.0.0.0/0` (Allow Access from Anywhere) is added to allow Vercel serverless functions to connect.
 
 ---
 
 ## 📚 Documentation Index
 
-Detailed engineering documentation is located in the [`docs/`](docs/) directory:
+Detailed architectural and engineering documentation is available in the [`docs/`](docs/) directory:
 
 - 📘 [ARCHITECTURE.md](docs/ARCHITECTURE.md) — Architectural design, server/client boundaries, and data flow.
-- 🛣️ [ROUTES.md](docs/ROUTES.md) — 54-route inventory, URL parameters, and access permissions.
+- 🛣️ [ROUTES.md](docs/ROUTES.md) — Complete 54-route inventory, URL parameters, and access permissions.
 - 🔐 [AUTH.md](docs/AUTH.md) — JWT mechanics, Next.js Proxy, cookie lifecycles, and security measures.
-- 👥 [RBAC.md](docs/RBAC.md) — Detailed role-based permission matrix.
+- 👥 [RBAC.md](docs/RBAC.md) — Comprehensive role-based permission matrix.
 - 🌐 [MULTI-SITE.md](docs/MULTI-SITE.md) — Multi-tenant domain resolution and dynamic styling.
 - ⚡ [STATE-MANAGEMENT.md](docs/STATE-MANAGEMENT.md) — Zustand and TanStack Query integration.
 - 🧪 [TESTING.md](docs/TESTING.md) — Vitest conventions, mock helpers, and test catalogs.
 
 ---
 
-## 📄 License
-
-This project is proprietary and maintained for MediPulse healthcare operations.
+<div align="center">
+  <sub>Built with ❤️ for modern healthcare operations • MediPulse Portal</sub>
+</div>
