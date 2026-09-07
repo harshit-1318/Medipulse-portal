@@ -9,7 +9,7 @@ interface Props {
     setFiltersEnabled: (v: boolean) => void;
 }
 
-export default function CustomerFilters({ 
+export function CustomerFilters({ 
     filters, setFilters, setPage, filtersEnabled, setFiltersEnabled 
 }: Props) {
     const { 
@@ -33,3 +33,5 @@ export default function CustomerFilters({
         />
     );
 }
+
+export default CustomerFilters;

@@ -1,9 +1,9 @@
 import { LazyMotion, domAnimation, m, AnimatePresence } from "framer-motion";
-import CustomersTable from './table/CustomersTable';
-import { useCustomersPage } from './hooks/useCustomersPage';
-import CustomersHeader from './components/CustomersHeader';
-import CustomerFilters from './filters/CustomerFilters';
-import { QueryProvider } from '@/components/common/QueryProvider';
+import { CustomersTable } from './table';
+import { useCustomersPage } from './hooks';
+import { CustomersHeader } from './components';
+import { CustomerFilters } from './filters';
+import { QueryProvider } from '@/components/common';
 
 interface Props {
     initialData?: any;

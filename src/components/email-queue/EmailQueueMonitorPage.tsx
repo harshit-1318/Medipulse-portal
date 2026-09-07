@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { RefreshCw } from 'lucide-react';
 import { getEmailQueueOverview, type EmailQueueOverview } from '@/api/services/email-queue/emailQueueService';
-import { EmailQueueTable } from './table/EmailQueueTable';
+import { EmailQueueTable } from './table';
 
 const REFRESH_MS = 15000;
 

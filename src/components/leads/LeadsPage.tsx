@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { LazyMotion, domAnimation, m } from 'framer-motion';
-import { QueryProvider } from '@/components/common/QueryProvider';
-import LeadDetailDrawer from './lead-drawer/LeadDetailDrawer';
-import { useLeads } from './hooks/useLeads';
-import { LeadsTable } from './table/LeadsTable';
-import { STATUS_TABS, StatsStrip } from './components/StatsStrip';
+import { QueryProvider } from '@/components/common';
+import { LeadDetailDrawer } from './lead-drawer';
+import { useLeads } from './hooks';
+import { LeadsTable } from './table';
+import { STATUS_TABS, StatsStrip } from './components';
 
 function LeadsContent() {
     const { data, loading, stats, page, setPage, filters, setStatusFilter, setSearch } = useLeads();

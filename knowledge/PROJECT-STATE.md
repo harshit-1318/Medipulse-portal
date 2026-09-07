@@ -1,5 +1,17 @@
 # Frontend Project State
 
+- Multi-Module Architecture Standardization & Barrel Completion (Sep 7 2026):
+	- Audited and standardized 6 component modules: `customers`, `dashboard`, `docman-jobs`, `email-queue`, `layout`, `leads` (141 total files).
+	- Layout LOC Compliance: Refactored `adminNavConfig.ts` (106 -> 48 LOC) with `menus/activityLogsMenu.ts`, and split `SidebarGroup.test.tsx` (123 LOC) into `SidebarGroup.render.test.tsx` and `SidebarGroup.roles.test.tsx`.
+	- Subfolder Barrels Added:
+		- `customers/`: `components/index.ts`, `filters/index.ts`, `hooks/index.ts`, `table/index.ts`, plus `useCustomerFilters.test.ts`.
+		- `dashboard/`: `components/index.ts`, `hooks/index.ts`, and updated root barrel.
+		- `docman-jobs/`: `components/index.ts`, `hooks/index.ts`, `pages/index.ts`, `services/index.ts`, `utils/index.ts`, plus `normalizeDocmanJob.test.ts`.
+		- `email-queue/`: `table/index.ts`, and updated root barrel.
+		- `leads/`: `components/index.ts`, `hooks/index.ts`, `lead-drawer/index.ts`, `table/index.ts`, and updated root barrel.
+	- Verified LOC Compliance: 100% of all 141 files across the 6 modules are strictly < 100 LOC (0 files exceed 100 lines).
+	- Verified: 11/11 test files passed (41/41 tests 100% PASS); `npm run typecheck` clean (0 errors).
+
 - Common Components Table Barrel & Test Suite Expansion (Sep 7 2026):
 	- Created dedicated barrel export `src/components/common/table/index.ts` re-exporting `TableRow`, `Badge`, `ActionButton`.
 	- Updated root `src/components/common/index.ts` to re-export `table` submodule.
