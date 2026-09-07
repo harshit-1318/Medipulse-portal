@@ -1,9 +1,5 @@
-import { describe, it, expect, vi } from "vitest";
-import { normalizeCustomer } from "./utils";
-
-vi.mock("@/utils/url/urlBase", () => ({
-    normalizeSortOrder: (order: string) => order.toLowerCase()
-}));
+import { describe, it, expect } from "vitest";
+import { normalizeCustomer } from "../mappers";
 
 describe("normalizeCustomer", () => {
     it("should normalize raw customer data correctly", () => {
@@ -13,7 +9,7 @@ describe("normalizeCustomer", () => {
             email: "john@example.com",
             totalOrders: "5",
             totalPens: 10,
-            createdAt: "2024-01-01"
+            createdAt: "2024-01-01",
         };
 
         const result = normalizeCustomer(raw);
@@ -24,14 +20,14 @@ describe("normalizeCustomer", () => {
             email: "john@example.com",
             totalOrders: 5,
             totalPens: 10,
-            createdAt: "2024-01-01"
+            createdAt: "2024-01-01",
         });
     });
 
     it("should handle BIGINT customerId with low/high properties", () => {
         const raw = {
             customerId: { low: 98765, high: 0 },
-            name: "Jane Smith"
+            name: "Jane Smith",
         };
 
         const result = normalizeCustomer(raw);
@@ -46,7 +42,7 @@ describe("normalizeCustomer", () => {
             email: "N/A",
             totalOrders: 0,
             totalPens: 0,
-            createdAt: ""
+            createdAt: "",
         });
     });
 });

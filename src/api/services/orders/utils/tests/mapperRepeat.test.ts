@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { mapBackendOrderToFrontend } from './mapper';
+import { mapBackendOrderToFrontend } from '../mapper';
 
 describe('mapBackendOrderToFrontend - Repeated Orders', () => {
     it('should correctly detect repeatedOrders from various field names', () => {

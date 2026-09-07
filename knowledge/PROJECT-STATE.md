@@ -1,5 +1,24 @@
 # Frontend Project State
 
+- Orders Service Architecture Standardization & Subfolder Index Files (Sep 7 2026):
+	- Created dedicated `index.ts` barrel files inside each subfolder (`actions/index.ts`, `fetchers/index.ts`, `utils/index.ts`).
+	- Removed redundant loose files `src/api/services/orders/actions.ts` and `src/api/services/orders/utils.ts`.
+	- Updated root `src/api/services/orders/index.ts` to cleanly export from submodules and expose `orderService`.
+	- Organized unit tests into dedicated `tests/` directories inside each `orders/` subfolder (`actions/tests/`, `fetchers/tests/`, `utils/tests/`).
+	- Verified LOC Compliance: 100% of all source and test files across `orders/` strictly comply with the < 100 LOC rule.
+	- Fixed failing tests in `order.test.ts` and `OrderDetailsMainContent.test.tsx`.
+	- Verified: 10/10 test files passed (66/66 tests 100% PASS); `npm run typecheck` clean (0 errors).
+- Customer Service Architecture Modularization (Sep 7 2026):
+	- Modularized `src/api/services/customer/` to mirror `src/api/services/activity-log/` architecture:
+		- Extracted pure parameter building logic to `params.ts` (`buildCustomerParams`).
+		- Extracted raw customer normalization logic to `mappers.ts` (`normalizeCustomer`).
+		- Isolated API HTTP service methods into `service.ts` (`getCustomers`, `filterCustomers`).
+		- Added `types.ts` re-exporting domain schemas from `@/types/customer`.
+		- Cleaned `index.ts` to act strictly as a barrel export.
+		- Retained backward-compatibility in `utils.ts` re-exporting `normalizeCustomer` and `buildCustomerParams`.
+		- Reorganized unit tests into dedicated `tests/` subdirectory: `service.test.ts`, `params.test.ts`, and `mappers.test.ts`.
+		- Removed loose root-level test files (`buildCustomerParams.test.ts`, `normalizeCustomer.test.ts`).
+	- Verified: 15/15 customer service tests passed (100% PASS); `npm run typecheck` passed (0 errors). All source files strictly < 100 LOC.
 - Live Browser & Localhost Automated Verification (Sep 7 2026):
 	- Executed interactive automated browser sessions on `http://localhost:3000` covering all 8 roles (Super Admin, Admin, Prescriber, Pharmacist, Pharmacy Staff, Customer Support, Driver, Customer).
 	- Successfully recorded browser execution video artifact (`localhost_auth_demo`) and verified UI rendering on `/super-dashboard` and `/dashboard`.

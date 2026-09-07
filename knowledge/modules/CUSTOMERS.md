@@ -14,3 +14,11 @@
 
 ## Notes
 - Keep sort normalization and field mapping in service param logic.
+- API service in `src/api/services/customer/` is modularized mirroring `activity-log`:
+  - `index.ts`: Clean barrel re-exports (`types`, `service`, `mappers`, `params`, `utils`).
+  - `service.ts`: Core API calls (`getCustomers`, `filterCustomers`).
+  - `params.ts`: Parameter building logic (`buildCustomerParams`).
+  - `mappers.ts`: Normalization logic (`normalizeCustomer`).
+  - `types.ts`: Service types re-exported from `@/types/customer`.
+  - `utils.ts`: Backward-compatibility re-exports.
+  - `tests/`: Dedicated unit test folder (`service.test.ts`, `params.test.ts`, `mappers.test.ts`).

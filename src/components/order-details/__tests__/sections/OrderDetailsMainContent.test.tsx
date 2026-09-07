@@ -2,14 +2,14 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { OrderDetailsMainContent } from '../../sections/Main';
 import { useUserInfo } from '@/store';
-import { useResyncFromShopify } from '../../hooks/useResyncFromShopify';
+import { useResyncOrder } from '../../hooks/useResyncOrder';
 
 vi.mock('@/store', () => ({
     useUserInfo: vi.fn(),
 }));
 
-vi.mock('../../hooks/useResyncFromShopify', () => ({
-    useResyncFromShopify: vi.fn(),
+vi.mock('../../hooks/useResyncOrder', () => ({
+    useResyncOrder: vi.fn(),
 }));
 
 vi.mock('../../sections/InfoCards/index', () => ({
@@ -80,7 +80,7 @@ describe('OrderDetailsMainContent', () => {
             effectiveRole: 'admin',
         } as any);
 
-        vi.mocked(useResyncFromShopify).mockReturnValue({
+        vi.mocked(useResyncOrder).mockReturnValue({
             isLoading: false,
             isSuccess: false,
             error: null,

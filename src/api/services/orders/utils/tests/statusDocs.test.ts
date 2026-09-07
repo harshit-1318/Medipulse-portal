@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { detectDocsStatus, getDocumentItemsStatus } from './status';
+import { detectDocsStatus, getDocumentItemsStatus } from '../status';
 
 describe('detectDocsStatus', () => {
     it('handles falsy objects', () => {

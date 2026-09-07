@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { normalizeStatus, resolveRawOrderStatus } from './status';
+import { normalizeStatus, resolveRawOrderStatus } from '../status';
 
 describe('normalizeStatus', () => {
     it('handles null/undefined values', () => {

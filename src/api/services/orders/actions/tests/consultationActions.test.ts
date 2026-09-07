@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { sendAgeVerification } from './consultationActions';
+import { sendAgeVerification } from '../consultationActions';
 
 vi.mock('@/api/apiClient', () => ({
     apiClient: { request: vi.fn() },

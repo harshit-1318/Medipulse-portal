@@ -52,13 +52,9 @@ export const markOrderOnHold = async (orderId: string): Promise<unknown> => {
 export const resyncOrder = async (orderId: string): Promise<{ message: string }> => {
     try {
         return await apiClient.post<{ message: string }>(`/orders/${orderId}/resync`, {});
-    } catch {
-        try {
-            return await apiClient.post<{ message: string }>(`/orders/${orderId}/resync-shopify`, {});
-        } catch (err: unknown) {
-            const error = err as AxiosError<{ message?: string }>;
-            throw new Error(error.response?.data?.message || "Failed to re-sync order from store");
-        }
+    } catch (err: unknown) {
+        const error = err as AxiosError<{ message?: string }>;
+        throw new Error(error.response?.data?.message || "Failed to re-sync order from store");
     }
 };
 

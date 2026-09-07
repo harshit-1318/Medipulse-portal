@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { mapBackendOrderToFrontend } from './mapper';
+import { mapBackendOrderToFrontend } from '../mapper';
 
 describe('mapBackendOrderToFrontend - Core Mapping', () => {
     it('maps per-document status object including video from backend fields', () => {

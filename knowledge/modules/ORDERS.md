@@ -20,3 +20,11 @@
 	- `DocsCell` renders three stacked rows (`ID`, `Full Photo`, `Video`) with Uploaded/Not Uploaded per row.
 	- Existing `documentsUploaded` remains for legacy aggregate behavior and filters (ID + Full Photo only).
 	- Docs column sorting is intentionally disabled in the table UI; docs visibility is per-item display only and should not control table ordering.
+- Re-Sync endpoint behavior:
+	- `resyncOrder` / `resyncOrderFromShopify` calls `POST /orders/:id/resync` to trigger an order data re-sync from the connected e-commerce store.
+- Test Organization:
+	- Subdirectories each contain their own dedicated `tests/` directory:
+		- `actions/tests/`: `order.test.ts`, `consultationActions.test.ts`
+		- `fetchers/tests/`: `fetchers.test.ts`
+		- `utils/tests/`: `date.test.ts`, `mapperCore.test.ts`, `mapperRepeat.test.ts`, `products.test.ts`, `statusDocs.test.ts`, `statusNormalize.test.ts`
+	- All 23 source files strictly satisfy the < 100 LOC target rule.

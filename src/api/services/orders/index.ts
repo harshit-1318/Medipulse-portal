@@ -1,14 +1,13 @@
-import { getOrders, getOrderById } from './fetchers/core';
-import { markOrderUrgent } from './actions';
+import { getOrders, getOrderById } from "./fetchers/core";
+import { markOrderUrgent } from "./actions/order";
 
-export * from './types';
-export * from './utils';
-export * from './buildParams';
-export * from './fetchers/core';
-export * from './fetchers/status';
-export * from './fetchers/customer';
-export * from './fetchers/document';
-export * from './actions';
+export * from "./types";
+export * from "./buildParams";
+export * from "./orderParamsNormalizer";
+export * from "./internalNotesService";
+export * from "./fetchers";
+export * from "./actions";
+export * from "./utils";
 
 export const orderService = {
     getOrders,
