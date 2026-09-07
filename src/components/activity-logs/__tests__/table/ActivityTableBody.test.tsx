@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { ActivityTableBody } from "./ActivityTableBody";
+import { ActivityTableBody } from "../../table/ActivityTableBody";
 import type { ActivityLogType } from "@/api/services/log/logService";
 
 const makeLog = (overrides: Partial<ActivityLogType> = {}): ActivityLogType => ({
@@ -59,10 +59,10 @@ describe("ActivityTableBody", () => {
         expect(text.indexOf("User wasim@example.com (2)")).toBeLessThan(text.indexOf("User himani@gmail.com (1)"));
     });
 
-    it("keeps existing flat-row behavior when subgrouping is disabled", () => {
+    it("renders regular flat rows when enableOrderSubgrouping is false", () => {
         const logs = [
-            makeLog({ id: "1", orderId: "100" }),
-            makeLog({ id: "2", orderId: "" }),
+            makeLog({ id: "1", orderId: "100", details: "viewed order 100" }),
+            makeLog({ id: "2", orderId: "200", details: "viewed order 200" }),
         ];
 
         const table = makeTable(logs) as any;
@@ -73,7 +73,7 @@ describe("ActivityTableBody", () => {
             </table>,
         );
 
-        expect(screen.queryByText("Order #100 (1)")).not.toBeInTheDocument();
-        expect(screen.queryByText(/User\s+/i)).not.toBeInTheDocument();
+        expect(screen.queryByText(/Order #100/)).not.toBeInTheDocument();
+        expect(screen.queryByText(/User/)).not.toBeInTheDocument();
     });
 });

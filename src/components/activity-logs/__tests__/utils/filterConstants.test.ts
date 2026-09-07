@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { ACTION_OPTIONS } from "./filterConstants";
-import { getActionConfig } from "./actionConfig";
+import { ACTION_OPTIONS } from "../../utils/filterConstants";
+import { getActionConfig } from "../../utils/actionConfig";
 
 describe("activity log filter/action mappings", () => {
   it("includes Email Skipped in action dropdown options", () => {

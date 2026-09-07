@@ -7,6 +7,7 @@
 - Components: src/components/activity-logs/
 - Pages: src/pages/activity-logs/
 - API service: src/api/services/activity-log/
+- Component Tests: src/components/activity-logs/__tests__/
 
 ## Notes
 - Keep filter/sort params centralized in service builders.

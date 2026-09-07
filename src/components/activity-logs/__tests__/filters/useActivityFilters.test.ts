@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { useActivityFilters } from './useActivityFilters';
+import { useActivityFilters } from '../../filters/useActivityFilters';
 
 describe('useActivityFilters', () => {
     const setPage = vi.fn();

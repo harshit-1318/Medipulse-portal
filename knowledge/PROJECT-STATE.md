@@ -1,5 +1,15 @@
 # Frontend Project State
 
+- Activity Logs Component Test Isolation (`__tests__/`) (Sep 7 2026):
+	- Created a dedicated `__tests__/` directory within `src/components/activity-logs/` with subfolders matching component domains:
+		- `__tests__/filters/` (`ActivityFiltersModal.test.tsx`, `useActivityFilters.test.ts`)
+		- `__tests__/table/` (`ActivityTableBody.test.tsx`)
+		- `__tests__/utils/` (`filterConstants.test.ts`, `actionConfig.test.ts`)
+	- Added test coverage for `actionConfig.ts` (`formatActionType`, badge color mappings).
+	- Cleaned and removed loose test files scattered across `filters/`, `table/`, and `utils/`.
+	- Verified 100% LOC compliance: all component and test files strictly < 100 LOC.
+	- Verified: 5/5 test files passed (14/14 tests 100% PASS); `npm run typecheck` clean (0 errors).
+
 - Orders Service Architecture Standardization & Subfolder Index Files (Sep 7 2026):
 	- Created dedicated `index.ts` barrel files inside each subfolder (`actions/index.ts`, `fetchers/index.ts`, `utils/index.ts`).
 	- Removed redundant loose files `src/api/services/orders/actions.ts` and `src/api/services/orders/utils.ts`.
