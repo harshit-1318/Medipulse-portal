@@ -1,4 +1,4 @@
-import { getStickmanScale } from '../utils/stickmanScale';
+import { getStickmanScale } from '../utils';
 
 
 interface StickmanAvatarProps {

@@ -1,7 +1,6 @@
 import { Info, Hash, User, Calendar } from "lucide-react";
 import type { ApiResponse } from "@/components/order-details/types";
-import { getOrderStatusStyle, detectOrderStatus } from "@/components/order-details/utils/status";
-import { formatDateModern } from "@/components/order-details/utils";
+import { getOrderStatusStyle, detectOrderStatus, formatDateModern } from "@/components/order-details/utils";
 import { LastPreviousOrderSection } from "./LastPreviousOrderSection";
 
 interface ContactCardProps {

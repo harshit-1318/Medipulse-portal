@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { BmiStatus } from "./useBmiStatus";
-import { getStickmanScale } from "../utils/stickmanScale";
+import { getStickmanScale } from "../utils";
 
 export function useWalkAnimation(bmiDisplay: string, bmiStatus: BmiStatus, fromPos?: string) {
     const stickmanScale = getStickmanScale(bmiDisplay);

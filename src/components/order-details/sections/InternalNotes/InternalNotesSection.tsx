@@ -40,7 +40,7 @@ export function InternalNotesSection({ orderId, isParked = false, isCancelled = 
                         <div className="flex items-center gap-2">
                             <h3 className="section-title">Internal Notes</h3>
                             {validNotes.length > 0 && (
-                                <span className="bg-orange-100 text-orange-600 text-[11px] font-semibold px-2 py-0.5 rounded-full flex items-center justify-center min-w-[20px]">
+                                <span className="bg-orange-100 text-orange-600 text-[11px] font-semibold px-2 py-0.5 rounded-full flex items-center justify-center min-w-5">
                                     {validNotes.length}
                                 </span>
                             )}
@@ -55,9 +55,9 @@ export function InternalNotesSection({ orderId, isParked = false, isCancelled = 
                     <InternalNoteInput onAdd={addNote} isPending={isAdding} onPark={handlePark} isParking={isParking} isParked={isParked || isParkConfirmed} isCancelled={isCancelled} />
 
                     <div className="relative pt-0">
-                        <div className="max-h-[350px] overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent">
+                        <div className="max-h-87.5 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent">
                             <div className="space-y-1 relative">
-                                <div className="absolute left-[11px] top-4 bottom-0 w-px bg-slate-100" />
+                                <div className="absolute left-2.75 top-4 bottom-0 w-px bg-slate-100" />
 
                                 <InternalNotesListState
                                     isLoading={isLoading}

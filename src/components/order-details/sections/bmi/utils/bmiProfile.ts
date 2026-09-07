@@ -1,5 +1,5 @@
 import type { Product } from "@/components/order-details/types";
-import { extractConsultationData } from "@/components/order-details/utils/consultation";
+import { extractConsultationData } from "@/components/order-details/utils";
 import {
     ETHNICITY_QUESTION_HINTS,
     WEBSITE_ETHNICITY_OPTIONS_ADJUSTED,

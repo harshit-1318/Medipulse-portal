@@ -1,7 +1,6 @@
 import { Hash, Calendar, Clock } from "lucide-react";
 import type { ApiResponse } from "@/components/order-details/types";
-import { getOrderStatusStyle } from "@/components/order-details/utils/status";
-import { formatDate } from "@/components/order-details/utils";
+import { getOrderStatusStyle, formatDate } from "@/components/order-details/utils";
 import { LastOrderLookupButton } from "./LastOrderLookupButton";
 import { LastOrderProductsList } from "./LastOrderProductsList";
 

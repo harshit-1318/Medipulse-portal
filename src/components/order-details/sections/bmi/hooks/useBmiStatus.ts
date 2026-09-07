@@ -1,5 +1,5 @@
-import type { BmiProfile } from "../utils/bmiProfile";
-import { getGaugePositionPercent } from "../utils/bmiGaugePosition";
+import type { BmiProfile } from "../utils";
+import { getGaugePositionPercent } from "../utils";
 
 export interface BmiStatus {
     label: "Underweight" | "Normal" | "Overweight" | "Obese" | "Severely Obese";
