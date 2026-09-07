@@ -34,7 +34,7 @@
 ## ✨ Key Features
 
 - 🩺 **Clinical Prescription Audit:** End-to-end clinical validation workflow with doctor approvals, contraindication checks, and dispensing verification.
-- 📦 **Order Lifecycle & Shopify Sync:** Unified management across 7 order states (*Pending, Clinical Review, Approved, Dispensed, Parked, Urgent, Shipped*) with bi-directional Shopify data synchronization.
+- 📦 **Order Lifecycle & Store Sync:** Unified management across 7 order states (*Pending, Clinical Review, Approved, Dispensed, Parked, Urgent, Shipped*) with real-time automated e-commerce store data synchronization.
 - 📝 **Dynamic Clinical Survey Builder:** Integrated SurveyJS (`survey-creator-react`) engine allowing clinical teams to design custom questionnaires, scoring rules, and view patient submissions.
 - 👥 **Multi-Tenant Administration:** Tenant isolation and domain-based routing via `X-SITE-ID`, `X-SITE-KEY`, and `X-SITE-HOST` headers with dynamic clinic branding.
 - 📊 **Executive & Operational Dashboards:** Real-time revenue telemetry, site performance statistics, prescriber workloads, and order throughput analytics.
