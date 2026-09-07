@@ -1,6 +1,6 @@
 import React from 'react';
 import { Eye, FileText } from "lucide-react";
-import { ActionButton } from "../../../common/table/TableUI";
+import { ActionButton } from "@/components/common";
 
 interface Props {
     shopifyOrderId: string | number;

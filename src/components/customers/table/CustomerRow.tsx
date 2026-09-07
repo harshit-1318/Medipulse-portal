@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Eye, FileText, ShieldCheck } from 'lucide-react';
 import type { Customer } from '../../../types/customer';
 import { SendSurveyModal } from '@/components/surveys';
-import { TableRow, Badge, ActionButton } from '@/components/common/table/TableUI';
+import { TableRow, Badge, ActionButton } from '@/components/common';
 import { formatDate, formatRelativeTime } from './customerDateUtils';
 
 interface Props {

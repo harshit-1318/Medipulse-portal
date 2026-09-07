@@ -1,5 +1,15 @@
 # Frontend Project State
 
+- Common Components Table Barrel & Test Suite Expansion (Sep 7 2026):
+	- Created dedicated barrel export `src/components/common/table/index.ts` re-exporting `TableRow`, `Badge`, `ActionButton`.
+	- Updated root `src/components/common/index.ts` to re-export `table` submodule.
+	- Streamlined imports in `CustomerRow.tsx` and `PrescriptionActionButtons.tsx` to import directly from `@/components/common`.
+	- Expanded unit test coverage in `src/components/common/__tests__/`:
+		- Added `Pagination.test.tsx` (51 LOC): page math derivation, bounds disabling, page change triggers.
+		- Added `TableUI.test.tsx` (63 LOC): TableRow rendering, Badge variant styles, ActionButton clicks and disabled state.
+	- Verified LOC Compliance: 100% of all 11 source and test files across `common/` are strictly < 100 LOC (maximum file is 95 LOC).
+	- Verified: 3/3 test files passed (9/9 tests 100% PASS); `npm run typecheck` clean (0 errors).
+
 - Auth Architecture Standardization & Test Isolation (`__tests__/`) (Sep 7 2026):
 	- Standardized `src/components/auth/` with dedicated subfolder barrel files:
 		- `login/components/index.ts`: Re-exports `AuthHeader`, `EmailInput`, `FormError`, `PasswordInput`, `SubmitButton`, `ThemeToggle`.
