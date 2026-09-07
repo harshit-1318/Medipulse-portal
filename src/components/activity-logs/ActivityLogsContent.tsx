@@ -2,10 +2,9 @@ import { useState } from "react";
 import ActivityTable from "./ActivityTable";
 import { LazyMotion, domAnimation } from "framer-motion";
 import { useScrollPreservation } from '@/hooks';
-import { useActivityLogs } from "./hooks/useActivityLogs";
+import { useActivityLogs, useActivityLogSites } from "./hooks";
 import { Activity } from "lucide-react";
 import { useUserInfo } from '@/store';
-import { useActivityLogSites } from "./hooks/useActivityLogSites";
 
 type ActivityLogsContentProps = {
     title?: string;

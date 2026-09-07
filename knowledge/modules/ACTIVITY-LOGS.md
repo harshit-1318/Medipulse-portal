@@ -5,6 +5,10 @@
 
 ## Main Locations
 - Components: src/components/activity-logs/
+  - `filters/index.ts`: Filter forms, modals, date inputs, and filter hooks
+  - `hooks/index.ts`: Activity logs data fetching & site options hooks
+  - `table/index.ts`: Table rows, cells, headers, and React Table configuration
+  - `utils/index.ts`: Action formatting, styling configs, and row grouping helpers
 - Pages: src/pages/activity-logs/
 - API service: src/api/services/activity-log/
 - Component Tests: src/components/activity-logs/__tests__/

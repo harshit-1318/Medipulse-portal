@@ -1,4 +1,4 @@
-import { ActivityFiltersModal } from "./filters/ActivityFiltersModal";
+import { ActivityFiltersModal } from "./filters";
 
 interface Props {
     filters: any;

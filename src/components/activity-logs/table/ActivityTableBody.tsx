@@ -2,7 +2,7 @@ import { type Table } from "@tanstack/react-table";
 import { Fragment } from "react";
 import { ActivityTableRow } from "./ActivityTableRow";
 import { TableSkeletonRows, TableEmptyState } from "./ActivityTablePlaceholders";
-import { groupActivityRows } from "../utils/groupActivityRows";
+import { groupActivityRows } from "../utils";
 
 interface Props {
     table: Table<any>;

@@ -1,5 +1,16 @@
 # Frontend Project State
 
+- Activity Logs Subfolder Barrel Index Files & Import Streamlining (Sep 7 2026):
+	- Created dedicated `index.ts` barrel files in all subfolders of `src/components/activity-logs/`:
+		- `filters/index.ts`: Re-exports modal, form, header, footer, date inputs, and `useActivityFilters`.
+		- `hooks/index.ts`: Re-exports `useActivityLogs` and `useActivityLogSites`.
+		- `table/index.ts`: Re-exports table row, body, header, cells, placeholders, and React Table hooks.
+		- `utils/index.ts`: Re-exports `actionConfig`, `filterConstants`, `groupActivityRows`, and `HighlightText`.
+	- Updated root `src/components/activity-logs/index.ts` to re-export all submodules alongside default and named component exports.
+	- Streamlined imports across consumers (`ActivityTable`, `ActivityLogsContent`, `ActivityFilters`, `UserActivitySection`, `SiteDetailPage`, `ActivityLogItem`).
+	- Verified LOC Compliance: 100% of all 34 files across `activity-logs` are strictly < 100 LOC (maximum is 96 LOC).
+	- Verified: 5/5 activity-log test files passed (14/14 tests 100% PASS); 23/23 dependent test files passed (231/231 tests 100% PASS); `npm run typecheck` clean (0 errors).
+
 - Activity Logs Component Test Isolation (`__tests__/`) (Sep 7 2026):
 	- Created a dedicated `__tests__/` directory within `src/components/activity-logs/` with subfolders matching component domains:
 		- `__tests__/filters/` (`ActivityFiltersModal.test.tsx`, `useActivityFilters.test.ts`)

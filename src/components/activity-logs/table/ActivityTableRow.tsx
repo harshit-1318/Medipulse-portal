@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import type { ActivityLogType } from "@/api/services/log/logService";
-import { getActionConfig } from "../utils/actionConfig";
+import { getActionConfig } from "../utils";
 import { AnimatePresence } from "framer-motion";
 import { ActivityActionCell, ActivityUserCell } from "./ActivityTableCells";
 import { ActivityExpandedRow } from "./ActivityExpandedRow";

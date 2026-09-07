@@ -1,6 +1,6 @@
 import { Search, Layers, RefreshCcw, Building2 } from "lucide-react";
 import CustomDropdown from "@/components/orders-table/ui";
-import { ACTION_OPTIONS, PAGE_OPTIONS } from "../utils/filterConstants";
+import { ACTION_OPTIONS, PAGE_OPTIONS } from "../utils";
 import { ActivityDateInputs } from "./ActivityDateInputs";
 
 interface Props {

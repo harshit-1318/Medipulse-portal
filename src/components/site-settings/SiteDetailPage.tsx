@@ -1,5 +1,5 @@
 import { useState } from "react";
-import ActivityTable from "@/components/activity-logs/ActivityTable";
+import { ActivityTable } from "@/components/activity-logs";
 import { QueryProvider } from "@/components/common/QueryProvider";
 import { useSiteDetail, useSiteLogs } from "./hooks/useSiteDetail";
 import { SiteDetailHeader } from "./components/SiteDetailHeader";

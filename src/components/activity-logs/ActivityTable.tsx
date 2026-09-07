@@ -1,11 +1,13 @@
 import type { ActivityLogType } from "@/api/services/log/logService";
 import { Pagination } from "@/components/common/Pagination";
 import ActivityFilters from "./ActivityFilters";
-import { ActivityTableHeader } from "./table/ActivityTableHeader";
-import { ActivityTableBody } from "./table/ActivityTableBody";
-import { useActivityFilters } from "./filters/useActivityFilters";
-import { ActivityTableTitle } from "./table/ActivityTableTitle";
-import { useActivityTableReactTable } from "./table/useActivityTableReactTable";
+import { useActivityFilters } from "./filters";
+import {
+    ActivityTableHeader,
+    ActivityTableBody,
+    ActivityTableTitle,
+    useActivityTableReactTable,
+} from "./table";
 
 type Props = {
     logs: ActivityLogType[];

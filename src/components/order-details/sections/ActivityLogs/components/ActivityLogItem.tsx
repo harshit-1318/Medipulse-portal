@@ -1,5 +1,5 @@
 import type { ActivityLog } from "@/components/order-details/types";
-import { getActionConfig } from "@/components/activity-logs/utils/actionConfig";
+import { getActionConfig } from "@/components/activity-logs";
 
 function resolveDisplayName(log: ActivityLog): string {
     if (log.userName && log.userName.trim() && log.userName !== "System") return log.userName.trim();
