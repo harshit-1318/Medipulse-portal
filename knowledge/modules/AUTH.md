@@ -5,8 +5,14 @@
 
 ## Main Locations
 - Components: src/components/auth/
-- Pages: src/pages/login.astro
-- Middleware: src/middleware.ts
+  - `login/components/index.ts`: Form inputs, header, error alert, and theme toggle
+  - `login/hooks/index.ts`: Login form submit and redirect hook
+  - `hooks/index.ts`: Idle session timeout, listeners, timers, and utils
+- Component Tests: src/components/auth/__tests__/
+  - `login/`: LoginForm render, submit, error handling, and ThemeToggle tests
+  - `session/`: IdleSessionManager core timers and advanced tab-visibility tests
+- Pages: src/app/(auth)/login/page.tsx
+- Middleware: src/proxy.ts / src/proxyRoutes.ts
 - Store: src/store/userStore.ts
 
 ## Notes

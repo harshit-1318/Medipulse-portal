@@ -1,9 +1,11 @@
-import AuthHeader from './components/AuthHeader';
-import FormError from './components/FormError';
-import EmailInput from './components/EmailInput';
-import PasswordInput from './components/PasswordInput';
-import SubmitButton from './components/SubmitButton';
-import { useLoginFormSubmit } from './hooks/useLoginFormSubmit';
+import {
+    AuthHeader,
+    EmailInput,
+    FormError,
+    PasswordInput,
+    SubmitButton,
+} from './components';
+import { useLoginFormSubmit } from './hooks';
 
 interface LoginFormProps {
     isDark?: boolean;

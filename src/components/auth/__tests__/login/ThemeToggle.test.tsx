@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import ThemeToggle from '../components/ThemeToggle';
+import ThemeToggle from '../../login/components/ThemeToggle';
 
 vi.mock('lucide-react', () => ({
     Sun: () => <span data-testid="sun-icon">Sun</span>,

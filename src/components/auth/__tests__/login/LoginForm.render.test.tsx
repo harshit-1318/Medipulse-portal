@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import LoginForm from '../LoginForm';
+import LoginForm from '../../login/LoginForm';
 import { commonBeforeEach } from './LoginForm.test.helpers';
 
 vi.mock('@/store', () => ({

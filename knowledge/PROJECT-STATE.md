@@ -1,5 +1,17 @@
 # Frontend Project State
 
+- Auth Architecture Standardization & Test Isolation (`__tests__/`) (Sep 7 2026):
+	- Standardized `src/components/auth/` with dedicated subfolder barrel files:
+		- `login/components/index.ts`: Re-exports `AuthHeader`, `EmailInput`, `FormError`, `PasswordInput`, `SubmitButton`, `ThemeToggle`.
+		- `login/hooks/index.ts`: Re-exports `useLoginFormSubmit`.
+		- Updated `login/index.ts` to cleanly re-export from `./components` and `./hooks`.
+	- Unified and isolated all test suites into dedicated `src/components/auth/__tests__/` directory:
+		- `__tests__/login/`: `LoginForm.render.test.tsx` (67 LOC), `LoginForm.submit.test.tsx` (92 LOC), `LoginForm.errors.test.tsx` (65 LOC), `ThemeToggle.test.tsx` (37 LOC), `LoginForm.test.helpers.ts` (23 LOC).
+		- `__tests__/session/`: `IdleSessionManager.core.test.tsx` (72 LOC), `IdleSessionManager.advanced.test.tsx` (86 LOC).
+	- Deleted obsolete/duplicate test files (`LoginForm.test.tsx` [181 LOC], `LoginForm.actions.test.tsx` [135 LOC], `IdleSessionManager.test.tsx` [130 LOC]).
+	- Verified LOC Compliance: 100% of all 27 source and test files across `auth` are strictly < 100 LOC (maximum file is 96 LOC).
+	- Verified: 6/6 test files passed (16/16 tests 100% PASS); `npm run typecheck` clean (0 errors).
+
 - Activity Logs Subfolder Barrel Index Files & Import Streamlining (Sep 7 2026):
 	- Created dedicated `index.ts` barrel files in all subfolders of `src/components/activity-logs/`:
 		- `filters/index.ts`: Re-exports modal, form, header, footer, date inputs, and `useActivityFilters`.
