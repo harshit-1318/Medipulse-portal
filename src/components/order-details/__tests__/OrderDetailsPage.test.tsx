@@ -1,9 +1,9 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import OrderDetailsPage from '../pages/OrderDetailsPage';
-import { useOrderDetailsPage } from '../hooks/useOrderDetailsPage';
+import { useOrderDetailsPage } from '../hooks/order/useOrderDetailsPage';
 
-vi.mock('../hooks/useOrderDetailsPage', () => ({
+vi.mock('../hooks/order/useOrderDetailsPage', () => ({
     useOrderDetailsPage: vi.fn(),
 }));
 

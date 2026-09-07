@@ -88,3 +88,4 @@
 	- Extracted `useConsultationMeasurements` hook from `ConsultationSection.tsx`, reducing file length from 113 to 84 LOC.
 	- 100% of non-test source files in `src/components/order-details/` strictly adhere to < 100 LOC.
 	- Added 4 dedicated unit test suites in `__tests__/components/` (`ActionButton.test.tsx`, `DocumentRow.test.tsx`, `Row.test.tsx`, `VideoRecordingsTable.test.tsx`), bringing module test total to 24 files and 231 passing tests.
+	- Reorganized `hooks/` from a flat 15-file directory into 5 domain subfolders (`clinical/`, `communication/`, `media/`, `order/`, `resync/`), each with a dedicated `index.ts` barrel, unified under root `hooks/index.ts` for clean developer ergonomics.

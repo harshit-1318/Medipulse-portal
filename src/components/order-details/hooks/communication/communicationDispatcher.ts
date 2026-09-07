@@ -1,5 +1,5 @@
-import type { ApiResponse } from "../types";
-import { handleDocumentAction, handleInPersonVideoAction, handlePrescriptionAction, handleVideoAction } from "../utils/communication";
+import type { ApiResponse } from "@/components/order-details/types";
+import { handleDocumentAction, handleInPersonVideoAction, handlePrescriptionAction, handleVideoAction } from "@/components/order-details/utils";
 
 export async function dispatchCommunicationAction({
     action,

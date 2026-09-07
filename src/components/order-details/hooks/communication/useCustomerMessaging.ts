@@ -1,6 +1,6 @@
 import type { Method } from "axios";
-import { sendMessageToCustomer, triggerSixMonthReview } from "../../../api/services/orders/actions";
-import type { ApiResponse } from "../types";
+import { sendMessageToCustomer, triggerSixMonthReview } from "@/api/services/orders/actions";
+import type { ApiResponse } from "@/components/order-details/types";
 
 export function useCustomerMessaging(
     order: ApiResponse | null,

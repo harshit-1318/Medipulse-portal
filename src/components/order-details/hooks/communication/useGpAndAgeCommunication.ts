@@ -1,6 +1,6 @@
 import type { Method } from "axios";
-import { sendGpEmail, sendAgeVerification } from "../../../api/services/orders/actions";
-import type { ApiResponse } from "../types";
+import { sendGpEmail, sendAgeVerification } from "@/api/services/orders/actions";
+import type { ApiResponse } from "@/components/order-details/types";
 
 export function useGpAndAgeCommunication(
     order: ApiResponse | null,

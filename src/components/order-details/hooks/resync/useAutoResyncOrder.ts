@@ -1,12 +1,12 @@
 import { useEffect, useRef } from "react";
-import { shouldAutoResyncOrder } from "../utils";
+import { shouldAutoResyncOrder } from "@/components/order-details/utils";
 import { useUserInfo } from '@/store';
 import { useResyncOrder } from "./useResyncOrder";
 import {
     getFirstDefinedEnvValue,
     isEnvFlagEnabled,
     isLocalStorageDebugFlagEnabled,
-} from "../../../utils/env";
+} from "@/utils/env";
 
 export function useAutoResyncOrder(order: any, orderId: string) {
     const logAutoResync = (...args: unknown[]) => {

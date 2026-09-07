@@ -1,5 +1,4 @@
-import { isClinicalOrder } from "../utils";
-import { isParkedOrderTag } from "../utils/tagsUtils";
+import { isClinicalOrder, isParkedOrderTag } from "@/components/order-details/utils";
 
 export function useOrderDetailsFlags(order: any, role?: string) {
     const orderStatus = (order.orderInfo?.status || "").toLowerCase();

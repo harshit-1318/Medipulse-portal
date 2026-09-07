@@ -1,6 +1,6 @@
 import { useState } from "react";
-import type { ApiResponse } from "../types";
-import { logActivity } from "../../../api/services/activity-log";
+import type { ApiResponse } from "@/components/order-details/types";
+import { logActivity } from "@/api/services/activity-log";
 import { useUserStore } from '@/store';
 import { dispatchCommunicationAction } from "./communicationDispatcher";
 import { useGpAndAgeCommunication } from "./useGpAndAgeCommunication";

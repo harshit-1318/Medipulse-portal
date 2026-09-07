@@ -2,13 +2,13 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { OrderDetailsMainContent } from '../../sections/Main';
 import { useUserInfo } from '@/store';
-import { useResyncOrder } from '../../hooks/useResyncOrder';
+import { useResyncOrder } from '../../hooks/resync/useResyncOrder';
 
 vi.mock('@/store', () => ({
     useUserInfo: vi.fn(),
 }));
 
-vi.mock('../../hooks/useResyncOrder', () => ({
+vi.mock('../../hooks/resync/useResyncOrder', () => ({
     useResyncOrder: vi.fn(),
 }));
 

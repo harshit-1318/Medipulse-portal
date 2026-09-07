@@ -4,8 +4,7 @@ import { ConsultationSection } from "../Consultation";
 import { CommunicationSection } from "../Communication";
 import { InternalNotesSection } from "../InternalNotes";
 import { ActivityLogsSection } from "../ActivityLogs";
-import { useAutoResyncOrder } from "@/components/order-details/hooks/useAutoResyncOrder";
-import { useOrderDetailsFlags } from "@/components/order-details/hooks/useOrderDetailsFlags";
+import { useAutoResyncOrder, useOrderDetailsFlags } from "@/components/order-details/hooks";
 import { ClinicalSections } from "./ClinicalSections";
 
 interface OrderDetailsMainContentProps {

@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { resyncOrder } from "../../../api/services/orders/actions/order";
-import { isLocalStorageDebugFlagEnabled } from "../../../utils/env";
+import { resyncOrder } from "@/api/services/orders/actions/order";
+import { isLocalStorageDebugFlagEnabled } from "@/utils/env";
 
 export function useResyncOrder() {
     const [isLoading, setIsLoading] = useState(false);

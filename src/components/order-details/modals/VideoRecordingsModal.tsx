@@ -1,6 +1,6 @@
 import type { ApiResponse } from "../types";
-import { useVideoRecordings } from "../hooks/useVideoRecordings";
-import { VideoRecordingsTable } from "../components/VideoRecordingsTable";
+import { useVideoRecordings } from "../hooks";
+import { VideoRecordingsTable } from "../components";
 
 interface VideoRecordingsModalProps {
     shopifyId?: string;
