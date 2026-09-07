@@ -81,6 +81,10 @@
 	- Section label renamed from "Clinical Measurements" → "Current Clinical Measurements".
 	- Previous Consultation Measurements block now wrapped in a muted card (`rounded-2xl border border-slate-200 bg-slate-50/60 p-4`) to visually distinguish it from the current measurements block. Title text is dimmed; divider opacity reduced.
 	- `getPrevBmiDisplay` falls back to calculating BMI from `prevHeightData` + `prevWeightData` when no explicit `prevBmiData` is stored (covers current Shopify re-order format).
-	- `BmiGauge` has optional `fromPos` prop: when set, stickman appears at prev BMI position on render, pauses 1s, then slow-walks (1600ms ease-in-out) to current BMI position. IntersectionObserver (threshold 0.4) delays animation until gauge is 40% visible in viewport. Fires once per mount.
-	- All changes backward-compatible: badge, prev section, and animation only appear when `hasPrevMeasurements()` is true (i.e. `prevHeightData`/`prevWeightData`/`prevBmiData` are populated).
-	- 50 measurement tests pass; 16 BmiGauge tests pass.
+- Module Architecture & Barrel Standardization (Sep 2026):
+	- Standardized symmetrical barrel hierarchy across all subfolders: added `index.ts` files to `components/`, `components/VideoPlayer/`, and section subdirectories (`ActivityLogs/components`, `bmi/components`, `bmi/hooks`, `bmi/utils`, `Communication/components`, `Consultation/components`, `Consultation/hooks`, `DocumentPrescription/components`, `DocumentPrescription/hooks`, `Header/components`, `InfoCards/components`, `InternalNotes/components`, `SCR/components`).
+	- Re-exported `components/` from root `src/components/order-details/index.ts` with `VideoPlayer` namespaced to prevent name collision with `sections/InfoCards`.
+	- Extracted nested sub-interfaces from `src/components/order-details/types/api.ts` into `types/models.ts`, shrinking `api.ts` from 140 to 55 LOC.
+	- Extracted `useConsultationMeasurements` hook from `ConsultationSection.tsx`, reducing file length from 113 to 84 LOC.
+	- 100% of non-test source files in `src/components/order-details/` strictly adhere to < 100 LOC.
+	- Added 4 dedicated unit test suites in `__tests__/components/` (`ActionButton.test.tsx`, `DocumentRow.test.tsx`, `Row.test.tsx`, `VideoRecordingsTable.test.tsx`), bringing module test total to 24 files and 231 passing tests.
