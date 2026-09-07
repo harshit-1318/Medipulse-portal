@@ -1,12 +1,8 @@
-import { DeclineModal } from "./DeclineModal";
-import { EmailCustomerModal } from "./EmailCustomerModal";
-import { EmailGpModal } from "./EmailGpModal";
-import { ImagePreviewModal } from "./ImagePreviewModal";
-import { SuccessModal } from "./SuccessModal";
-import { VideoRecordingsModal } from "./VideoRecordingsModal";
-import { PreviousPrescriptionsModal } from "./PreviousPrescriptionsModal";
-import { FullScreenLoader } from "./FullScreenLoader";
-import type { ApiResponse } from "../types";
+import { DeclineModal } from "./decline";
+import { EmailCustomerModal, EmailGpModal } from "./communication";
+import { ImagePreviewModal, VideoRecordingsModal, PreviousPrescriptionsModal } from "./media";
+import { SuccessModal, FullScreenLoader } from "./feedback";
+import type { ApiResponse } from "@/components/order-details/types";
 
 interface OrderDetailsModalsProps {
     order: ApiResponse;
