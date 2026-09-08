@@ -1,5 +1,11 @@
 # Frontend Project State
 
+- Complete API Layer Standardization & Test Suite Isolation (Sep 8 2026):
+	- Fully standardized `src/api/services/`: Created symmetrical `index.ts` barrel files across all 11 services (`dashboard`, `email-queue`, `globalSearch`, `lead`, `log`, `prescription`, `publicSurvey`, `site`, `super-admin`, `survey`, `user`).
+	- Isolated all unit test suites into dedicated `tests/` directories across `src/api/services/` and `src/api/utils/` (31 test files / 165 tests).
+	- Harmonized root `src/api/index.ts` to import cleanly and uniformly from service root directory barrels instead of deep file paths.
+	- Verified: 100% Vitest pass rate (31/31 test files, 165/165 tests PASS); `npm run typecheck` clean (0 errors); all commits pushed to `origin/main`.
+
 - Complete Gold Standard Component Architecture Reorganization (Sep 8 2026):
 	- Fully modularized `src/components/users/`: Reorganized 10+ loose component files into clean domain subfolders `filters/`, `table/`, `form/`, and `summary/` (including nested `UserForm/` and `user-activity-summary/`).
 	- Added symmetrical subfolder barrels across all `users` subdomains with 100% backward-compatible re-exports in `users/components/index.ts`.
