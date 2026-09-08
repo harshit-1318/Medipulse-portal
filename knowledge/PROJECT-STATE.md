@@ -3,13 +3,16 @@
 - Comprehensive Root Proxy (`src/proxy*`) Audit & Modularization (Sep 9 2026):
 	- Audited Next.js 16 root proxy middleware architecture (`proxy.ts`, `proxyRoutes.ts`, `proxy.test.ts`).
 	- Extracted lightweight JWT decoding utility `src/proxyJwt.ts` (23 LOC), reducing `src/proxy.ts` from 112 LOC to 78 LOC.
-	- Modularized legacy 228-line `proxy.test.ts` into focused, highly targeted test suites:
-		- `src/proxyRedirects.test.ts` (80 LOC, 12 tests PASS: root `/`, legacy `/search` & `/orders`, `/login` redirect, role dashboard separation, public bypass, matcher config)
-		- `src/proxyRbac.test.ts` (48 LOC, 7 tests PASS: returnUrl parameter preservation, RBAC enforcement across prescriber, driver, customer support, admin, super_admin)
-		- `src/proxyJwt.test.ts` (26 LOC, 4 tests PASS: valid tokens, base64url padding, malformed tokens, corrupt payloads)
-	- Verified LOC Compliance: 100% of all 6 proxy source and test files are strictly `< 80 LOC` (maximum file is 80 LOC).
+	- Refactored `src/proxy.test.ts` into a parameterized test suite (48 LOC, 24 tests PASS) covering all redirects, bypasses, returnUrl preservation, RBAC enforcement, and matcher config.
+	- Added `src/proxyJwt.test.ts` (26 LOC, 4 tests PASS: valid tokens, base64url padding, malformed tokens, corrupt payloads).
+	- Verified LOC Compliance: 100% of all proxy files are strictly `< 80 LOC`:
+		- `src/proxy.ts`: 78 LOC
+		- `src/proxyRoutes.ts`: 41 LOC
+		- `src/proxy.test.ts`: 48 LOC
+		- `src/proxyJwt.ts`: 23 LOC
+		- `src/proxyJwt.test.ts`: 26 LOC
 	- Full Verification:
-		- 100% Vitest pass rate for proxy tests (3/3 test files, 23/23 tests PASS).
+		- 100% Vitest pass rate for proxy tests (2/2 test files, 28/28 tests PASS).
 		- `npm run typecheck` clean (0 errors).
 		- Next.js Turbopack production build compiles with 0 errors (54/54 static & dynamic pages generated in 5.5s).
 
