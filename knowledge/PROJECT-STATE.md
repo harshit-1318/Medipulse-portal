@@ -1,5 +1,21 @@
 # Frontend Project State
 
+- Comprehensive `src/store` Audit & Full Test Suite Completion (Sep 9 2026):
+	- Audited all 3 Zustand store subdomains in `src/store/`: `loader/`, `site/`, `user/`.
+	- Added symmetrical subfolder barrels:
+		- `src/store/site/index.ts` (re-exports `siteStore` and `siteActions`)
+		- `src/store/user/index.ts` (re-exports `userStore` and `userHelpers`)
+		- `src/store/loader/index.ts` (re-exports `globalLoaderStore`)
+		- `src/store/index.ts` (root barrel re-exporting all 3 stores)
+	- Created comprehensive unit test suites in dedicated `__tests__/` directories:
+		- `src/store/loader/__tests__/globalLoaderStore.test.ts` (4 tests PASS)
+		- `src/store/site/__tests__/siteStore.test.ts` (3 tests PASS)
+		- `src/store/site/__tests__/siteActions.test.ts` (4 tests PASS)
+		- `src/store/user/__tests__/userHelpers.test.ts` (6 tests PASS)
+		- `src/store/user/__tests__/userStore.test.ts` (4 tests PASS)
+	- Verified LOC Compliance: 100% of all 14 source and test files across `src/store/` are strictly `< 100 LOC` (maximum file is 71 LOC).
+	- Verified: 100% Vitest pass rate for `src/store` (5/5 test files, 21/21 tests PASS); `npm run typecheck` clean (0 errors); all changes committed and pushed to `origin/main`.
+
 - Comprehensive `src/lib` Audit & Architecture Standardization (Sep 9 2026):
 	- Audited all 4 subdomains and subdirectories in `src/lib/`: `api/`, `auth/`, `db/` (with `models/`), `stores/`.
 	- Added symmetrical `index.ts` barrel files across all subdirectories and models:
