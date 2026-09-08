@@ -3,6 +3,10 @@ import { ROLES_TO_TEST } from '../fixtures';
 
 const BASE_URL = 'http://localhost:3000';
 
+const isLocalhostRunning = await fetch(BASE_URL, { signal: AbortSignal.timeout(300) })
+  .then(() => true)
+  .catch(() => false);
+
 function extractCookies(header: string | null): string {
   if (!header) return '';
   return header
@@ -12,8 +16,7 @@ function extractCookies(header: string | null): string {
     .join('; ');
 }
 
-describe('Live Localhost:3000 Multi-Phase Login & Authorization Automation', () => {
-  // Phase 1: Super Admin
+describe.runIf(isLocalhostRunning)('Live Localhost:3000 Multi-Phase Login & Authorization Automation', () => {
   describe('Phase 1: Super Admin Automation', () => {
     const superAdmin = ROLES_TO_TEST.find((r) => r.expectedRole === 'super_admin')!;
 
@@ -26,15 +29,12 @@ describe('Live Localhost:3000 Multi-Phase Login & Authorization Automation', () 
       expect(loginRes.status).toBe(200);
       const cookies = extractCookies(loginRes.headers.get('set-cookie'));
 
-      // Root path redirect
       const rootRes = await fetch(`${BASE_URL}/`, { headers: { Cookie: cookies }, redirect: 'manual' });
       expect(rootRes.headers.get('location')).toBe('/super-dashboard');
 
-      // Dashboard access
       const dashRes = await fetch(`${BASE_URL}/super-dashboard`, { headers: { Cookie: cookies } });
       expect(dashRes.status).toBe(200);
 
-      // Logout and session termination
       const logoutRes = await fetch(`${BASE_URL}/api/auth/logout`, { method: 'POST', headers: { Cookie: cookies } });
       expect(logoutRes.headers.get('set-cookie')).toContain('Max-Age=0');
 
@@ -44,7 +44,6 @@ describe('Live Localhost:3000 Multi-Phase Login & Authorization Automation', () 
     });
   });
 
-  // Phase 2: Admin
   describe('Phase 2: Admin Operations Automation', () => {
     const admin = ROLES_TO_TEST.find((r) => r.expectedRole === 'admin')!;
 
@@ -57,22 +56,18 @@ describe('Live Localhost:3000 Multi-Phase Login & Authorization Automation', () 
       expect(loginRes.status).toBe(200);
       const cookies = extractCookies(loginRes.headers.get('set-cookie'));
 
-      // Root path redirect to /dashboard
       const rootRes = await fetch(`${BASE_URL}/`, { headers: { Cookie: cookies }, redirect: 'manual' });
       expect(rootRes.headers.get('location')).toBe('/dashboard');
 
-      // Blocked from super-dashboard
       const superRes = await fetch(`${BASE_URL}/super-dashboard`, { headers: { Cookie: cookies }, redirect: 'manual' });
       expect(superRes.status).toBe(307);
       expect(superRes.headers.get('location')).toBe('/dashboard');
 
-      // Logout
       const logoutRes = await fetch(`${BASE_URL}/api/auth/logout`, { method: 'POST', headers: { Cookie: cookies } });
       expect(logoutRes.headers.get('set-cookie')).toContain('Max-Age=0');
     });
   });
 
-  // Phase 3: Other Roles
   describe('Phase 3: Standard & Clinical Roles Automation', () => {
     const otherRoles = ROLES_TO_TEST.filter((r) => r.expectedRole !== 'super_admin' && r.expectedRole !== 'admin');
 

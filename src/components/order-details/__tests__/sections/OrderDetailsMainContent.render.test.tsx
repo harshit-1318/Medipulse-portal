@@ -39,7 +39,10 @@ describe('OrderDetailsMainContent — role-based UI', () => {
     beforeEach(() => {
         vi.clearAllMocks();
         vi.unstubAllEnvs();
+        vi.stubEnv('NEXT_PUBLIC_AUTO_RESYNC', 'false');
+        vi.stubEnv('PUBLIC_AUTO_RESYNC', 'false');
         vi.stubEnv('VITE_AUTO_RESYNC', 'false');
+        vi.stubEnv('AUTO_RESYNC', 'false');
         vi.mocked(useResyncOrder).mockReturnValue({ isLoading: false, isSuccess: false, error: null, handleResync: vi.fn() });
     });
 

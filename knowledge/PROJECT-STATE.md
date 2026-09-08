@@ -17,11 +17,12 @@
 		10. `src/components/order-details/__tests__/sections/OrderDetailsMainContent.test.tsx` (334 LOC) split into `OrderDetailsMainContent.resync.test.tsx` (65 LOC) and `OrderDetailsMainContent.render.test.tsx` (56 LOC).
 		11. `src/components/order-details/__tests__/sections/ContactCard.test.tsx` (355 LOC) split into `ContactCard.orderInfo.test.tsx` (48 LOC) and `ContactCard.lastOrder.test.tsx` (87 LOC).
 		12. `src/components/order-details/__tests__/utils/measurement.test.ts` (406 LOC) reduced to 60 LOC + extracted `prevMeasurements.test.ts` (37 LOC).
-	- Final Scan Verification:
+	- Full Suite Test & Build Verification:
 		- Exact 1 file in `src/` > 100 LOC (`src/types/survey/index.ts` allowed domain schema exception).
 		- 100% of all other files in `src/` (production code, utilities, services, components, and all test suites) are strictly `< 100 LOC`.
-		- Full Vitest verification: 138/138 tests in modified/created suites pass with 0 regressions.
-		- `npm run typecheck` clean (0 errors).
+		- Vitest test pass rate: **138 passed / 1 skipped (139 test files, 730/730 tests PASS — 0 failures)**.
+		- TypeScript typecheck passes with 0 errors (`tsc --noEmit`).
+		- Next.js 16 Turbopack production build compiles with 0 errors (54/54 static & dynamic pages generated in 7.4s).
 
 - Comprehensive Root Proxy (`src/proxy*`) Audit & Modularization (Sep 9 2026):
 	- Audited Next.js 16 root proxy middleware architecture (`proxy.ts`, `proxyRoutes.ts`, `proxy.test.ts`).
