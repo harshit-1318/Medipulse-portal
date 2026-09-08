@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import PasswordFields from '../components/UserForm/PasswordFields';
+import PasswordFields from '../form/UserForm/PasswordFields';
 
 const baseProps = {
     form: {

@@ -1,8 +1,8 @@
 import { LazyMotion, domAnimation, m, AnimatePresence } from "framer-motion";
-import { useUsersList } from '@/components/users/hooks/useUsersList';
-import UsersHeader from '@/components/users/components/UsersHeader';
-import UsersTable from '@/components/users/components/UsersTable';
-import UserFilters from '@/components/users/components/UserFilters';
+import { useUsersList } from '../hooks/useUsersList';
+import UsersHeader from '../components/UsersHeader';
+import UsersTable from '../table/UsersTable';
+import UserFilters from '../filters/UserFilters';
 
 function UsersListContent() {
     const {

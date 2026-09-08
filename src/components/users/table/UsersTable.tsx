@@ -1,7 +1,7 @@
 import { AnimatePresence } from 'framer-motion';
 import { Pagination } from '@/components/common/Pagination';
 import type { User } from '@/components/users/types';
-import UserRow from '@/components/users/components/UserRow';
+import UserRow from './UserRow';
 import { UsersTableHeader } from './UsersTableHeader';
 
 interface UsersTableProps {

@@ -1,6 +1,6 @@
 import { useUserForm } from '@/components/users/hooks/useUserForm';
-import UserFormFields from '@/components/users/components/UserForm/UserFormFields';
-import UserFormActions from '@/components/users/components/UserFormActions';
+import UserFormFields from './UserForm/UserFormFields';
+import UserFormActions from './UserFormActions';
 import { m } from 'framer-motion';
 
 interface UserFormProps {

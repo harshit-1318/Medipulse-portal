@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import UserRow from '../components/UserRow';
+import UserRow from '../table/UserRow';
 
 vi.mock('framer-motion', () => ({
     m: {

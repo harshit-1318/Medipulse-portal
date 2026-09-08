@@ -1,5 +1,5 @@
 import { LazyMotion, domAnimation } from "framer-motion";
-import UserForm from '@/components/users/components/UserForm';
+import UserForm from '../form/UserForm';
 
 interface UserFormPageProps {
     userId?: string;

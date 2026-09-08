@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ActivityTable, useActivityLogs } from "@/components/activity-logs";
-import UserActivitySummary from "@/components/users/components/UserActivitySummary";
+import UserActivitySummary from "../summary/UserActivitySummary";
 
 interface UserActivitySectionProps {
     userId: string;
