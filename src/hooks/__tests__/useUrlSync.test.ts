@@ -20,6 +20,7 @@ describe('useUrlSync', () => {
     });
 
     it('syncs state to URLSearchParams on subsequent state updates', () => {
+        replaceStateSpy.mockClear();
         const onUrlStateChange = vi.fn();
         const { rerender } = renderHook(
             ({ state }) => useUrlSync(state, onUrlStateChange, 1, undefined, 'test-storage', undefined, true),
@@ -29,8 +30,27 @@ describe('useUrlSync', () => {
         rerender({ state: { status: 'fulfilled' } });
 
         expect(replaceStateSpy).toHaveBeenCalled();
-        const calledUrl = replaceStateSpy.mock.calls[0][2];
+        const calledUrl = replaceStateSpy.mock.calls[replaceStateSpy.mock.calls.length - 1][2];
         expect(calledUrl).toContain('status=fulfilled');
+    });
+
+    it('omits default values and handles page parameter', () => {
+        replaceStateSpy.mockClear();
+        const onUrlStateChange = vi.fn();
+        const defaults = { status: 'all', limit: '20' };
+
+        const { rerender } = renderHook(
+            ({ state, page }) => useUrlSync(state, onUrlStateChange, page, undefined, undefined, defaults, true),
+            { initialProps: { state: { status: 'all', limit: '20' }, page: 1 } }
+        );
+
+        rerender({ state: { status: 'urgent', limit: '20' }, page: 2 });
+
+        expect(replaceStateSpy).toHaveBeenCalled();
+        const calledUrl = replaceStateSpy.mock.calls[replaceStateSpy.mock.calls.length - 1][2];
+        expect(calledUrl).toContain('status=urgent');
+        expect(calledUrl).toContain('page=2');
+        expect(calledUrl).not.toContain('limit');
     });
 
     it('syncs from URL on popstate event', () => {
