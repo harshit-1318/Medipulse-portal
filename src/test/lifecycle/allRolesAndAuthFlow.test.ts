@@ -3,9 +3,9 @@ import { POST as loginRoute } from '@/app/api/auth/login/route';
 import { POST as logoutRoute } from '@/app/api/auth/logout/route';
 import { proxy } from '@/proxy';
 import { NextRequest } from 'next/server';
-import { verifyJwt } from '@/lib/auth/jwt';
-import { ROLES_TO_TEST } from '../fixtures/authFlowData';
-import { assertDashboardRouting, assertRouteAndApiPermissions } from '../helpers/authFlowHelpers';
+import { verifyJwt } from '@/lib/auth';
+import { ROLES_TO_TEST } from '../fixtures';
+import { assertDashboardRouting, assertRouteAndApiPermissions } from '../helpers';
 
 describe('Phase 4: Automated 5-Step Lifecycle Verification Across All 8 Roles', () => {
   for (const testCase of ROLES_TO_TEST) {

@@ -1,7 +1,7 @@
 import { expect } from 'vitest';
 import { NextRequest } from 'next/server';
 import { proxy } from '@/proxy';
-import { verifyApiAuth } from '@/lib/auth/apiAuth';
+import { verifyApiAuth } from '@/lib/auth';
 
 export function assertDashboardRouting(authToken: string, role: string, expectedRedirect: string) {
   const rootReq = new NextRequest('http://localhost:3000/');

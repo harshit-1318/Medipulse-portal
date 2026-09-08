@@ -1,10 +1,10 @@
-import { ROLES_TO_TEST } from '../fixtures/authFlowData';
+import { ROLES_TO_TEST } from '../fixtures';
 import {
   verifyAuditLogin,
   verifyAuditDashboard,
   verifyAuditPermissions,
   verifyAuditLogout,
-} from '../helpers/auditStepVerifiers';
+} from '../helpers';
 
 export async function runComprehensiveAudit() {
   console.log('================================================================================');

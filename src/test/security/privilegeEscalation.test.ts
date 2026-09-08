@@ -1,8 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { NextRequest } from 'next/server';
 import { proxy } from '@/proxy';
-import { signJwt, verifyJwt } from '@/lib/auth/jwt';
-import { verifyApiAuth } from '@/lib/auth/apiAuth';
+import { signJwt, verifyJwt, verifyApiAuth } from '@/lib/auth';
 
 describe('Special Security Check: Anti-Tampering & Privilege Escalation Defenses', () => {
   it('rejects tampered JWT token attempting role escalation to super_admin', async () => {

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { ROLES_TO_TEST } from '../fixtures/authFlowData';
+import { ROLES_TO_TEST } from '../fixtures';
 
 const BASE_URL = 'http://localhost:3000';
 

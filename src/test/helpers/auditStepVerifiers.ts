@@ -2,8 +2,7 @@ import { POST as loginRoute } from '@/app/api/auth/login/route';
 import { POST as logoutRoute } from '@/app/api/auth/logout/route';
 import { proxy } from '@/proxy';
 import { NextRequest } from 'next/server';
-import { verifyJwt } from '@/lib/auth/jwt';
-import { verifyApiAuth } from '@/lib/auth/apiAuth';
+import { verifyJwt, verifyApiAuth } from '@/lib/auth';
 import { isRouteAllowedForRole } from '@/proxyRoutes';
 
 export const ALL_PORTAL_ROUTES = [

@@ -3,9 +3,8 @@ import { POST as loginRoute } from '@/app/api/auth/login/route';
 import { POST as logoutRoute } from '@/app/api/auth/logout/route';
 import { proxy } from '@/proxy';
 import { NextRequest } from 'next/server';
-import { ROLES_TO_TEST } from '../fixtures/authFlowData';
-import { ROLE_RESTRICTION_MATRIX } from '../fixtures/roleRestrictionMatrix';
-import { verifyRestrictedApiOperations } from '../helpers/roleTestHelpers';
+import { ROLES_TO_TEST, ROLE_RESTRICTION_MATRIX } from '../fixtures';
+import { verifyRestrictedApiOperations } from '../helpers';
 
 describe('Phase 5 & 6: Cross-Role RBAC Security Matrix Audit', () => {
   for (const roleA of ROLES_TO_TEST) {
