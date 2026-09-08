@@ -46,5 +46,21 @@ export { default as SiteDetailPage } from './site-settings/SiteDetailPage';
 export { default as SuperAdminDashboardPage } from './super-admin/SuperAdminDashboardPage';
 export { default as ActivityDashboardSection } from './super-admin/ActivityDashboardSection';
 
+// Order Details Components
+export { default as OrderDetailsPage, OrderDetailsPage as OrderDetails } from './order-details';
+
+// Users Components
+export { UsersListPage, UserFormPage, UserDetailPage } from './users/pages';
+export { default as UsersTable } from './users/table';
+export { default as UserFilters } from './users/filters';
+export { default as UserForm } from './users/form';
+
+// Account Components
+export { default as AccountSettings, AccountForm } from './account';
+
+// Docman Jobs Components
+export { default as DocmanJobsPage } from './docman-jobs/pages/DocmanJobsPage';
+
 // Surveys Components
 export { default as SurveysPage, SurveysTable, SurveysHeader, SendSurveyModal } from './surveys';
+

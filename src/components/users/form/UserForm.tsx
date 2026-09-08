@@ -18,7 +18,7 @@ export default function UserForm({ userId }: UserFormProps) {
         return (
             <div className="py-20 text-center animate-pulse space-y-4">
                 <div className="h-10 w-48 bg-slate-100 rounded-xl mx-auto" />
-                <div className="h-[400px] w-full bg-slate-50/50 rounded-2xl mx-auto border border-slate-100" />
+                <div className="h-100 w-full bg-slate-50/50 rounded-2xl mx-auto border border-slate-100" />
             </div>
         );
     }
