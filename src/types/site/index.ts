@@ -1,4 +1,4 @@
-import type { SortingState } from "@tanstack/react-table";
+import type { SortingState, OnChangeFn } from "@tanstack/react-table";
 
 export interface Site {
     id: string;
@@ -24,7 +24,7 @@ export interface SitesTableProps {
     search: string;
     setSearch: (search: string) => void;
     sorting: SortingState;
-    setSorting: (sorting: any) => void;
+    setSorting: OnChangeFn<SortingState>;
 }
 
 export interface SiteFiltersState {

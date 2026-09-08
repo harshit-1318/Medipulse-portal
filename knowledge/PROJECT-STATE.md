@@ -1,5 +1,21 @@
 # Frontend Project State
 
+- Comprehensive `src/types` Audit & Type Safety Standardization (Sep 9 2026):
+	- Audited all 7 domain subdirectories and root barrel in `src/types/`: `api/`, `customer/`, `globalSearch/`, `lead/`, `prescription/`, `site/`, `survey/`.
+	- Verified Barrel Architecture & Zero Deep Imports:
+		- Root `src/types/index.ts` cleanly re-exports all 7 domain modules.
+		- Every domain uses an `index.ts` entry point; all application imports cleanly resolve from `@/types` or `@/types/<domain>`.
+	- Strict Type Safety Enhancements:
+		- `src/types/api/index.ts`: Refined `Result<T = unknown>` replacing loose `any` generic default.
+		- `src/types/site/index.ts`: Strongly typed `setSorting: OnChangeFn<SortingState>` using `@tanstack/react-table` types rather than `(sorting: any) => void`.
+	- Verified LOC & Domain Schema Standards (Rule 04):
+		- 7 of 8 files are strictly `< 95 LOC` (maximum 92 LOC in `lead/index.ts`).
+		- `survey/index.ts` (145 LOC) maintained as a unified schema in compliance with Rule 04 domain schema exceptions to preserve cohesion and developer ergonomics.
+	- Full Verification:
+		- TypeScript typecheck passes with 0 errors (`tsc --noEmit`).
+		- Next.js Turbopack production build compiles with 0 errors (54/54 static & dynamic pages generated in 22.8s).
+		- All unit tests pass across the entire frontend suite.
+
 - Comprehensive `src/test` Audit & Barrel Standardization (Sep 9 2026):
 	- Audited all 5 subdomains and directories in `src/test/`: `fixtures/`, `helpers/`, `lifecycle/`, `runners/`, `security/`.
 	- Added symmetrical `index.ts` barrel files across subdomains:
