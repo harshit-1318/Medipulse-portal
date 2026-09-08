@@ -9,11 +9,19 @@
 		- `src/lib/db/index.ts` (re-exports `mongodb` and `models`)
 		- `src/lib/stores/index.ts` (re-exports `inMemoryOrderNotes`)
 		- `src/lib/index.ts` (root barrel re-exporting `./api`, `./auth`, `./db`, `./stores`)
-	- Isolated test suites into dedicated `src/lib/auth/__tests__/`:
-		- `apiAuth.test.ts` (7 tests PASS)
-		- `jwt.test.ts` (4 tests PASS)
-	- Verified LOC Compliance: 100% of all 21 source and test files across `src/lib/` are strictly `< 100 LOC` (maximum file is 84 LOC).
-	- Verified: 100% Vitest pass rate for `src/lib` tests (2/2 test files, 11/11 tests PASS); `npm run typecheck` clean (0 errors); all changes committed and pushed to `origin/main`.
+	- Full Unit Test Suite Coverage across all subdomains in dedicated `__tests__/` directories:
+		- `src/lib/api/__tests__/client.test.ts` (6 tests PASS)
+		- `src/lib/api/__tests__/interceptors.test.ts` (5 tests PASS)
+		- `src/lib/auth/__tests__/apiAuth.test.ts` (7 tests PASS)
+		- `src/lib/auth/__tests__/jwt.test.ts` (4 tests PASS)
+		- `src/lib/db/__tests__/mongodb.test.ts` (2 tests PASS)
+		- `src/lib/stores/__tests__/inMemoryOrderNotes.test.ts` (3 tests PASS)
+	- Safety & Import Enhancements:
+		- Moved top-level `MONGODB_URI` validation in `mongodb.ts` into `connectToDatabase()` to eliminate module load time crashes when importing barrels in non-database contexts.
+		- Formatted `interceptors.ts` to strictly maintain <= 77 LOC.
+		- Updated `src/api/apiClient.ts` to cleanly import from `@/lib/api` barrel.
+	- Verified LOC Compliance: 100% of all 25 source and test files across `src/lib/` are strictly `< 100 LOC` (maximum file is 77 LOC).
+	- Verified: 100% Vitest pass rate for `src/lib` tests (6/6 test files, 27/27 tests PASS); `npm run typecheck` clean (0 errors); all changes committed and pushed to `origin/main`.
 
 - Comprehensive `src/hooks` Audit & Full Test Suite Completion (Sep 9 2026):
 	- Audited all 4 subdomains in `src/hooks/`: `navigation/`, `search/`, `timing/`, `url/`.
