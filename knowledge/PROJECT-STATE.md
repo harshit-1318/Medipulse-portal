@@ -1,5 +1,13 @@
 # Frontend Project State
 
+- Complete Gold Standard Component Architecture Reorganization (Sep 8 2026):
+	- Fully modularized `src/components/users/`: Reorganized 10+ loose component files into clean domain subfolders `filters/`, `table/`, `form/`, and `summary/` (including nested `UserForm/` and `user-activity-summary/`).
+	- Added symmetrical subfolder barrels across all `users` subdomains with 100% backward-compatible re-exports in `users/components/index.ts`.
+	- Added unit tests: `src/components/users/__tests__/userRowStyles.test.ts` (6/6 tests PASS), covering created date formatting, deterministic avatar hashing, and role styles.
+	- Standardized `src/components/super-admin/`: Added subfolder barrels for `dashboard/` and `activity-dashboard/` with unit test suite `utils.test.ts` (5/5 tests PASS).
+	- Fixed infinite loop in `AccountForm.test.tsx` caused by unstable Zustand mock reference re-triggering `useEffect`.
+	- Verified: 100% test pass rate across all modified modules; `npm run typecheck` clean (0 errors); all commits pushed to `origin/main`.
+
 - Final Module Polish & Barrel/Test Completion (Sep 8 2026):
 	- Completed architecture standardization, subfolder barrels, and test coverage across the remaining modules: `site-settings`, `prescriptions`, `account`, `users`, and `surveys`.
 	- Added symmetrical subfolder barrels for `src/components/site-settings/`: `components/index.ts`, `filters/index.ts`, `form/index.ts`, `hooks/index.ts`, `table/index.ts`, `utils/index.ts`, and updated root `site-settings/index.ts`.
