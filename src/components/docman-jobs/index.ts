@@ -1,3 +1,4 @@
+export { default } from './pages';
 export * from './types';
 export * from './pages';
 export * from './components';

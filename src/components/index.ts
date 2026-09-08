@@ -2,34 +2,28 @@
 export { Header, Sidebar, Breadcrumb, SearchBar, AccountDropdown, AccountDropdownMenu, NoticeButton } from './layout';
 
 // Common Components
-export { default as Logo } from './common/Logo';
-export { Pagination } from './common/Pagination';
-export { QueryProvider } from './common/QueryProvider';
-export { default as RouteLoadingProgress } from './common/RouteLoadingProgress';
+export { Logo, Pagination, QueryProvider, RouteLoadingProgress } from './common';
 
 // Auth Components
-export { default as IdleSessionManager } from './auth/IdleSessionManager';
-export { default as IdleWarningModal } from './auth/IdleWarningModal';
-export { LoginForm, ThemeToggle } from './auth';
+export { IdleSessionManager, IdleWarningModal, LoginForm, ThemeToggle } from './auth';
 
 // Dashboard Components
-export { default as DashboardContent } from './dashboard/DashboardContent';
-export { default as StatCards } from './dashboard/StatCards';
-export { default as RecentOrdersPreview } from './dashboard/RecentOrdersPreview';
+export { default as DashboardContent, StatCards, RecentOrdersPreview } from './dashboard';
 
 // Customers Components
 export { default as CustomersPage, CustomersTable, CustomersHeader } from './customers';
 
 // Orders Table Components
-export { default as OrderTable, OrderFilters } from "./orders-table";
+export { default as OrderTable, OrderFilters } from './orders-table';
+
+// Order Details Components
+export { default as OrderDetailsPage, OrderDetailsPage as OrderDetails } from './order-details';
 
 // Activity Logs Components
-export { default as ActivityLogsContent } from './activity-logs/ActivityLogsContent';
-export { default as ActivityFilters } from './activity-logs/ActivityFilters';
-export { default as ActivityTable } from './activity-logs/ActivityTable';
+export { default as ActivityLogsContent, ActivityFilters, ActivityTable } from './activity-logs';
 
 // Email Queue Components
-export { default as EmailQueueMonitorPage } from './email-queue/EmailQueueMonitorPage';
+export { default as EmailQueueMonitorPage } from './email-queue';
 
 // Leads Components
 export { default as LeadsPage, LeadDetailDrawer, LeadStatusBadge } from './leads';
@@ -38,29 +32,19 @@ export { default as LeadsPage, LeadDetailDrawer, LeadStatusBadge } from './leads
 export { default as PrescriptionsPage, PrescriptionsTable, PrescriptionsHeader } from './prescriptions';
 
 // Site Settings Components
-export { default as SiteSettingsPage } from './site-settings/SiteSettingsPage';
-export { default as SitesListPage } from './site-settings/SitesListPage';
-export { default as SiteDetailPage } from './site-settings/SiteDetailPage';
+export { default as SiteSettingsPage, SitesListPage, SiteDetailPage } from './site-settings';
 
 // Super Admin Components
-export { default as SuperAdminDashboardPage } from './super-admin/SuperAdminDashboardPage';
-export { default as ActivityDashboardSection } from './super-admin/ActivityDashboardSection';
-
-// Order Details Components
-export { default as OrderDetailsPage, OrderDetailsPage as OrderDetails } from './order-details';
+export { default as SuperAdminDashboardPage, ActivityDashboardSection } from './super-admin';
 
 // Users Components
-export { UsersListPage, UserFormPage, UserDetailPage } from './users/pages';
-export { default as UsersTable } from './users/table';
-export { default as UserFilters } from './users/filters';
-export { default as UserForm } from './users/form';
+export { UsersListPage, UserFormPage, UserDetailPage, UsersTable, UserFilters, UserForm } from './users';
 
 // Account Components
 export { default as AccountSettings, AccountForm } from './account';
 
 // Docman Jobs Components
-export { default as DocmanJobsPage } from './docman-jobs/pages/DocmanJobsPage';
+export { default as DocmanJobsPage } from './docman-jobs';
 
 // Surveys Components
 export { default as SurveysPage, SurveysTable, SurveysHeader, SendSurveyModal } from './surveys';
-
