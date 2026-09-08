@@ -1,6 +1,7 @@
 'use client';
 
-import UsersListPage from '@/components/users/pages/UsersListPage';
+import { UsersListPage } from '@/components/users';
+
 
 export default function UsersListPageRoute() {
   return (

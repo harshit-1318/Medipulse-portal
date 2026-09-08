@@ -1,6 +1,7 @@
 'use client';
 
-import SurveyResponsesPage from '@/components/surveys/responses/SurveyResponsesPage';
+import SurveyResponsesPage from '@/components/surveys/responses';
+
 
 export default function AllSurveyResponsesRoute() {
   return (

@@ -1,6 +1,7 @@
 'use client';
 
-import DocmanJobsPage from '@/components/docman-jobs/pages/DocmanJobsPage';
+import DocmanJobsPage from '@/components/docman-jobs';
+
 
 export default function DocmanJobsRoute() {
   return (

@@ -3,11 +3,14 @@ import {
     Mail,
     UserCheck,
 } from 'lucide-react';
-import type { NavItem } from '@/components/layout/sidebar/types';
-import { usersMenu } from './menus/usersMenu';
-import { sitesMenu } from './menus/sitesMenu';
-import { surveysMenu } from './menus/surveys';
-import { activityLogsMenu } from './menus/activityLogsMenu';
+import type { NavItem } from './types';
+import {
+    usersMenu,
+    sitesMenu,
+    surveysMenu,
+    activityLogsMenu
+} from './menus';
+
 
 export const adminNavSection: { section: string; items: NavItem[] } = {
     section: 'Admin',

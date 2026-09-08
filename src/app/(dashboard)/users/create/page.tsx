@@ -1,6 +1,7 @@
 'use client';
 
-import UserFormPage from '@/components/users/pages/UserFormPage';
+import { UserFormPage } from '@/components/users';
+
 
 export default function CreateUserRoute() {
   return (
