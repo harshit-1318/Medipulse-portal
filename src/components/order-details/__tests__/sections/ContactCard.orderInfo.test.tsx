@@ -2,9 +2,13 @@ import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { ContactCard } from '../../sections/InfoCards/components/ContactCard';
 
-vi.mock('@/api/services/orders/fetchers/core', () => ({
-    lookupOrderByDisplayId: vi.fn().mockResolvedValue(null),
-}));
+vi.mock('@/api/services/orders', async (importOriginal) => {
+    const actual = await importOriginal<Record<string, any>>();
+    return {
+        ...actual,
+        lookupOrderByDisplayId: vi.fn().mockResolvedValue(null),
+    };
+});
 
 const baseOrderInfo = {
     orderId: '#100500',

@@ -12,3 +12,4 @@ export * as emailQueueApi from './services/email-queue';
 export * as globalSearchApi from './services/globalSearch';
 export * as superAdminApi from './services/super-admin';
 export * as publicSurveyApi from './services/publicSurvey';
+export * as apiUtils from './utils';

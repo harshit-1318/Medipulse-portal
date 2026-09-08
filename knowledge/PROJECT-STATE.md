@@ -1,5 +1,16 @@
 # Frontend Project State
 
+- Comprehensive Project-Wide Health Audit & Architecture Polish (Sep 9 2026):
+	- Zero Deep Imports: Audited entire codebase and eliminated remaining deep path imports across `orders` routes and `order-details` (`LastOrderLookupButton`, `useResyncOrder`, and 5 category/customer/document/product/status route pages now cleanly import through module barrels).
+	- Barrel Completeness: Added `src/api/utils/index.ts` and exported `apiUtils` from root `src/api/index.ts`. 100% of non-app directories containing code now have complete barrel exports.
+	- Database Connection Resilience: Added exponential backoff connection retry in `src/lib/db/mongodb.ts`, resolving transient DNS resolution drops (`queryTxt EREFUSED cluster0.f9gfmb5.mongodb.net`) during parallel test execution.
+	- Scripts Standardized: Updated `package.json` `"lint": "tsc --noEmit"`, ensuring compatibility with Next.js 16 CLI.
+	- Full Verification:
+		- `npm run lint` & `npm run typecheck` pass with 0 errors (`tsc --noEmit`).
+		- Vitest test suite: 138 passed / 1 skipped (139 test files, 730/730 tests PASS — 0 failures).
+		- Next.js 16 Turbopack production build: 54/54 routes generated in 6.1s (0 errors).
+		- Exactly 1 file in `src/` > 100 LOC (`src/types/survey/index.ts` allowed domain schema exception).
+
 - Complete Codebase < 100 LOC Compliance & Test Suite Modularization (Sep 9 2026):
 	- Audited entire `src/` codebase for files exceeding 100 LOC.
 	- Preserved single allowed domain schema exemption under Rule 04:

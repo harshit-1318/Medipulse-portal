@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { resyncOrder } from "@/api/services/orders/actions/order";
+import { resyncOrder } from "@/api/services/orders";
 import { isLocalStorageDebugFlagEnabled } from "@/utils/env";
 
 export function useResyncOrder() {

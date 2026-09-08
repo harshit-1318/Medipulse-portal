@@ -1,9 +1,7 @@
 'use client';
 
 import { use } from 'react';
-import InjectableOrdersContent from "@/components/orders-table/views/product-type/InjectableOrdersContent";
-import OralOrdersContent from "@/components/orders-table/views/product-type/OralOrdersContent";
-import { AllOrdersContent } from "@/components/orders-table/views";
+import { InjectableOrdersContent, OralOrdersContent, AllOrdersContent } from "@/components/orders-table";
 
 interface ProductOrdersPageProps {
   params: Promise<{ type: string }>;

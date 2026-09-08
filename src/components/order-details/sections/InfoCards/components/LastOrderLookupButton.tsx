@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { lookupOrderByDisplayId } from "@/api/services/orders/fetchers/core";
+import { lookupOrderByDisplayId } from "@/api/services/orders";
 
 interface LastOrderLookupButtonProps {
     orderId: string;

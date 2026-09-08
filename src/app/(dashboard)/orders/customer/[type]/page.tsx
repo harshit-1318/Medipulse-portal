@@ -1,9 +1,7 @@
 'use client';
 
 import { use } from 'react';
-import FirstOrdersContent from "@/components/orders-table/views/customer-orders/FirstOrdersContent";
-import RepeatOrdersContent from "@/components/orders-table/views/customer-orders/RepeatOrdersContent";
-import { AllOrdersContent } from "@/components/orders-table/views";
+import { FirstOrdersContent, RepeatOrdersContent, AllOrdersContent } from "@/components/orders-table";
 
 interface CustomerOrdersPageProps {
   params: Promise<{ type: string }>;

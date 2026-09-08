@@ -33,14 +33,21 @@ export async function connectToDatabase(): Promise<typeof mongoose> {
   }
 
   if (!cached?.promise) {
-    const opts = {
-      bufferCommands: false,
+    const opts = { bufferCommands: false };
+    const connectWithRetry = async (retries = 3, delay = 250): Promise<typeof mongoose> => {
+      try {
+        const m = await mongoose.connect(uri, opts);
+        console.log('✅ Connected successfully to MongoDB Atlas Cluster');
+        return m;
+      } catch (err) {
+        if (retries > 0) {
+          await new Promise((res) => setTimeout(res, delay));
+          return connectWithRetry(retries - 1, delay * 1.5);
+        }
+        throw err;
+      }
     };
-
-    cached!.promise = mongoose.connect(uri, opts).then((m) => {
-      console.log('✅ Connected successfully to MongoDB Atlas Cluster');
-      return m;
-    });
+    cached!.promise = connectWithRetry();
   }
 
   try {

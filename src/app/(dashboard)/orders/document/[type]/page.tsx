@@ -1,9 +1,7 @@
 'use client';
 
 import { use } from 'react';
-import UploadedDocsContent from "@/components/orders-table/views/document-status/UploadedDocsContent";
-import NotUploadedDocsContent from "@/components/orders-table/views/document-status/NotUploadedDocsContent";
-import { AllOrdersContent } from "@/components/orders-table/views";
+import { UploadedDocsContent, NotUploadedDocsContent, AllOrdersContent } from "@/components/orders-table";
 
 interface DocumentOrdersPageProps {
   params: Promise<{ type: string }>;

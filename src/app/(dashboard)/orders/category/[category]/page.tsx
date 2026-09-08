@@ -1,19 +1,21 @@
 'use client';
 
 import { use } from 'react';
-import AcidRefluxOrdersContent from "@/components/orders-table/views/categories/AcidRefluxOrdersContent";
-import AcneOrdersContent from "@/components/orders-table/views/categories/AcneOrdersContent";
-import AsthmaOrdersContent from "@/components/orders-table/views/categories/AsthmaOrdersContent";
-import BacterialVaginosisOrdersContent from "@/components/orders-table/views/categories/BacterialVaginosisOrdersContent";
-import EczemaDermatitisOrdersContent from "@/components/orders-table/views/categories/EczemaDermatitisOrdersContent";
-import EDOrdersContent from "@/components/orders-table/views/categories/EDOrdersContent";
-import HairLossOrdersContent from "@/components/orders-table/views/categories/HairLossOrdersContent";
-import JetLagOrdersContent from "@/components/orders-table/views/categories/JetLagOrdersContent";
-import JointPainOrdersContent from "@/components/orders-table/views/categories/JointPainOrdersContent";
-import MigraineOrdersContent from "@/components/orders-table/views/categories/MigraineOrdersContent";
-import PeriodDelayOrdersContent from "@/components/orders-table/views/categories/PeriodDelayOrdersContent";
-import WeightLossOrdersContent from "@/components/orders-table/views/categories/WeightLossOrdersContent";
-import { AllOrdersContent } from "@/components/orders-table/views";
+import {
+  AcidRefluxOrdersContent,
+  AcneOrdersContent,
+  AsthmaOrdersContent,
+  BacterialVaginosisOrdersContent,
+  EczemaDermatitisOrdersContent,
+  EDOrdersContent,
+  HairLossOrdersContent,
+  JetLagOrdersContent,
+  JointPainOrdersContent,
+  MigraineOrdersContent,
+  PeriodDelayOrdersContent,
+  WeightLossOrdersContent,
+  AllOrdersContent,
+} from "@/components/orders-table";
 
 interface CategoryOrdersPageProps {
   params: Promise<{ category: string }>;
