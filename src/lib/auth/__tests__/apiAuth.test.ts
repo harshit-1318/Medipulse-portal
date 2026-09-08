@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { verifyApiAuth } from './apiAuth';
-import { signJwt } from './jwt';
+import { verifyApiAuth } from '../apiAuth';
+import { signJwt } from '../jwt';
+
 
 const reqWith = (headers: Record<string, string> = {}) =>
   new Request('http://localhost:3000/api/orders', { headers });

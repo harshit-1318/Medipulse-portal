@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { signJwt, verifyJwt, type JwtPayload } from './jwt';
+import { signJwt, verifyJwt, type JwtPayload } from '../jwt';
+
 
 describe('Cryptographic JWT utility (src/lib/auth/jwt.ts)', () => {
   const mockPayload: JwtPayload = {
