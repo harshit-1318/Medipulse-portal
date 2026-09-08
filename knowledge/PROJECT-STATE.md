@@ -1,5 +1,22 @@
 # Frontend Project State
 
+- Comprehensive `src/components` Final Audit & Standardization (Sep 9 2026):
+	- Conducted full-spectrum inspection of all 18 component directories in `src/components/` to achieve 100% Gold Standard symmetry and complete barrel coverage.
+	- Dashboard Standardization: Co-located `StatCards.tsx` and `RecentOrdersPreview.tsx` into `dashboard/components/`, leaving clean `DashboardContent.tsx` at the root and updating all barrels.
+	- Orders-Table Barrels: Added missing symmetrical barrels across all subfolders:
+		- `actions/components/export/index.ts`, `actions/components/index.ts`
+		- `cells/components/index.ts`
+		- `filters/components/index.ts`, `filters/hooks/index.ts`, `filters/utils/index.ts`
+		- `modals/components/index.ts`
+		- `table/components/index.ts`
+		- `table-header/components/index.ts`
+		- `ui/components/index.ts`
+		- `utils/index.ts`
+		- `views/components/index.ts`
+	- Layout Barrels: Standardized `layout/search/components/index.ts`, `layout/search/hooks/index.ts`, `layout/sidebar/components/index.ts`, `layout/sidebar/hooks/index.ts`, `layout/sidebar/menus/index.ts`, and updated `layout/index.ts` to export cleanly from sub-barrels.
+	- Prescriptions & Site-Settings: Added `prescriptions/table/components/index.ts` and `site-settings/form/StatusSettings/components/index.ts`, `StatusSettings/hooks/index.ts`, `StatusSettings/index.ts`, cleanly isolating subcomponents and resolving TS2308 collisions.
+	- Verified: 100% Vitest pass rate across components (67/67 test files, 384/384 tests PASS); `npm run typecheck` clean (0 errors); all changes committed and pushed to `origin/main`.
+
 - Surveys Module Full Barrel Standardization (Sep 8 2026):
 	- Added symmetrical subfolder barrels across all 8 subdomains in `src/components/surveys/`: `builder/`, `components/`, `hooks/`, `modal/`, `public/`, `responses/`, `table/`, `view/`.
 	- Updated root `surveys/index.ts` to cleanly re-export all domain modules with 100% backward compatibility.
