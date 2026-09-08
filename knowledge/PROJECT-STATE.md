@@ -1,14 +1,13 @@
 # Frontend Project State
 
-- Comprehensive `src/styles` Audit & Modularization (Sep 9 2026):
+- Comprehensive `src/styles` Audit & Flat Standardization (Sep 9 2026):
 	- Audited all CSS stylesheets in `src/styles/` (`order-details.css`, `theme.css`, `base.css`, `components.css`, `nprogress-custom.css`, `global.css`).
-	- Modularized large monolithic stylesheets into clean domain modules:
-		- Extracted `src/styles/order-details/`: `cards.css` (33 LOC), `badges.css` (50 LOC), `consultation.css` (55 LOC), `index.css` (3 LOC).
-		- Streamlined `src/styles/order-details.css` to 1 LOC re-exporting `./order-details/index.css`.
-		- Extracted animation keyframes into `src/styles/animations.css` (31 LOC).
-		- Streamlined `src/styles/theme.css` to 29 LOC importing `./animations.css`.
-		- Removed duplicate `.custom-scrollbar` selector in `components.css` (18 LOC) resolving conflict with `base.css`.
-	- Verified LOC Compliance: 100% of all 11 CSS files across `src/styles/` are strictly `< 55 LOC` (maximum file is 55 LOC).
+	- Standardized into a clean, flat 6-file structure (0 nested directories):
+		- Preserved unified, compact `order-details.css` (95 LOC).
+		- Integrated all animation keyframes directly into `theme.css` (59 LOC).
+		- Cleaned duplicate `.custom-scrollbar` selector in `components.css` (18 LOC) resolving conflict with `base.css`.
+		- Eliminated fragmented subdirectories (`order-details/`) and auxiliary files (`animations.css`).
+	- Verified LOC Compliance: 100% of all 6 CSS files are strictly `< 100 LOC` (maximum file is 95 LOC).
 	- Verified: Next.js Turbopack production build compiles with 0 errors (54/54 static & dynamic pages generated); Vitest order-details component test suite 100% PASS (25/25 test files, 232/232 tests); `npm run typecheck` clean (0 errors); all changes committed and pushed to `origin/main`.
 
 - Comprehensive `src/store` Audit & Full Test Suite Completion (Sep 9 2026):
