@@ -26,7 +26,7 @@
 
   /* Status Badges */
   .status-badge {
-    @apply px-3 py-1.5 rounded-lg text-[10.5px] font-bold uppercase tracking-wider shadow-sm flex items-start gap-2 transition-all duration-200 min-h-[30px] whitespace-normal w-fit;
+    @apply px-3 py-1.5 rounded-lg text-[10.5px] font-bold uppercase tracking-wider shadow-sm flex items-start gap-2 transition-all duration-200 min-h-7.5 whitespace-normal w-fit;
   }
   .status-badge-dot { @apply h-2 w-2 rounded-full shrink-0; }
 
@@ -54,7 +54,7 @@
     @apply grid grid-cols-1 md:grid-cols-[1fr_auto] items-start py-3.5 px-4 border-b border-slate-100/60 hover:bg-slate-50/30 transition-all duration-200 last:border-0 rounded-xl gap-3 md:gap-12 w-full;
   }
   .consultation-label { @apply text-[13.5px] font-bold text-slate-700 leading-snug pr-4 min-w-0 wrap-break-word; }
-  .consultation-answer-wrapper { @apply flex flex-col items-end pt-0.5 min-w-0 max-w-full md:max-w-[480px] ml-auto; }
+  .consultation-answer-wrapper { @apply flex flex-col items-end pt-0.5 min-w-0 max-w-full md:max-w-120 ml-auto; }
 
   .consultation-group-header { @apply flex items-center gap-3 pt-6 pb-2 px-1 first:pt-2; }
   .consultation-group-title { @apply text-[12px] font-extrabold text-slate-400 uppercase tracking-widest; }
@@ -62,7 +62,7 @@
 
   /* Activity Timeline */
   .timeline-container {
-    @apply relative pl-8 space-y-8 before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-[2px] before:bg-slate-100;
+    @apply relative pl-8 space-y-8 before:absolute before:left-2.75 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-100;
   }
   .timeline-item { @apply relative; }
   .timeline-dot {
