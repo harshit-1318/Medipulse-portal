@@ -1,5 +1,20 @@
 # Frontend Project State
 
+- Comprehensive `src/lib` Audit & Architecture Standardization (Sep 9 2026):
+	- Audited all 4 subdomains and subdirectories in `src/lib/`: `api/`, `auth/`, `db/` (with `models/`), `stores/`.
+	- Added symmetrical `index.ts` barrel files across all subdirectories and models:
+		- `src/lib/api/index.ts` (re-exports `client` and `interceptors`)
+		- `src/lib/auth/index.ts` (re-exports `apiAuth` and `jwt`)
+		- `src/lib/db/models/index.ts` (re-exports `Customer`, `DocmanJob`, `Lead`, `Order`, `Prescription`, `Survey`, `User`)
+		- `src/lib/db/index.ts` (re-exports `mongodb` and `models`)
+		- `src/lib/stores/index.ts` (re-exports `inMemoryOrderNotes`)
+		- `src/lib/index.ts` (root barrel re-exporting `./api`, `./auth`, `./db`, `./stores`)
+	- Isolated test suites into dedicated `src/lib/auth/__tests__/`:
+		- `apiAuth.test.ts` (7 tests PASS)
+		- `jwt.test.ts` (4 tests PASS)
+	- Verified LOC Compliance: 100% of all 21 source and test files across `src/lib/` are strictly `< 100 LOC` (maximum file is 84 LOC).
+	- Verified: 100% Vitest pass rate for `src/lib` tests (2/2 test files, 11/11 tests PASS); `npm run typecheck` clean (0 errors); all changes committed and pushed to `origin/main`.
+
 - Comprehensive `src/hooks` Audit & Full Test Suite Completion (Sep 9 2026):
 	- Audited all 4 subdomains in `src/hooks/`: `navigation/`, `search/`, `timing/`, `url/`.
 	- Verified that all 5 hook source files are strictly `< 100 LOC` (max 78 LOC) and subfolder barrels are fully symmetrical.
