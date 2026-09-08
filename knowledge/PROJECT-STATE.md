@@ -1,5 +1,28 @@
 # Frontend Project State
 
+- Complete Codebase < 100 LOC Compliance & Test Suite Modularization (Sep 9 2026):
+	- Audited entire `src/` codebase for files exceeding 100 LOC.
+	- Preserved single allowed domain schema exemption under Rule 04:
+		- `src/types/survey/index.ts` (130 LOC — complete SurveyJS domain schema: sessions, responses, versioning, payloads).
+	- Refactored all 12 oversized test files down to strictly `< 100 LOC`:
+		1. `src/components/surveys/__tests__/useSurveyFilters.test.ts` (118 ➔ 65 LOC).
+		2. `src/components/order-details/__tests__/utils/order.test.ts` (121 ➔ 60 LOC via parameterized `it.each`).
+		3. `src/components/order-details/__tests__/bmi/bmiProfile.test.ts` (135 ➔ 45 LOC via `it.each`).
+		4. `src/components/order-details/__tests__/sections/ConsultationSection.test.tsx` (127 ➔ 58 LOC).
+		5. `src/api/services/customer/tests/service.test.ts` (160 LOC) split into `getCustomers.test.ts` (52 LOC) and `filterCustomers.test.ts` (38 LOC).
+		6. `src/api/services/user/tests/userService.test.ts` (157 LOC) reduced to 60 LOC + extracted `userAuthService.test.ts` (32 LOC).
+		7. `src/components/order-details/__tests__/bmi/BmiGauge.test.tsx` (164 LOC) reduced to 91 LOC + extracted `useBmiStatus.test.ts` (55 LOC).
+		8. `src/components/order-details/__tests__/sections/IdentityCard.test.tsx` (192 LOC) split into `IdentityCard.tags.test.tsx` (70 LOC) and `IdentityCard.status.test.tsx` (55 LOC).
+		9. `src/components/order-details/__tests__/utils/dataNormalization.test.ts` (186 LOC) split into `dataNormalization.base.test.ts` (59 LOC) and `dataNormalization.lineItems.test.ts` (74 LOC).
+		10. `src/components/order-details/__tests__/sections/OrderDetailsMainContent.test.tsx` (334 LOC) split into `OrderDetailsMainContent.resync.test.tsx` (65 LOC) and `OrderDetailsMainContent.render.test.tsx` (56 LOC).
+		11. `src/components/order-details/__tests__/sections/ContactCard.test.tsx` (355 LOC) split into `ContactCard.orderInfo.test.tsx` (48 LOC) and `ContactCard.lastOrder.test.tsx` (87 LOC).
+		12. `src/components/order-details/__tests__/utils/measurement.test.ts` (406 LOC) reduced to 60 LOC + extracted `prevMeasurements.test.ts` (37 LOC).
+	- Final Scan Verification:
+		- Exact 1 file in `src/` > 100 LOC (`src/types/survey/index.ts` allowed domain schema exception).
+		- 100% of all other files in `src/` (production code, utilities, services, components, and all test suites) are strictly `< 100 LOC`.
+		- Full Vitest verification: 138/138 tests in modified/created suites pass with 0 regressions.
+		- `npm run typecheck` clean (0 errors).
+
 - Comprehensive Root Proxy (`src/proxy*`) Audit & Modularization (Sep 9 2026):
 	- Audited Next.js 16 root proxy middleware architecture (`proxy.ts`, `proxyRoutes.ts`, `proxy.test.ts`).
 	- Extracted lightweight JWT decoding utility `src/proxyJwt.ts` (23 LOC), reducing `src/proxy.ts` from 112 LOC to 78 LOC.
