@@ -8,3 +8,5 @@ export * from './OrdersFilterBar';
 export * from './PreviewStatusBadge';
 export * from './StatCard';
 export * from './StatCardsSection';
+export { default as StatCards } from './StatCards';
+export { default as RecentOrdersPreview } from './RecentOrdersPreview';

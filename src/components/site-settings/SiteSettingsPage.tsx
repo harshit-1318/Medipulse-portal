@@ -1,10 +1,13 @@
 import { useSiteSettings } from "./hooks/useSiteSettings";
 import { QueryProvider } from "@/components/common/QueryProvider";
-import { SiteSettingsHeader } from "./form/SiteSettingsHeader";
-import { GeneralSettingsSection } from "./form/GeneralSettingsSection";
-import { StoreSettingsSection } from "./form/StoreSettingsSection";
-import { StatusSettingsSection } from "./form/StatusSettings/StatusSettingsSection";
-import { SiteSettingsFooter } from "./form/SiteSettingsFooter";
+import {
+    SiteSettingsHeader,
+    GeneralSettingsSection,
+    StoreSettingsSection,
+    StatusSettingsSection,
+    SiteSettingsFooter
+} from "./form";
+
 
 interface Props {
     siteId?: string;

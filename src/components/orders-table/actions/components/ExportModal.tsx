@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import { ExportHeader } from "./export/ExportHeader";
-import { ExportOption } from "./export/ExportOption";
+import { ExportHeader, ExportOption } from "./export";
+
 
 interface Props {
     isOpen: boolean;

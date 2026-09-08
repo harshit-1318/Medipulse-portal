@@ -1,7 +1,7 @@
-import { useRecentOrders } from './hooks/useRecentOrders';
-import { OrdersFilterBar } from './components/OrdersFilterBar';
-import { OrderPreviewTableBody } from './components/OrderPreviewTableBody';
-import { QueryProvider } from '../common/QueryProvider';
+import { useRecentOrders } from '../hooks/useRecentOrders';
+import { OrdersFilterBar } from './OrdersFilterBar';
+import { OrderPreviewTableBody } from './OrderPreviewTableBody';
+import { QueryProvider } from '@/components/common/QueryProvider';
 
 /**
  * OrdersListPreview Component

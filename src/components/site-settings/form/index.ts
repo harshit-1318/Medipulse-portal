@@ -4,4 +4,6 @@ export * from './StoreSettingsSection';
 export * from './StoreCredentialsFields';
 export * from './SiteSettingsHeader';
 export * from './SiteSettingsFooter';
-export { StatusSettingsSection } from './StatusSettings/StatusSettingsSection';
+export { StatusSettingsSection } from './StatusSettings';
+
+

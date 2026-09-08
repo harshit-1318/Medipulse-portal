@@ -1,1 +1,2 @@
-export { FilterBadgesGroup } from "./components/FilterBadgesGroup";
+export * from './components';
+
