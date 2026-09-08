@@ -7,6 +7,7 @@
 		- `src/test/helpers/index.ts` (re-exports `auditStepVerifiers`, `authFlowHelpers`, `roleTestHelpers`)
 		- `src/test/runners/index.ts` (re-exports `comprehensiveRoleAudit`)
 		- `src/test/index.ts` (root barrel re-exporting `./fixtures`, `./helpers`, `./runners`)
+	- Eliminated all 7 deep path imports across `src/test/` to cleanly import from `../fixtures`, `../helpers`, and `@/lib/auth` barrels.
 	- Verified LOC Compliance: 100% of all 16 source, helper, fixture, and test files across `src/test/` are strictly `< 90 LOC` (maximum file is 89 LOC).
 	- Verified: Unit tests in `src/test/security/privilegeEscalation.test.ts` 100% PASS (2/2 tests); `npm run typecheck` clean (0 errors); all changes committed and pushed to `origin/main`.
 
