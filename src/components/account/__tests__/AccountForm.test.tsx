@@ -2,12 +2,14 @@ import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import AccountForm from '../components/AccountForm';
 
+const mockUser = {
+    username: 'Dr. Jane Smith',
+    email: 'jane@medipulse.co.uk',
+};
+
 vi.mock('@/store', () => ({
     useUserStore: () => ({
-        user: {
-            username: 'Dr. Jane Smith',
-            email: 'jane@medipulse.co.uk',
-        },
+        user: mockUser,
     }),
 }));
 
@@ -20,6 +22,7 @@ describe('AccountForm', () => {
 
     it('renders password input fields', () => {
         render(<AccountForm />);
-        expect(screen.getByPlaceholderText('••••••••')).toBeInTheDocument();
+        expect(screen.getByPlaceholderText('Enter current password')).toBeInTheDocument();
+        expect(screen.getByPlaceholderText('Create new password')).toBeInTheDocument();
     });
 });
