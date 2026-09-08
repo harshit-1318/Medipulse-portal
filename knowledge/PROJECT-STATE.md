@@ -1,5 +1,23 @@
 # Frontend Project State
 
+- Comprehensive `src/utils` Audit & Full Test Suite Completion (Sep 9 2026):
+	- Audited all 6 subdomains in `src/utils/`: `auth/`, `branding/`, `env/`, `helpers/`, `http/`, `url/`.
+	- Eliminated all 5 deep sub-path imports across the application:
+		- Replaced `@/utils/url/urlBase` and `@/utils/url/orderFilterUtils` with unified `@/utils/url` barrel imports in `useUrlSync.ts`, `useOrderTableEffects.ts`, `buildParams.ts`, and `customer/params.ts`.
+		- Standardized relative path import in `orderFilterUtils.ts` to canonical `@/components/orders-table/types`.
+	- Removed dead code: Cleaned unused private function `simpleMd5` in `src/utils/helpers/md5.ts`.
+	- Added comprehensive unit test suites:
+		- `src/utils/helpers/string.test.ts` (8 tests PASS: `slugify`, `cn`, `capitalize`)
+		- `src/utils/helpers/md5.test.ts` (5 tests PASS: `md5`, `getGravatarUrl`)
+		- `src/utils/url/urlBase.test.ts` (9 tests PASS: `normalizeSortOrder`, `normalizeSortBy`, `getUrlParam`, `getUrlParamBool`, `getUrlParamInt`)
+		- `src/utils/url/orderFilterUtils.test.ts` (6 tests PASS: `parseFiltersFromParams`, `getInitialOrderFilters`, `STORAGE_VERSION`)
+		- `src/utils/url/urlIndex.test.ts` (3 tests PASS: `getDashboardStorageKey`, `clearDashboardState`, `getInitialStateFromUrl`)
+	- Verified LOC Compliance: 100% of all 21 source and test files across `src/utils/` are strictly `< 75 LOC` (maximum file is 73 LOC).
+	- Full Verification:
+		- 100% Vitest pass rate for `src/utils/` (9/9 test files, 49/49 tests PASS).
+		- `npm run typecheck` clean (0 errors).
+		- Next.js Turbopack production build compiles with 0 errors (54/54 routes generated in 6.5s).
+
 - Comprehensive `src/types` Audit & Type Safety Standardization (Sep 9 2026):
 	- Audited all 7 domain subdirectories and root barrel in `src/types/`: `api/`, `customer/`, `globalSearch/`, `lead/`, `prescription/`, `site/`, `survey/`.
 	- Verified Barrel Architecture & Zero Deep Imports:

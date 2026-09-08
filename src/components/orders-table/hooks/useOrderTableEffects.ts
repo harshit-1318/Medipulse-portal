@@ -1,6 +1,6 @@
 import type { SortingState } from "@tanstack/react-table";
 import { useEffect } from "react";
-import { normalizeSortBy } from "@/utils/url/urlBase";
+import { normalizeSortBy } from "@/utils/url";
 
 export function useOrderTableEffects({
     loading,

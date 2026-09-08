@@ -1,5 +1,5 @@
 import type { CustomerFilters } from "./types";
-import { normalizeSortOrder } from "@/utils/url/urlBase";
+import { normalizeSortOrder } from "@/utils/url";
 
 /**
  * 🔹 Build query parameters for customer API consistent with backend expectations

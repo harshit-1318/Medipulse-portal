@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
 import { getMappedValue, parseParamValue } from "./urlSyncUtils";
-import { normalizeSortBy } from "@/utils/url/urlBase";
-import { STORAGE_VERSION } from "@/utils/url/orderFilterUtils";
+import { normalizeSortBy, STORAGE_VERSION } from "@/utils/url";
 
 export function useUrlSync<T extends Record<string, any>>(
     state: T,

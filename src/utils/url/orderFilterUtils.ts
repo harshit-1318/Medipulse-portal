@@ -1,5 +1,5 @@
 import { normalizeSortOrder } from "./urlBase";
-import type { OrderFilters } from "../../components/orders-table/types";
+import type { OrderFilters } from "@/components/orders-table/types";
 
 export function parseFiltersFromParams<T extends Record<string, any>>(params: URLSearchParams, defaults: T): T {
     const filters: any = { ...defaults };

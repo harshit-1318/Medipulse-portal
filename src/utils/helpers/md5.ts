@@ -63,14 +63,3 @@ export function getGravatarUrl(email: string, size = 200) {
 
     return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
 }
-
-function simpleMd5(s: string) {
-    let hash = 0;
-    if (s.length === 0) return '00000000000000000000000000000000';
-    for (let i = 0; i < s.length; i++) {
-        const char = s.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
-        hash = hash & hash;
-    }
-    return Math.abs(hash).toString(16).padStart(32, '0');
-}

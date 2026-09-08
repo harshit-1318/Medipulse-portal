@@ -1,4 +1,4 @@
-import { normalizeSortOrder, normalizeSortBy } from "@/utils/url/urlBase";
+import { normalizeSortOrder, normalizeSortBy } from "@/utils/url";
 import { applyDateAndCategoryFilters } from "./orderParamsNormalizer";
 
 export const buildOrderParams = (page: number, filters: any = {}): any => {
