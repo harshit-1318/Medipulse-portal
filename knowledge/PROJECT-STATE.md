@@ -1,5 +1,10 @@
 # Frontend Project State
 
+- Surveys Module Full Barrel Standardization (Sep 8 2026):
+	- Added symmetrical subfolder barrels across all 8 subdomains in `src/components/surveys/`: `builder/`, `components/`, `hooks/`, `modal/`, `public/`, `responses/`, `table/`, `view/`.
+	- Updated root `surveys/index.ts` to cleanly re-export all domain modules with 100% backward compatibility.
+	- Verified: 100% Vitest pass rate (19/19 tests PASS); `npm run typecheck` clean (0 errors); all commits pushed to `origin/main`.
+
 - Complete API Layer Standardization & Test Suite Isolation (Sep 8 2026):
 	- Fully standardized `src/api/services/`: Created symmetrical `index.ts` barrel files across all 11 services (`dashboard`, `email-queue`, `globalSearch`, `lead`, `log`, `prescription`, `publicSurvey`, `site`, `super-admin`, `survey`, `user`).
 	- Isolated all unit test suites into dedicated `tests/` directories across `src/api/services/` and `src/api/utils/` (31 test files / 165 tests).
