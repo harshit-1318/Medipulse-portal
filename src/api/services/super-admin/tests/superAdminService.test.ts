@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { getActivityDashboard, type ActivityDashboard } from "./superAdminService";
+import { getActivityDashboard, type ActivityDashboard } from "../superAdminService";
 
 vi.mock("@/api/apiClient", () => ({
     default: { get: vi.fn() },

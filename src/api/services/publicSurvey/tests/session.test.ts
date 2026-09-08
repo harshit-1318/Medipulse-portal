@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { getSurveySession, saveProgress } from './publicSurveyService';
+import { getSurveySession, saveProgress } from '../publicSurveyService';
 
 const { mockGet, mockPatch } = vi.hoisted(() => ({
     mockGet: vi.fn(),

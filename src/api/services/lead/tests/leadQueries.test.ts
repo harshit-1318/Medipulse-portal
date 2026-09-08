@@ -5,7 +5,7 @@ import {
     getLead,
     getLeadNotes,
     getLeadActivity,
-} from './leadService';
+} from '../leadService';
 
 const { mockGet } = vi.hoisted(() => ({
     mockGet: vi.fn(),

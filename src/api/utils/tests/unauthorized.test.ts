@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { shouldHandleUnauthorizedRedirect } from './unauthorized';
+import { shouldHandleUnauthorizedRedirect } from '../unauthorized';
 
 describe('shouldHandleUnauthorizedRedirect', () => {
     it('returns true for protected routes and non-auth API endpoints', () => {

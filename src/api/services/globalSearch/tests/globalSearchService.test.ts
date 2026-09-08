@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { globalSearch } from './globalSearchService';
+import { globalSearch } from '../globalSearchService';
 
 vi.mock('@/api/apiClient', () => ({
     apiClient: { get: vi.fn() },

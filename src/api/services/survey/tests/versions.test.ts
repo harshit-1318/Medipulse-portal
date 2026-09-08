@@ -4,7 +4,7 @@ import {
     getSurveyVersion,
     rollbackSurvey,
     updateSurveySettings,
-} from './surveyVersionService';
+} from '../surveyVersionService';
 
 vi.mock('@/api/apiClient', () => ({
     apiClient: {

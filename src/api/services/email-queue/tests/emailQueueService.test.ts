@@ -7,7 +7,7 @@ vi.mock('@/api/apiClient', () => ({
 }));
 
 import apiClient from '@/api/apiClient';
-import { getEmailQueueOverview } from './emailQueueService';
+import { getEmailQueueOverview } from '../emailQueueService';
 
 describe('emailQueueService', () => {
     beforeEach(() => {

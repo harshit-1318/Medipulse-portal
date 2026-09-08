@@ -9,7 +9,7 @@ import {
     publishSurvey,
     unpublishSurvey,
     duplicateSurvey,
-} from './surveyService';
+} from '../surveyService';
 
 vi.mock('@/api/apiClient', () => ({
     apiClient: { get: vi.fn(), post: vi.fn(), put: vi.fn(), patch: vi.fn(), delete: vi.fn() },

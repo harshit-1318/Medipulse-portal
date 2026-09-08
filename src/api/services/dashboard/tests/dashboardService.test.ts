@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { getDashboardStats } from './dashboardService';
+import { getDashboardStats } from '../dashboardService';
 
 const { mockApiClient } = vi.hoisted(() => {
     return {

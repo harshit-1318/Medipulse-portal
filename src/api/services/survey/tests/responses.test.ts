@@ -5,7 +5,7 @@ import {
     getSurveyResponse,
     deleteSurveyResponse,
     getAllSurveyResponses,
-} from './surveyResponsesService';
+} from '../surveyResponsesService';
 
 vi.mock('@/api/apiClient', () => ({
     apiClient: {

@@ -4,7 +4,7 @@ import {
     updateLeadStatus,
     assignLead,
     addLeadNote,
-} from './leadService';
+} from '../leadService';
 
 const { mockPost, mockPut, mockPatch } = vi.hoisted(() => ({
     mockPost: vi.fn(),

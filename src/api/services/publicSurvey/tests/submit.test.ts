@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { submitSurvey } from './publicSurveyService';
+import { submitSurvey } from '../publicSurveyService';
 
 const { mockPost } = vi.hoisted(() => ({
     mockPost: vi.fn(),

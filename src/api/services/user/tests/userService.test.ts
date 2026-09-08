@@ -9,8 +9,8 @@ import {
   login,
   signup,
   logout,
-} from './userService';
-import { UserApi } from './userTypes';
+} from '../userService';
+import { UserApi } from '../userTypes';
 
 vi.mock('@/api/apiClient', () => ({
   default: {
