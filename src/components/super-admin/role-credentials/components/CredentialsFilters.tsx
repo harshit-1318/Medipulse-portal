@@ -25,7 +25,7 @@ export const CredentialsFilters: React.FC<CredentialsFiltersProps> = ({
 }) => {
   return (
     <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs">
-      <div className="relative flex-1 min-w-[240px]">
+      <div className="relative flex-1 min-w-60">
         <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
         <input
           type="text"
@@ -45,7 +45,7 @@ export const CredentialsFilters: React.FC<CredentialsFiltersProps> = ({
       </div>
 
       <div className="flex flex-wrap items-center gap-2.5">
-        <div className="relative min-w-[150px]">
+        <div className="relative min-w-37.5">
           <select
             value={role}
             onChange={(e) => onRoleChange(e.target.value)}
@@ -63,7 +63,7 @@ export const CredentialsFilters: React.FC<CredentialsFiltersProps> = ({
         <select
           value={status}
           onChange={(e) => onStatusChange(e.target.value)}
-          className="min-w-[120px] px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 cursor-pointer"
+          className="min-w-30 px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 cursor-pointer"
         >
           {STATUS_FILTER_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>
