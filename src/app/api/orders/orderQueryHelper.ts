@@ -48,5 +48,19 @@ export function buildOrderQuery(searchParams: URLSearchParams): OrderQueryParams
     if (endDate) query.createdAt.$lte = parseDateBoundary(endDate, true);
   }
 
+  const orderType = searchParams.get('order_type') || searchParams.get('repeatedOrders');
+  if (orderType === 'first') {
+    query.$or = [
+      { order_type: 'first' },
+      { repeatedOrders: 0 },
+      { repeatedOrders: { $exists: false } },
+    ];
+  } else if (orderType === 'repeat') {
+    query.$or = [
+      { order_type: 'repeat' },
+      { repeatedOrders: { $gt: 0 } },
+    ];
+  }
+
   return { query, sortOptions: { [sortBy]: sortDir }, page, limit };
 }

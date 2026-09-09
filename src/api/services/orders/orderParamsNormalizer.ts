@@ -24,9 +24,14 @@ export function applyDateAndCategoryFilters(params: any, filters: any) {
 
     if (filters.products) params.product_type = String(filters.products).toLowerCase();
 
-    if (filters.repeatedOrders === "repeat") params.order_type = "repeat";
-    else if (filters.repeatedOrders === "first") params.order_type = "first";
-    else if (filters.repeatedOrders && filters.repeatedOrders !== "all" && filters.repeatedOrders !== "") {
+    if (filters.repeatedOrders === "repeat") {
+        params.order_type = "repeat";
+        params.repeatedOrders = "repeat";
+    } else if (filters.repeatedOrders === "first") {
+        params.order_type = "first";
+        params.repeatedOrders = "first";
+    } else if (filters.repeatedOrders && filters.repeatedOrders !== "all" && filters.repeatedOrders !== "") {
         params.order_type = filters.repeatedOrders;
+        params.repeatedOrders = filters.repeatedOrders;
     }
 }

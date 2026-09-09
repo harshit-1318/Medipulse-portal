@@ -65,4 +65,14 @@ describe('buildOrderQuery', () => {
     expect(result.limit).toBe(50);
     expect(result.sortOptions).toEqual({ total: 1 });
   });
+
+  it('handles first and repeat order_type filtering', () => {
+    const firstRes = buildOrderQuery(new URLSearchParams({ order_type: 'first' }));
+    expect(firstRes.query.$or).toBeDefined();
+    expect(firstRes.query.$or).toContainEqual({ order_type: 'first' });
+
+    const repeatRes = buildOrderQuery(new URLSearchParams({ repeatedOrders: 'repeat' }));
+    expect(repeatRes.query.$or).toBeDefined();
+    expect(repeatRes.query.$or).toContainEqual({ order_type: 'repeat' });
+  });
 });

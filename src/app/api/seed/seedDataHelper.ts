@@ -25,6 +25,8 @@ export function generateSeedBatch(dateStr: string, count: number) {
   for (let i = 0; i < count; i++) {
     const fn = FIRST_NAMES[Math.floor(Math.random() * FIRST_NAMES.length)];
     const ln = LAST_NAMES[Math.floor(Math.random() * LAST_NAMES.length)];
+    const isRepeat = i > 0 && Math.random() < 0.35;
+    const repeatCount = isRepeat ? Math.floor(Math.random() * 3) + 1 : 0;
     const name = `${fn} ${ln}`;
     const email = `${fn.toLowerCase()}.${ln.toLowerCase()}${Math.floor(Math.random() * 900 + 100)}@example.com`;
     const phone = `+44 7${Math.floor(100000000 + Math.random() * 900000000)}`;
@@ -47,6 +49,9 @@ export function generateSeedBatch(dateStr: string, count: number) {
       tags: ['mock_seed', med.tag],
       shopify_order_id: String(Math.floor(5000000000 + Math.random() * 4000000000)),
       store_order_id: String(Math.floor(100000 + Math.random() * 900000)),
+      order_type: isRepeat ? 'repeat' : 'first',
+      repeatedOrders: repeatCount,
+      repeatCount,
       createdAt: orderDate,
       updatedAt: orderDate,
     });
@@ -64,7 +69,7 @@ export function generateSeedBatch(dateStr: string, count: number) {
       updatedAt: orderDate,
     });
 
-    customers.push({ name, email, phone, status: 'active', orderDate });
+    customers.push({ name, email, phone, status: 'active', totalOrders: repeatCount + 1, orderDate });
   }
 
   return { orders, rxList, customers };

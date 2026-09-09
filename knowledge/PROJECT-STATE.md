@@ -1,5 +1,17 @@
 # Frontend Project State
 
+- Customer Orders First vs Repeat Filtering & Dynamic Repeat Count Display (Sep 10 2026):
+	- Accurate First vs Repeat Order Segregation: Fixed `/orders/customer/first` and `/orders/customer/repeat` showing identical order sets by extending `buildOrderQuery` in `src/app/api/orders/orderQueryHelper.ts` to filter MongoDB queries with `$or` on `order_type` and `repeatedOrders`.
+	- Dynamic Repeat Count Badges: Supported dynamic repeat counts (`Repeat (2)`, `Repeat (3)`, `Repeat (4)`) for recurring customers, while single/initial orders strictly display `First Order` in blue pill.
+	- Schema & Seeding Parity: Updated `Order.ts` schema with `order_type`, `repeatedOrders`, and `repeatCount`, and enhanced `seedDataHelper.ts` and `scripts/seed.mjs` to generate realistic returning customers with multiple orders.
+	- Scripts Modularization < 100 LOC: Modularized `scripts/seed.mjs` (previously 220 LOC) into clean single-responsibility files: `scripts/seedConstants.mjs` (39 LOC), `scripts/seedGenerator.mjs` (73 LOC), and `scripts/seed.mjs` (88 LOC), achieving 100% LOC compliance (< 100 LOC) across `scripts/`.
+	- 100% LOC Compliance: All modified files (`Order.ts` 52 LOC, `orderQueryHelper.ts` 66 LOC, `orderParamsNormalizer.ts` 37 LOC, `seedDataHelper.ts` 76 LOC, `orderQueryHelper.test.ts` 78 LOC, `seed.mjs` 88 LOC, `seedGenerator.mjs` 73 LOC, `seedConstants.mjs` 39 LOC) remain strictly < 90 LOC.
+	- Full Verification:
+		- Unit test suite `orderQueryHelper.test.ts` (6 tests) passed.
+		- 100% Vitest test suite (148 test files, 776/776 tests PASS — 0 failures).
+		- TypeScript typecheck clean (`npm run lint` / `tsc --noEmit` with 0 errors).
+		- Live browser automation confirmed First Orders view (14 orders, 100% `First Order`), Repeat Orders view (11 orders, dynamic `Repeat (2)`, `Repeat (3)`, `Repeat (4)` badges), and All Orders view (25 orders, correctly mixed).
+
 - All Orders Database Population & Customer/Status Normalization (Sep 10 2026):
 	- Endpoint Fix in `useAllOrdersData`: Removed invalid `customEndpoint: "/orders/all-order-list"` which collided with Next.js dynamic route `/api/orders/[id]` and returned a single order object instead of the order array. Standardized to canonical `getOrders(page, filters)`.
 	- Customer Normalization & Fallbacks: Enhanced `normalizeCustomer.ts` and `mapper.ts` to seamlessly map MongoDB order fields (`customerName`, `customerEmail`, `customerId`, `store_order_id`, `shopify_order_id`) when nested `customer` object is absent, eliminating `--` values in the table.

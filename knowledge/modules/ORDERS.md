@@ -29,6 +29,12 @@
 	- `useOrderTableEffects` fallback sorting fixed to `"date"` instead of `"createdAt"` to match the column ID in `OrderColumns`.
 	- `normalizeSortBy` in `urlBase.ts` normalizes `"createdAt"` to `"date"`.
 	- `STORAGE_VERSION` bumped to `5` in `orderFilterUtils.ts` with automatic cleanup of legacy `createdAt` and `id` keys.
+- Customer Orders First vs Repeat Contract (Sep 10 2026):
+	- `/orders/customer/first` strictly filters for `order_type: 'first'` / `repeatedOrders: 0`, displaying blue `First Order` badges.
+	- `/orders/customer/repeat` strictly filters for `order_type: 'repeat'` / `repeatedOrders > 0`, displaying green `Repeat (2)`, `Repeat (3)`, `Repeat (4)` badges matching the customer's order history.
+	- `orderQueryHelper.ts` filters MongoDB queries with `$or` for `order_type` and `repeatedOrders` count.
+	- `Order.ts` schema explicitly defines `order_type: string`, `repeatedOrders: number`, and `repeatCount: number`.
+	- Seed engine (`seedDataHelper.ts` and `scripts/seed.mjs`) generates realistic recurring customers with ~35% repeat orders.
 - Test Organization:
 	- Subdirectories each contain their own dedicated `tests/` directory:
 		- `actions/tests/`: `order.test.ts`, `consultationActions.test.ts`

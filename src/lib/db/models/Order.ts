@@ -14,6 +14,9 @@ export interface IOrder {
   tags?: string[];
   shopify_order_id?: string;
   store_order_id?: string;
+  order_type?: string;
+  repeatedOrders?: number;
+  repeatCount?: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -31,6 +34,9 @@ const OrderSchema = new Schema<IOrder>(
     tags: { type: [String], default: [] },
     shopify_order_id: { type: String },
     store_order_id: { type: String },
+    order_type: { type: String, default: 'first' },
+    repeatedOrders: { type: Number, default: 0 },
+    repeatCount: { type: Number, default: 0 },
     items: [
       {
         name: { type: String },
