@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { createPortal } from "react-dom";
+import { useEffect } from "react";
 import type { PageType } from "../../types";
 import { OrderFiltersHeader } from "./OrderFiltersHeader";
 import { OrderFiltersForm } from "./OrderFiltersForm";
@@ -34,12 +33,6 @@ export function OrderFiltersModal({
     setLocalProductName,
     pageType,
 }: Props) {
-    const [mounted, setMounted] = useState(false);
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
-
     useEffect(() => {
         const handleEsc = (e: KeyboardEvent) => {
             if (e.key === "Escape") setFiltersEnabled(false);
@@ -48,11 +41,12 @@ export function OrderFiltersModal({
         return () => window.removeEventListener("keydown", handleEsc);
     }, [setFiltersEnabled]);
 
-    if (!filtersEnabled || !mounted) return null;
+    if (!filtersEnabled) return null;
 
-    const modalContent = (
+    return (
         <div
-            className="fixed inset-0 z-9999 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200"
+            className="fixed inset-0 z-100 bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in transition-[left] duration-300 ease-in-out"
+            style={{ left: "var(--sidebar-width, 17.5rem)" }}
             onClick={(e) => {
                 if (e.target === e.currentTarget) setFiltersEnabled(false);
             }}
@@ -79,6 +73,4 @@ export function OrderFiltersModal({
             </div>
         </div>
     );
-
-    return createPortal(modalContent, document.body);
 }

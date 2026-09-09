@@ -41,3 +41,8 @@
 		- `fetchers/tests/`: `fetchers.test.ts`
 		- `utils/tests/`: `date.test.ts`, `mapperCore.test.ts`, `mapperRepeat.test.ts`, `products.test.ts`, `statusDocs.test.ts`, `statusNormalize.test.ts`
 	- All 23 source files strictly satisfy the < 100 LOC target rule.
+- Filters Modal Sidebar Visibility Contract (Sep 10 2026):
+	- `OrderFiltersModal` renders directly in the component tree with `z-100` and `bg-slate-900/60 backdrop-blur-md` without portaling to `document.body`.
+	- Uses `left: var(--sidebar-width, 17.5rem)` to offset from the sidebar (`280px` expanded, `80px` collapsed, `0px` mobile).
+	- Keeps the persistent `<Sidebar>` (`z-index: 1000`) completely visible and unblurred, while keeping the modal perfectly centered in the viewable main content area across all screen resolutions (Edge, Chrome, standard 1080p 125% scale 1536x730, etc.).
+

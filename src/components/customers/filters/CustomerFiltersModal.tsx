@@ -29,12 +29,16 @@ export function CustomerFiltersModal({
     if (!filtersEnabled) return null;
 
     return (
-        <div className="fixed inset-0 z-100 bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-300">
+        <div 
+            className="fixed inset-0 z-100 bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in transition-[left] duration-300 ease-in-out"
+            style={{ left: "var(--sidebar-width, 17.5rem)" }}
+            onClick={(e) => { if (e.target === e.currentTarget) setFiltersEnabled(false); }}
+        >
             <div className="bg-white w-full max-w-5xl rounded-4xl shadow-[0_20px_50px_rgba(79,70,229,0.15)] overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 slide-in-from-bottom-4 duration-500 border border-slate-100/50 backdrop-blur-xl relative">
                 <div className="absolute inset-0 bg-linear-to-tr from-indigo-50/10 via-transparent to-slate-50/10 pointer-events-none" />
 
                 <div className="flex justify-between items-center px-6 py-4 border-b border-slate-100 bg-linear-to-r from-white via-indigo-50/5 to-white relative overflow-hidden group">
-                    <div className="absolute top-0 left-0 w-full h-[2px] bg-linear-to-r from-transparent via-indigo-400/30 to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-700" />
+                    <div className="absolute top-0 left-0 w-full h-0.5 bg-linear-to-r from-transparent via-indigo-400/30 to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-700" />
 
                     <div className="flex items-center gap-3 relative">
                         <div className="p-2 bg-indigo-50 text-indigo-600 rounded-xl border border-indigo-100 group-hover:shadow-[0_0_20px_rgba(79,70,229,0.1)] transition-all duration-300">

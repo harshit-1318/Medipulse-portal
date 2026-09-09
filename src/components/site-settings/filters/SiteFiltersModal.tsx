@@ -25,7 +25,8 @@ export function SiteFiltersModal({ isOpen, setOpen, filters, onChange, onClear }
 
     return (
         <div
-            className="fixed inset-0 z-100 bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-300"
+            className="fixed inset-0 z-100 bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in transition-[left] duration-300 ease-in-out"
+            style={{ left: "var(--sidebar-width, 17.5rem)" }}
             onClick={(e) => {
                 if (e.target === e.currentTarget) setOpen(false);
             }}

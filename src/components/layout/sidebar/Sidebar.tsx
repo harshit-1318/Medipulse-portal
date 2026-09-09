@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { navItems } from './constants';
 import SidebarLogo from './components/SidebarLogo';
 import { SidebarGroup } from './components/SidebarGroup';
@@ -22,6 +23,15 @@ export default function Sidebar({ initialPath = '/dashboard' }: SidebarProps) {
         toggleMenu,
         toggleSection,
     } = useSidebarState(initialPath);
+
+    useEffect(() => {
+        if (typeof document !== 'undefined') {
+            document.documentElement.style.setProperty(
+                '--sidebar-width',
+                isCollapsed ? '5rem' : '17.5rem'
+            );
+        }
+    }, [isCollapsed]);
 
     return (
         <aside

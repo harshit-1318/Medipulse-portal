@@ -39,7 +39,8 @@ export function PrescriptionFiltersModal({
 
     return (
         <div
-            className="fixed inset-0 z-100 bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-300"
+            className="fixed inset-0 z-100 bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in transition-[left] duration-300 ease-in-out"
+            style={{ left: "var(--sidebar-width, 17.5rem)" }}
             onClick={(e) => { if (e.target === e.currentTarget) setFiltersEnabled(false); }}
         >
             <div className="bg-white w-full max-w-5xl rounded-4xl shadow-[0_20px_50px_rgba(79,70,229,0.15)] overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 slide-in-from-bottom-4 duration-500 border border-slate-100/50 backdrop-blur-xl relative">

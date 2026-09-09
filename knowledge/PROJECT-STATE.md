@@ -1,5 +1,13 @@
 # Frontend Project State
 
+- Order Filters Modal Sidebar Visibility & Responsive Viewport Centering (Sep 10 2026):
+	- Sidebar Visibility While Filtering: Fixed `OrderFiltersModal` obscuring and dimming the left navigation sidebar when opened. Removed legacy `createPortal(modalContent, document.body)` and `z-9999`, adopting local component rendering with `z-100` and `bg-slate-900/60 backdrop-blur-md`.
+	- Responsive Content-Area Centering (Chrome & Edge on 1536x730): Resolved off-center positioning and modal-sidebar collision on standard 1080p 125% DPI displays by synchronizing `--sidebar-width` CSS variable (`17.5rem` expanded, `5rem` collapsed, `0rem` on mobile) from `Sidebar.tsx` to `document.documentElement` and setting `left: var(--sidebar-width)`. The modal is now perfectly centered in the viewable main content area with symmetrical margins on both sides.
+	- Parity Across All Filter Modals: Standardized `--sidebar-width` offset in `OrderFiltersModal`, `PrescriptionFiltersModal`, `CustomerFiltersModal`, and `SiteFiltersModal`.
+	- Strict < 100 LOC Compliance: All modified components (`OrderFiltersModal.tsx` 68 LOC, `Sidebar.tsx` 66 LOC, `PrescriptionFiltersModal.tsx` 94 LOC, `CustomerFiltersModal.tsx` 89 LOC, `SiteFiltersModal.tsx` 59 LOC) remain strictly compliant with the < 100 LOC target.
+	- Comprehensive Test Suite: Added `src/components/orders-table/__tests__/OrderFiltersModal.test.tsx` (6 tests) covering visibility, local container rendering, `z-100` overlay, Escape key dismiss, and backdrop click handlers.
+	- Full Verification: 100% Vitest test pass rate (149 test files, 782/782 tests PASS — 0 failures) and live browser automation screenshot verified on 1536x730.
+
 - Customer Orders First vs Repeat Filtering & Dynamic Repeat Count Display (Sep 10 2026):
 	- Accurate First vs Repeat Order Segregation: Fixed `/orders/customer/first` and `/orders/customer/repeat` showing identical order sets by extending `buildOrderQuery` in `src/app/api/orders/orderQueryHelper.ts` to filter MongoDB queries with `$or` on `order_type` and `repeatedOrders`.
 	- Dynamic Repeat Count Badges: Supported dynamic repeat counts (`Repeat (2)`, `Repeat (3)`, `Repeat (4)`) for recurring customers, while single/initial orders strictly display `First Order` in blue pill.
