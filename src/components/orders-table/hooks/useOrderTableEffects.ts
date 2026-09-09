@@ -24,7 +24,7 @@ export function useOrderTableEffects({
     // SORTING → BACKEND (Standardized to sortBy and sortDir)
     useEffect(() => {
         const s = sorting?.[0];
-        const rawSortBy = s ? String(s.id || "").trim() : "createdAt";
+        const rawSortBy = s ? String(s.id || "").trim() : "date";
         const newSortBy = normalizeSortBy(rawSortBy);
         const newSortDir = s ? (s.desc ? "desc" : "asc") : "asc";
 

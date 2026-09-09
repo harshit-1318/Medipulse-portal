@@ -1,6 +1,35 @@
 # Frontend Project State
 
-- Super Admin Role Credentials Management Page (Sep 10 2026):
+- All Orders Database Population & Customer/Status Normalization (Sep 10 2026):
+	- Endpoint Fix in `useAllOrdersData`: Removed invalid `customEndpoint: "/orders/all-order-list"` which collided with Next.js dynamic route `/api/orders/[id]` and returned a single order object instead of the order array. Standardized to canonical `getOrders(page, filters)`.
+	- Customer Normalization & Fallbacks: Enhanced `normalizeCustomer.ts` and `mapper.ts` to seamlessly map MongoDB order fields (`customerName`, `customerEmail`, `customerId`, `store_order_id`, `shopify_order_id`) when nested `customer` object is absent, eliminating `--` values in the table.
+	- Status Mapping Parity: Configured `OrderColumns.tsx` to read `fulfillment_status || status`, and extended `StatusCell.tsx` and `status.ts` to cleanly format MongoDB statuses (`completed`, `pending_doctor_approval`, `dispatched`, `payment_pending`) into colored badges.
+	- Full Verification:
+		- Unit test suite `normalizeCustomer.test.ts` (5 tests) passed.
+		- 100% orders service test suite (10 test files, 66/66 tests PASS).
+		- Full TypeScript typecheck clean (0 errors).
+		- Live browser automation confirmed 100% populated customer names, emails, IDs, and colored status pills.
+
+- Order Table SSR Hydration Fix & Sort Normalization (Sep 10 2026):
+	- OrderTableHeader Hydration Mismatch Resolved: Next.js SSR rendered `<ArrowDown />` for the default `"date"` column while client hydration rendered `<ArrowUpDown />` due to client-side localStorage/URL query state differing from server defaults. Added `mounted` state gate in `OrderTableHeader` to render neutral `ArrowUpDown` consistently during SSR and initial client hydration, transitioning to the active sort arrow (`ArrowDown`/`ArrowUp`) post-mount.
+	- Sort ID Alignment: Fixed `useOrderTableEffects.ts` where empty/fallback sorting defaulted to `"createdAt"` instead of UI column ID `"date"`, breaking column sort matching in TanStack Table.
+	- Normalize Sort By: Enhanced `normalizeSortBy` in `src/utils/url/urlBase.ts` to map `"createdAt"` to `"date"`.
+	- Cache Invalidation & Cleanup: Bumped `STORAGE_VERSION` to `5` in `src/utils/url/orderFilterUtils.ts` and added sanitization for stored legacy `createdAt` and `id` keys to revert cleanly to default sort (`sortBy: "date"`, `sort: "desc"`).
+	- Strict < 100 LOC Compliance: All modified files (`OrderTableHeader.tsx` 81 LOC, `OrderTable.tsx` 83 LOC, `useOrderTableEffects.ts` 42 LOC, `orderFilterUtils.ts` 86 LOC, `urlBase.ts` 57 LOC) remain well under the 100 LOC target.
+
+- Super Admin Dashboard UI/UX Polish & Sparkline Fix (Sep 10 2026):
+	- Daily Sparkline Bar Glitch Resolved: Fixed `DailySparkline` in `Charts.tsx` where single/sparse event days caused bars to expand into a giant solid rectangle via `flex-1`. Implemented full day sequence generation (7/30/90 days) with subtle baseline bars (`bg-slate-100`) for zero-count days, brand teal `#00A294` for active days, `max-w-[24px]` constraints, and Start/Today date labels.
+	- Brand Color Harmony: Standardized Super Admin Dashboard CTA buttons ("Manage Sites") and activity bar list graphs to MediPulse brand teal (`#00A294` / `#008F83`) and navy (`#003B73`), removing rogue indigo colors.
+	- Premium Executive Stat Cards: Upgraded `SuperAdminStatCard` with soft-tinted icon containers (blue, emerald, indigo, teal), hover elevation (`hover:shadow-md hover:border-slate-300`), and contextual subtext indicators.
+	- Live Status Indicator: Replaced the outdated amber "Experimental" badge on Activity Log Dashboard with a professional pulsating emerald "Live" status badge.
+	- Mobile Sidebar Collapse: Added tablet/mobile auto-collapse fallback in `useSidebarState.ts` and `shrink-0` in `Sidebar.tsx` to prevent main dashboard compression on smaller viewports.
+	- Sleek Floating Custom Scrollbar & Right-Edge Alignment: Upgraded main body container in `layout.tsx` to use compact right padding (`md:pr-4`) and smooth `custom-scrollbar` with soft slate thumb (`#cbd5e1`), eliminating the thick Windows OS scrollbar and asymmetric right margin.
+	- Full Verification:
+		- Unit test suite `DailySparkline.test.tsx` (3 tests) added.
+		- 100% Vitest pass rate: 148 passed (770/770 tests PASS — 0 failures).
+		- TypeScript typecheck passes with 0 errors (`tsc --noEmit`).
+		- Live automated browser verification with video recording and screenshots captured.
+
 	- Dedicated Super Admin Credentials Vault: Implemented clean, professional, responsive Role Credentials page (`/super-admin/role-credentials` and `/role-credentials`) enabling Super Admins to review all system login accounts, emails, roles, and credentials in one place.
 	- Controlled Password Reveal & Auto-Masking: Masked credentials (`••••••••••`) by default with confirmation modal ("Are you sure you want to reveal this password?"), security warning advisory, audit logging of credential access, copy password button, and a 15-second countdown timer that automatically re-masks the password.
 	- Pure State Updaters & Decoupled Effects: Refactored `usePasswordReveal` to separate pure interval countdown math from auto-mask toast notifications via dedicated `useEffect`, eliminating React cross-component `setState` in render warnings.

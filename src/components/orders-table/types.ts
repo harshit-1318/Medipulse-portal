@@ -55,7 +55,7 @@ export const DEFAULT_ORDER_FILTERS: OrderFilters = {
     repeatedOrders: "all",
     isUrgent: false,
     isParked: false,
-    sortBy: "id",
+    sortBy: "date",
     sort: "desc",
 };
 

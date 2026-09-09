@@ -62,13 +62,13 @@ function SuperAdminDashboardContent() {
                 <div className="flex items-center gap-2">
                     <a
                         href="/users"
-                        className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                        className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 shadow-xs transition-colors"
                     >
                         Manage Users
                     </a>
                     <a
                         href="/sites"
-                        className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
+                        className="inline-flex items-center gap-2 rounded-lg bg-[#00A294] px-4 py-2 text-sm font-semibold text-white shadow-xs hover:bg-[#008F83] transition-colors"
                     >
                         Manage Sites
                     </a>
@@ -76,10 +76,38 @@ function SuperAdminDashboardContent() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-                <StatCard title="Total Sites" value={stats.totalSites} icon={<Building2 size={18} />} />
-                <StatCard title="Active Sites" value={stats.activeSites} icon={<CheckCircle2 size={18} />} />
-                <StatCard title="Total Users" value={stats.totalUsers} icon={<Users size={18} />} />
-                <StatCard title="Total Activities" value={stats.totalActivities} icon={<Activity size={18} />} />
+                <StatCard
+                    title="Total Sites"
+                    value={stats.totalSites}
+                    icon={<Building2 size={18} />}
+                    iconBg="bg-blue-50"
+                    iconColor="text-blue-600"
+                    subtext="Configured domains"
+                />
+                <StatCard
+                    title="Active Sites"
+                    value={stats.activeSites}
+                    icon={<CheckCircle2 size={18} />}
+                    iconBg="bg-emerald-50"
+                    iconColor="text-emerald-600"
+                    subtext="Healthy & live"
+                />
+                <StatCard
+                    title="Total Users"
+                    value={stats.totalUsers}
+                    icon={<Users size={18} />}
+                    iconBg="bg-indigo-50"
+                    iconColor="text-indigo-600"
+                    subtext="Platform accounts"
+                />
+                <StatCard
+                    title="Total Activities"
+                    value={stats.totalActivities}
+                    icon={<Activity size={18} />}
+                    iconBg="bg-teal-50"
+                    iconColor="text-[#00A294]"
+                    subtext="System audits"
+                />
             </div>
 
             <SitesOverviewTable sites={sites} loading={loading} />

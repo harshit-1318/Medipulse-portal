@@ -83,5 +83,29 @@ describe('orderFilterUtils', () => {
             expect(result.orderId).toBe('');
             expect(localStorage.getItem('orders_storage')).toBeNull();
         });
+
+        it('cleans up legacy sortBy: id from stored filters and reverts to default sortBy', () => {
+            localStorage.setItem('orders_storage', JSON.stringify({
+                _v: STORAGE_VERSION,
+                sortBy: 'id',
+                limit: 50,
+            }));
+
+            const result = getInitialOrderFilters(defaultFilters, 'orders_storage');
+            expect(result.sortBy).toBe('date');
+            expect(result.limit).toBe(50);
+        });
+
+        it('cleans up legacy sortBy: createdAt from stored filters and reverts to default sortBy', () => {
+            localStorage.setItem('orders_storage', JSON.stringify({
+                _v: STORAGE_VERSION,
+                sortBy: 'createdAt',
+                limit: 30,
+            }));
+
+            const result = getInitialOrderFilters(defaultFilters, 'orders_storage');
+            expect(result.sortBy).toBe('date');
+            expect(result.limit).toBe(30);
+        });
     });
 });

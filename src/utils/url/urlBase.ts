@@ -51,5 +51,6 @@ export const normalizeSortOrder = (sort?: string): "asc" | "desc" => {
  */
 export const normalizeSortBy = (value: string): string => {
   if (value === "products") return "product";
+  if (value === "createdAt") return "date";
   return value;
 };

@@ -45,4 +45,17 @@ describe('normalizeCustomer', () => {
             id: '--'
         });
     });
+
+    it('should fall back to customerName, customerEmail, and store_order_id when customer object is absent', () => {
+        const order = {
+            customerName: 'Alice Walker',
+            customerEmail: 'alice@example.com',
+            store_order_id: '45678',
+        };
+        expect(normalizeCustomer(order)).toEqual({
+            name: 'Alice Walker',
+            email: 'alice@example.com',
+            id: '45678',
+        });
+    });
 });

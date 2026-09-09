@@ -1,13 +1,14 @@
+import { useState, useEffect } from "react";
 import { flexRender, type Table } from "@tanstack/react-table";
-import { ArrowUpDown, ArrowUp, ArrowDown, User, FileText, Clock, Users, Layers, Package, ExternalLink } from "lucide-react";
+import { ArrowUpDown, ArrowUp, ArrowDown, User, FileText, Clock, Users, Layers, Package, Hash } from "lucide-react";
 
 interface Props {
     table: Table<any>;
 }
 
 const ICON_MAP: Record<string, any> = { 
-    id: ExternalLink, 
-    shopify_order_id: ExternalLink,
+    id: Hash, 
+    shopify_order_id: Hash,
     date: Clock, 
     createdAt: Clock,
     status: Layers,
@@ -24,13 +25,19 @@ const ICON_MAP: Record<string, any> = {
  * Renders the table header with sorting controls for Order Table.
  */
 export function OrderTableHeader({ table }: Props) {
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
     return (
         <thead className="bg-[#f8fafc] text-slate-800 sticky top-0 z-20 border-b border-slate-100 shadow-sm font-montserrat">
             {table.getHeaderGroups().map((hg) => (
                 <tr key={hg.id}>
                     {hg.headers.map((h) => {
                         const canSort = h.column.getCanSort();
-                        const sorted = h.column.getIsSorted();
+                        const sorted = mounted ? h.column.getIsSorted() : false;
                         const Icon = ICON_MAP[h.column.id] || ICON_MAP[(h.column.columnDef as any).accessorKey];
 
                         return (
@@ -52,7 +59,7 @@ export function OrderTableHeader({ table }: Props) {
                                         </span>
                                     </div>
                                     {canSort && (
-                                        <span className="ml-1.5 flex items-center">
+                                        <span className="ml-1.5 flex items-center" suppressHydrationWarning>
                                             {sorted === "asc" ? (
                                                 <ArrowUp size={14} className="text-indigo-600 animate-in slide-in-from-bottom-1 duration-300" />
                                             ) : sorted === "desc" ? (

@@ -14,6 +14,8 @@ export function useSidebarState(initialPath: string = '/dashboard') {
         const saved = localStorage.getItem(SIDEBAR_COLLAPSED_STORAGE_KEY);
         if (saved !== null) {
             setIsCollapsed(saved === 'true');
+        } else if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+            setIsCollapsed(true);
         }
     }, []);
 

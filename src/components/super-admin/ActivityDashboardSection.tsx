@@ -47,7 +47,7 @@ export default function ActivityDashboardSection() {
                     <div className="h-24 flex items-center justify-center text-slate-400 text-sm">Loading&hellip;</div>
                 ) : (
                     <>
-                        <DailySparkline byDay={data?.byDay ?? []} />
+                        <DailySparkline byDay={data?.byDay ?? []} days={days} />
                         <p className="text-xs text-slate-400 mt-2">Hover a bar to see the count. Each bar = 1 day.</p>
                     </>
                 )}
@@ -62,7 +62,7 @@ export default function ActivityDashboardSection() {
             />
 
             <SectionCard title="Top Action Types" icon={<Activity size={16} />}>
-                {loading ? <p className="text-sm text-slate-400">Loading&hellip;</p> : <BarList items={(data?.byActionType ?? []).map((a) => ({ label: formatActionLabel(a.action), count: a.count }))} max={maxAction} colorClass="bg-indigo-500" />}
+                {loading ? <p className="text-sm text-slate-400">Loading&hellip;</p> : <BarList items={(data?.byActionType ?? []).map((a) => ({ label: formatActionLabel(a.action), count: a.count }))} max={maxAction} colorClass="bg-[#00A294]" />}
             </SectionCard>
 
             <BrowserOSDeviceSection data={data} loading={loading} />

@@ -25,7 +25,7 @@ export default function Sidebar({ initialPath = '/dashboard' }: SidebarProps) {
 
     return (
         <aside
-            className={`relative h-screen bg-white border-r border-slate-200/60 shadow-[4px_0_24px_rgba(0,0,0,0.02)] flex flex-col transition-all duration-300 ease-in-out z-50 ${isCollapsed ? 'w-20' : 'w-70'}`}
+            className={`relative h-screen bg-white border-r border-slate-200/60 shadow-[4px_0_24px_rgba(0,0,0,0.02)] flex flex-col shrink-0 transition-all duration-300 ease-in-out z-50 ${isCollapsed ? 'w-20' : 'w-70'}`}
             style={{ zIndex: 1000 }}
         >
             <SidebarLogo

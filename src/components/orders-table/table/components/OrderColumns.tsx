@@ -32,7 +32,7 @@ export function useOrderColumns(pageType: PageType) {
         header: () => (
           <span className="text-[13px] font-extrabold font-montserrat tracking-widest text-[#003B73]/80">STATUS</span>
         ),
-        cell: ({ row }) => <StatusCell status={row.original.fulfillment_status} />
+        cell: ({ row }) => <StatusCell status={row.original.fulfillment_status || row.original.status} />
       },
       {
         accessorKey: "customer",

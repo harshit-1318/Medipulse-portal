@@ -26,15 +26,24 @@ export function mapBackendOrderToFrontend(o: any, forceDocuments?: any, filterHi
     }
 
     const resolvedShopifyId = o.shopify_order_id || o.shopifyOrderId || o.order_id || o.orderNumber || o.order_number || o.id || o._id || "--";
+    const normalizedStatus = normalizeStatus(resolveRawOrderStatus(o));
+    const customerObj = (o.customer && typeof o.customer === "object") ? o.customer : {
+        name: o.customerName || (typeof o.customer === "string" ? o.customer : "--"),
+        first_name: o.customerName ? o.customerName.split(" ")[0] : "",
+        last_name: o.customerName ? o.customerName.split(" ").slice(1).join(" ") : "",
+        email: o.customerEmail || "--",
+        id: o.customerId || o.customer_id || o.store_order_id || o.shopify_order_id || "--",
+    };
 
     return {
         ...o,
         id: String(internalId),
         shopify_order_id: String(resolvedShopifyId),
-        status: normalizeStatus(resolveRawOrderStatus(o)),
+        status: normalizedStatus,
+        fulfillment_status: o.fulfillment_status || o.fulfillmentStatus || normalizedStatus,
         date: o.createdAt || o.created_at || o.date,
         updatedAt: o.updatedAt || o.updated_at || o.createdAt || "",
-        customer: o.customer ?? null,
+        customer: customerObj,
         products: products,
         category: detectCategory(products),
         documents: hasDocs ? "Uploaded" : "Not Uploaded",

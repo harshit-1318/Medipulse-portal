@@ -5,7 +5,7 @@ export function useRecentOrders() {
     const { data: orderResponse, isLoading: loading } = useQuery({
         queryKey: ['recent-orders'],
         queryFn: () => getOrders(1, {
-            orderId: "", status: "", customer: "", products: "", category: "", documents: "", startDate: "", endDate: "", repeatedOrders: "all", sortBy: "id", sort: "desc"
+            orderId: "", status: "", customer: "", products: "", category: "", documents: "", startDate: "", endDate: "", repeatedOrders: "all", sortBy: "date", sort: "desc"
         }),
         refetchOnMount: 'always',
     });

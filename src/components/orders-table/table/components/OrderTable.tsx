@@ -19,7 +19,8 @@ export default function OrderTable(props: Props) {
     // Initialize sorting from filters
     const [sorting, setSorting] = useState<SortingState>(() => {
         if (filters.sortBy) {
-            return [{ id: filters.sortBy, desc: filters.sort === 'desc' }];
+            const id = filters.sortBy === "createdAt" ? "date" : filters.sortBy;
+            return [{ id, desc: filters.sort === 'desc' }];
         }
         return [];
     });
@@ -32,14 +33,15 @@ export default function OrderTable(props: Props) {
     // Sync sorting state with filters (important for initial load and navigation)
     useEffect(() => {
         if (filters.sortBy) {
+            const sortId = filters.sortBy === "createdAt" ? "date" : filters.sortBy;
             const currentSort = sorting[0];
             const shouldUpdate = !currentSort || 
-                               currentSort.id !== filters.sortBy || 
+                               currentSort.id !== sortId || 
                                (currentSort.desc && filters.sort === 'asc') || 
                                (!currentSort.desc && filters.sort === 'desc');
             
             if (shouldUpdate) {
-                setSorting([{ id: filters.sortBy, desc: filters.sort === 'desc' }]);
+                setSorting([{ id: sortId, desc: filters.sort === 'desc' }]);
             }
         }
     }, [filters.sortBy, filters.sort]);

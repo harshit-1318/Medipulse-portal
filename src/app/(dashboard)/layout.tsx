@@ -32,7 +32,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         <Header />
 
         {/* Scrollable Page Body */}
-        <div className="flex-1 overflow-y-auto overflow-x-hidden relative w-full px-4 py-2 md:px-6 md:py-4">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden relative w-full pl-4 pr-2 py-2 md:pl-6 md:pr-4 md:py-4 custom-scrollbar">
           {children}
         </div>
       </main>

@@ -33,7 +33,7 @@ export function useAllOrdersData() {
         setLoading(true);
         startLoader("all-orders");
 
-        getOrders(page, filters, "/orders/all-order-list").then((res) => {
+        getOrders(page, filters).then((res) => {
             if (!ignore) {
                 setOrders(res.orders || []);
                 setTotal(res.total || 0);

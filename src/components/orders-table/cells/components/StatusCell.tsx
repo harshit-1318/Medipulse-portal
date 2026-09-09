@@ -6,11 +6,11 @@
 function getStatusBadgeStyle(status?: string) {
     const s = status?.toLowerCase() || "";
 
-    if (s === "fulfilled") {
+    if (s === "fulfilled" || s === "completed" || s.includes("dispatch")) {
         return "bg-linear-to-b from-emerald-50 to-emerald-100/30 border border-emerald-200/80 text-emerald-700 shadow-sm shadow-emerald-500/10";
     }
-    if (s === "unfulfilled") {
-        return "bg-linear-to-b from-red-50 to-red-100/30 border border-red-200/80 text-red-600 shadow-sm shadow-red-500/10";
+    if (s === "unfulfilled" || s.includes("pending")) {
+        return "bg-linear-to-b from-amber-50 to-amber-100/30 border border-amber-200/80 text-amber-700 shadow-sm shadow-amber-500/10";
     }
     if (s.includes("hold")) {
         return "bg-linear-to-b from-amber-50 to-amber-100/30 border border-amber-200/80 text-amber-700 shadow-sm shadow-amber-500/10";

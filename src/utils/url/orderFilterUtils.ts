@@ -46,7 +46,7 @@ export function parseFiltersFromParams<T extends Record<string, any>>(params: UR
 // Bump this when default filter values change (e.g. new sortBy/sort default).
 // Any localStorage entry written by an older version is silently discarded,
 // preventing stale values from overriding new defaults.
-export const STORAGE_VERSION = 2;
+export const STORAGE_VERSION = 5;
 
 export function getInitialOrderFilters(defaults: OrderFilters, storageKey?: string): OrderFilters {
     if (typeof window === 'undefined') return defaults;
@@ -72,6 +72,9 @@ export function getInitialOrderFilters(defaults: OrderFilters, storageKey?: stri
                     return defaults;
                 }
                 const { _v, ...restStored } = parsedStored;
+                if (restStored.sortBy === "id" || restStored.sortBy === "createdAt") {
+                    delete restStored.sortBy;
+                }
                 return { ...defaults, ...restStored, category: defaults.category };
             } catch (e) {}
         }

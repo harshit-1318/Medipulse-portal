@@ -22,6 +22,13 @@
 	- Docs column sorting is intentionally disabled in the table UI; docs visibility is per-item display only and should not control table ordering.
 - Re-Sync endpoint behavior:
 	- `resyncOrder` / `resyncOrderFromShopify` calls `POST /orders/:id/resync` to trigger an order data re-sync from the connected e-commerce store.
+- Default Sort & Column Headers Contract (Sep 10 2026):
+	- Default sort across order lists is `sortBy: "date"`, `sort: "desc"` (Order Date descending / newest first).
+	- `OrderTableHeader` uses `Hash` (`#`) icon for `id` and `shopify_order_id` columns instead of misleading `ExternalLink`.
+	- `OrderTableHeader` uses `mounted` state check to render neutral `ArrowUpDown` during SSR and initial client hydration, eliminating Next.js hydration mismatch errors when client sorting differs from SSR defaults.
+	- `useOrderTableEffects` fallback sorting fixed to `"date"` instead of `"createdAt"` to match the column ID in `OrderColumns`.
+	- `normalizeSortBy` in `urlBase.ts` normalizes `"createdAt"` to `"date"`.
+	- `STORAGE_VERSION` bumped to `5` in `orderFilterUtils.ts` with automatic cleanup of legacy `createdAt` and `id` keys.
 - Test Organization:
 	- Subdirectories each contain their own dedicated `tests/` directory:
 		- `actions/tests/`: `order.test.ts`, `consultationActions.test.ts`

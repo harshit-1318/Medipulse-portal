@@ -33,6 +33,10 @@ describe('urlBase utilities', () => {
             expect(normalizeSortBy('products')).toBe('product');
         });
 
+        it('maps createdAt to date', () => {
+            expect(normalizeSortBy('createdAt')).toBe('date');
+        });
+
         it('preserves other sortBy keys', () => {
             expect(normalizeSortBy('date')).toBe('date');
             expect(normalizeSortBy('status')).toBe('status');
