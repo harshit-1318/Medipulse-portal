@@ -2,6 +2,7 @@ import {
     FileSearch,
     Mail,
     UserCheck,
+    KeyRound,
 } from 'lucide-react';
 import type { NavItem } from './types';
 import {
@@ -17,6 +18,12 @@ export const adminNavSection: { section: string; items: NavItem[] } = {
     items: [
         { ...sitesMenu, role: ['super_admin'] },
         { ...usersMenu, role: ['super_admin'] },
+        {
+            title: 'Role Credentials',
+            path: '/super-admin/role-credentials',
+            icon: KeyRound,
+            role: ['super_admin'],
+        },
         activityLogsMenu,
         {
             title: 'Queue Monitor',

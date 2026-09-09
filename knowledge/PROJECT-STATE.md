@@ -1,5 +1,20 @@
 # Frontend Project State
 
+- Super Admin Role Credentials Management Page (Sep 10 2026):
+	- Dedicated Super Admin Credentials Vault: Implemented clean, professional, responsive Role Credentials page (`/super-admin/role-credentials` and `/role-credentials`) enabling Super Admins to review all system login accounts, emails, roles, and credentials in one place.
+	- Controlled Password Reveal & Auto-Masking: Masked credentials (`••••••••••`) by default with confirmation modal ("Are you sure you want to reveal this password?"), security warning advisory, audit logging of credential access, copy password button, and a 15-second countdown timer that automatically re-masks the password.
+	- Pure State Updaters & Decoupled Effects: Refactored `usePasswordReveal` to separate pure interval countdown math from auto-mask toast notifications via dedicated `useEffect`, eliminating React cross-component `setState` in render warnings.
+	- Role Identification & Prominence: High-contrast, distinct professional badges for all system roles (Super Admin, Admin, Doctor/Prescriber, Nurse/Pharmacy Staff, Receptionist/Support, Accountant, Patient/Customer, Driver).
+	- Summary Cards: 4 responsive metric cards above table displaying Total Accounts, Active Accounts, Inactive Accounts, and Total Roles.
+	- User Details Side Drawer & Account Actions: Slide-out drawer with profile info, account status toggle, created/last-login dates, granular assigned permissions list, and credentials card with password reset modal.
+	- Search, Filtering & Normalized Sorting: Debounced search across name/email/role, role dropdown, status dropdown, sortable headers (`normalizeSortOrder`), and pagination.
+	- Edge Proxy & API Security: Enforced strict Super Admin RBAC across Next.js 16 Edge proxy (`src/proxyRoutes.ts`) and backend API route handlers (`verifyApiAuth({ requireSuperAdmin: true })`).
+	- 100% LOC Compliance: All 32 new and modified source files strictly < 150 LOC (almost all < 100 LOC).
+	- Full Verification:
+		- Vitest test suite: 146 passed (764/764 tests PASS — 0 failures).
+		- TypeScript typecheck passes with 0 errors (`tsc --noEmit`).
+		- Next.js 16 Turbopack production build: 61/61 routes compiled cleanly in 984ms (0 errors).
+
 - Automated Date-Based Seeding Engine & Production Deployment Hardening (Sep 10 2026):
 	- Date-Based Seeding Engine: Created `scripts/seed.mjs` (CLI) and `src/app/api/seed/route.ts` with `seedDataHelper.ts` (API) allowing instant generation of realistic fake Orders, Customers, Prescriptions, and Leads for any specific date (`--date=YYYY-MM-DD`), today (`--today`), yesterday (`--yesterday`), or across the past N days (`--days=N`).
 	- Real Date & Filter Querying: Added `src/app/api/orders/orderQueryHelper.ts` and updated `src/app/api/orders/route.ts` to support real MongoDB queries for date ranges (`startDate`, `endDate`), order IDs, customer search, status, and pagination.

@@ -2,11 +2,11 @@
 export const protectedRoutes = [
   '/dashboard', '/super-dashboard', '/sites', '/orders', '/customers',
   '/leads', '/prescriptions', '/users', '/surveys', '/activity-logs',
-  '/queue-monitor', '/docman-jobs', '/account',
+  '/queue-monitor', '/docman-jobs', '/account', '/super-admin', '/role-credentials',
 ];
 
 // Routes strictly restricted to super admin accounts
-export const superAdminOnlyRoutes = ['/super-dashboard', '/sites', '/users'];
+export const superAdminOnlyRoutes = ['/super-dashboard', '/sites', '/users', '/super-admin', '/role-credentials'];
 
 // Role-based route access mapping
 export const roleAllowedRoutes: Record<string, string[]> = {
