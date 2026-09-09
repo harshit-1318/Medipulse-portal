@@ -2,7 +2,10 @@ import axios, { type AxiosRequestConfig } from 'axios';
 import { setupInterceptors } from './interceptors';
 
 const defaultBaseURL = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.SERVER_API_BASE_URL || 'http://localhost:5000';
-const baseURL = typeof window !== 'undefined' && process.env.NODE_ENV === 'development' ? '/api' : defaultBaseURL;
+const isPlaceholder = (url?: string) => !url || url.includes('your-api-domain.com') || url.includes('localhost:5000');
+const baseURL = typeof window !== 'undefined'
+  ? (isPlaceholder(process.env.NEXT_PUBLIC_API_BASE_URL) ? '/api' : process.env.NEXT_PUBLIC_API_BASE_URL)
+  : defaultBaseURL;
 
 declare module 'axios' {
   export interface InternalAxiosRequestConfig<D = any> {

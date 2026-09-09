@@ -1,5 +1,15 @@
 # Frontend Project State
 
+- Automated Date-Based Seeding Engine & Production Deployment Hardening (Sep 10 2026):
+	- Date-Based Seeding Engine: Created `scripts/seed.mjs` (CLI) and `src/app/api/seed/route.ts` with `seedDataHelper.ts` (API) allowing instant generation of realistic fake Orders, Customers, Prescriptions, and Leads for any specific date (`--date=YYYY-MM-DD`), today (`--today`), yesterday (`--yesterday`), or across the past N days (`--days=N`).
+	- Real Date & Filter Querying: Added `src/app/api/orders/orderQueryHelper.ts` and updated `src/app/api/orders/route.ts` to support real MongoDB queries for date ranges (`startDate`, `endDate`), order IDs, customer search, status, and pagination.
+	- Production Client Resilience: Updated `src/lib/api/client.ts` to cleanly default to `/api` in browser production environments when placeholder API domains are set, guaranteeing seamless deployment to Vercel.
+	- Full Verification:
+		- `npm run typecheck` passes with 0 errors (`tsc --noEmit`).
+		- Unit test suites `orderQueryHelper.test.ts` (5 tests) and `seedDataHelper.test.ts` (2 tests) 100% PASS.
+		- Next.js 16 Turbopack production build: 55/55 routes generated cleanly in 14.8s (0 errors).
+		- 100% LOC compliance: all new/modified files strictly < 80 LOC.
+
 - Comprehensive Project-Wide Health Audit & Architecture Polish (Sep 9 2026):
 	- Zero Deep Imports: Audited entire codebase and eliminated remaining deep path imports across `orders` routes and `order-details` (`LastOrderLookupButton`, `useResyncOrder`, and 5 category/customer/document/product/status route pages now cleanly import through module barrels).
 	- Barrel Completeness: Added `src/api/utils/index.ts` and exported `apiUtils` from root `src/api/index.ts`. 100% of non-app directories containing code now have complete barrel exports.

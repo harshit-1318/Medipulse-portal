@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/db/mongodb';
 import { Order } from '@/lib/db/models/Order';
 import { verifyApiAuth } from '@/lib/auth/apiAuth';
+import { buildOrderQuery } from './orderQueryHelper';
 
 export async function GET(request: Request) {
   const auth = await verifyApiAuth(request, {
@@ -12,11 +13,19 @@ export async function GET(request: Request) {
   }
 
   try {
+    const { searchParams } = new URL(request.url);
+    const { query, sortOptions, page, limit } = buildOrderQuery(searchParams);
+
     await connectToDatabase();
 
-    let orders = await Order.find().limit(50).lean();
+    let total = await Order.countDocuments(query);
+    let orders = await Order.find(query)
+      .sort(sortOptions)
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .lean();
 
-    if (orders.length === 0) {
+    if (total === 0 && Object.keys(query).length === 0) {
       const sampleOrders = await Order.insertMany([
         {
           orderNumber: 'MP-1001',
@@ -36,6 +45,7 @@ export async function GET(request: Request) {
         },
       ]);
       orders = sampleOrders.map((o) => o.toObject());
+      total = orders.length;
     }
 
     return NextResponse.json({
@@ -43,9 +53,9 @@ export async function GET(request: Request) {
       success: true,
       data: {
         orders,
-        total: orders.length,
-        page: 1,
-        limit: 50,
+        total,
+        page,
+        limit,
       },
       message: 'Orders fetched from MongoDB Atlas successfully',
     });
