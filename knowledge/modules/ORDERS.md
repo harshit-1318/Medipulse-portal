@@ -76,3 +76,10 @@
 	- Wall-Clock & UTC Parity: `getTimeAgo` in `src/api/services/orders/utils/date.ts` gracefully resolves local wall-clock hours persisted into UTC mock seeds while retaining millisecond precision for standard UTC dates.
 	- Live Updates: `DateCell.tsx` mounts a 30-second interval via `useEffect` to periodically refresh relative time strings as time passes without full page reloads or SSR hydration mismatches.
 	- Display Format: Primary value displays formatted UTC date (e.g. `"10 Sept 26"` in `text-slate-800 font-semibold`), secondary value displays dynamic relative time (e.g. `"14 minutes ago"` in `text-slate-400 font-medium`).
+- Order Status Views Filtering Contract (Sep 10 2026):
+	- On Hold (`/orders/status/on-hold`): Strictly filters for `fulfillmentStatus="on_hold"`. Displays 100% `ON HOLD` badges in amber pill.
+	- Unfulfilled (`/orders/status/unfulfilled`): Strictly filters for `fulfillmentStatus="unfulfilled"`. Displays 100% `UNFULFILLED` badges.
+	- Fulfilled (`/orders/status/fulfilled`): Strictly filters for `fulfillmentStatus="fulfilled"`. Displays 100% `FULFILLED` badges.
+	- Cancelled (`/orders/status/cancelled`): Strictly filters for `fulfillmentStatus="cancelled"`. Displays 100% `CANCELLED` badges.
+	- API query helper `applyStatusFilter` in `orderStatusFilter.ts` translates `fulfillmentStatus`, `fulfillment_status`, `orderStatus`, and `status` into exact MongoDB `$or` queries matching both `status` and `fulfillment_status` fields without colliding with `order_type`.
+

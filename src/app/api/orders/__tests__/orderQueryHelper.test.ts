@@ -75,4 +75,24 @@ describe('buildOrderQuery', () => {
     expect(repeatRes.query.$or).toBeDefined();
     expect(repeatRes.query.$or).toContainEqual({ order_type: 'repeat' });
   });
+
+  it('handles on_hold, unfulfilled, fulfilled, cancelled fulfillmentStatus', () => {
+    const holdRes = buildOrderQuery(new URLSearchParams({ fulfillmentStatus: 'on_hold' }));
+    expect(holdRes.query.$or).toContainEqual({ status: { $in: ['on_hold', 'hold'] } });
+
+    const unfulfilledRes = buildOrderQuery(new URLSearchParams({ fulfillmentStatus: 'unfulfilled' }));
+    expect(unfulfilledRes.query.$or).toContainEqual({ fulfillment_status: 'unfulfilled' });
+
+    const fulfilledRes = buildOrderQuery(new URLSearchParams({ fulfillmentStatus: 'fulfilled' }));
+    expect(fulfilledRes.query.$or).toContainEqual({ fulfillment_status: 'fulfilled' });
+
+    const cancelledRes = buildOrderQuery(new URLSearchParams({ fulfillmentStatus: 'cancelled' }));
+    expect(cancelledRes.query.$or).toContainEqual({ fulfillment_status: 'cancelled' });
+  });
+
+  it('combines order_type and status using $and', () => {
+    const res = buildOrderQuery(new URLSearchParams({ order_type: 'first', fulfillmentStatus: 'on_hold' }));
+    expect(res.query.$and).toBeDefined();
+    expect(res.query.$and.length).toBe(2);
+  });
 });

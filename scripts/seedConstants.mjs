@@ -36,4 +36,8 @@ export const MEDICATIONS = [
   { name: 'Finasteride 1mg Tablets (28)', price: 28.50, tag: 'Hair Loss' },
   { name: 'Sildenafil 50mg Tablets (8)', price: 34.00, tag: 'Men’s Health' },
 ];
-export const STATUSES = ['completed', 'pending_doctor_approval', 'dispatched', 'consultation_approved', 'payment_pending'];
+export const STATUSES = [
+  'on_hold', 'unfulfilled', 'fulfilled', 'cancelled',
+  'completed', 'dispatched', 'pending_doctor_approval',
+  'consultation_approved', 'payment_pending'
+];

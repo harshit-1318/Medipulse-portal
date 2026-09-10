@@ -7,6 +7,7 @@ export interface IOrder {
   customerName: string;
   customerEmail: string;
   status: string;
+  fulfillment_status?: string;
   total: number;
   items: Array<{ name: string; quantity: number; price: number }>;
   isUrgent?: boolean;
@@ -28,6 +29,7 @@ const OrderSchema = new Schema<IOrder>(
     customerName: { type: String, required: true },
     customerEmail: { type: String, required: true },
     status: { type: String, default: 'pending' },
+    fulfillment_status: { type: String },
     total: { type: Number, default: 0 },
     isUrgent: { type: Boolean, default: false },
     isParked: { type: Boolean, default: false },

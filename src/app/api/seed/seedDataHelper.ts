@@ -7,7 +7,11 @@ const MEDICATIONS = [
   { name: 'Wegovy 1mg FlexTouch', price: 135.50, tag: 'Weight Management' },
   { name: 'Ozempic 1mg Pen', price: 115.00, tag: 'Diabetes / Weight' },
 ];
-const STATUSES = ['completed', 'pending_doctor_approval', 'dispatched', 'consultation_approved', 'payment_pending'];
+const STATUSES = [
+  'on_hold', 'unfulfilled', 'fulfilled', 'cancelled',
+  'completed', 'dispatched', 'pending_doctor_approval',
+  'consultation_approved', 'payment_pending'
+];
 
 export function getRandomDateForDay(dateStr: string): Date {
   const [year, month, day] = dateStr.split('-').map(Number);
@@ -36,12 +40,18 @@ export function generateSeedBatch(dateStr: string, count: number) {
     const orderNum = `MP-${Math.floor(10000 + Math.random() * 90000)}`;
     const orderDate = getRandomDateForDay(dateStr);
 
+    let fulfillmentStatus = 'unfulfilled';
+    if (status === 'on_hold') fulfillmentStatus = 'on_hold';
+    else if (status === 'cancelled') fulfillmentStatus = 'cancelled';
+    else if (['completed', 'fulfilled', 'dispatched'].includes(status)) fulfillmentStatus = 'fulfilled';
+
     orders.push({
       siteId: '65e0123456789abcdef00001',
       orderNumber: orderNum,
       customerName: name,
       customerEmail: email,
       status,
+      fulfillment_status: fulfillmentStatus,
       total: med.price,
       items: [{ name: med.name, quantity: 1, price: med.price }],
       isUrgent: Math.random() < 0.15,

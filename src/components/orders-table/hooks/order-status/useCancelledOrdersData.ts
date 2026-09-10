@@ -9,7 +9,7 @@ import { getInitialOrderFilters, getUrlParamInt, getDashboardStorageKey } from '
 const DEFAULT_FILTERS: OrderFilters = {
     ...DEFAULT_ORDER_FILTERS,
     fulfillmentStatus: "cancelled",
-    sort: "asc",
+    status: "",
 };
 
 export function useCancelledOrdersData() {

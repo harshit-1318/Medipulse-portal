@@ -1,5 +1,6 @@
 export function applyDateAndCategoryFilters(params: any, filters: any) {
     if (filters.fulfillmentStatus) params.fulfillmentStatus = String(filters.fulfillmentStatus).toLowerCase().replace(/[\s-]+/g, "_");
+    if (filters.status && filters.status !== "all") params.status = String(filters.status).toLowerCase().replace(/[\s-]+/g, "_");
     if (filters.startDate) {
         const [y, m, d] = filters.startDate.split('-').map(Number);
         params.start_date = new Date(Date.UTC(y, m - 1, d, 0, 0, 0, 0)).toISOString();

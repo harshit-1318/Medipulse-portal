@@ -1,3 +1,5 @@
+import { applyStatusFilter } from './orderStatusFilter';
+
 export interface OrderQueryParams {
   query: Record<string, any>;
   sortOptions: Record<string, 1 | -1>;
@@ -24,9 +26,6 @@ export function buildOrderQuery(searchParams: URLSearchParams): OrderQueryParams
   const sortDir = searchParams.get('sort') === 'asc' ? 1 : -1;
 
   const query: Record<string, any> = {};
-
-  const status = searchParams.get('status');
-  if (status && status !== 'all') query.status = status;
 
   if (searchParams.get('isUrgent') === 'true') query.isUrgent = true;
   if (searchParams.get('isParked') === 'true') query.isParked = true;
@@ -61,6 +60,8 @@ export function buildOrderQuery(searchParams: URLSearchParams): OrderQueryParams
       { repeatedOrders: { $gt: 0 } },
     ];
   }
+
+  applyStatusFilter(query, searchParams);
 
   return { query, sortOptions: { [sortBy]: sortDir }, page, limit };
 }

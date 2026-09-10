@@ -22,12 +22,18 @@ export function generateSeedRecord(index, dateStr) {
   const orderNum = `MP-${Math.floor(10000 + Math.random() * 90000)}`;
   const orderDate = getRandomDateForDay(dateStr);
 
+  let fulfillmentStatus = 'unfulfilled';
+  if (status === 'on_hold') fulfillmentStatus = 'on_hold';
+  else if (status === 'cancelled') fulfillmentStatus = 'cancelled';
+  else if (['completed', 'fulfilled', 'dispatched'].includes(status)) fulfillmentStatus = 'fulfilled';
+
   const order = {
     siteId: '65e0123456789abcdef00001',
     orderNumber: orderNum,
     customerName,
     customerEmail,
     status,
+    fulfillment_status: fulfillmentStatus,
     total: med.price,
     items: [{ name: med.name, quantity: 1, price: med.price }],
     isUrgent: Math.random() < 0.15,
