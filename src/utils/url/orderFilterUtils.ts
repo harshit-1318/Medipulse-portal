@@ -13,7 +13,7 @@ export function parseFiltersFromParams<T extends Record<string, any>>(params: UR
         }
         if (value === null && key === 'orderId') value = params.get("id");
         if (value === null && key === 'products') value = params.get("productName") || params.get("product_type");
-        if (value === null && key === 'status') value = params.get("orderStatus");
+        if (value === null && key === 'status') value = params.get("fulfillmentStatus") || params.get("fulfillment_status") || params.get("orderStatus");
         if (value === null && key === 'category') value = params.get("product_category");
         if (value === null && key === 'startDate') value = params.get("start_date");
         if (value === null && key === 'endDate') value = params.get("end_date");
@@ -53,7 +53,7 @@ export function getInitialOrderFilters(defaults: OrderFilters, storageKey?: stri
     const params = new URLSearchParams(window.location.search);
     
     let hasUrlParams = false;
-    const keysToCheck = ['customerId', 'customerName', 'id', 'productName', 'product_type', 'orderStatus', 'product_category', 'start_date', 'end_date', 'order_type', 'sortDir', 'limit', 'documentStatus'];
+    const keysToCheck = ['customerId', 'customerName', 'id', 'productName', 'product_type', 'orderStatus', 'fulfillmentStatus', 'fulfillment_status', 'product_category', 'start_date', 'end_date', 'order_type', 'sortDir', 'limit', 'documentStatus'];
     
     Object.keys(defaults).forEach((key) => {
         if (params.has(key)) hasUrlParams = true;

@@ -43,10 +43,11 @@ export const buildOrderParams = (page: number, filters: any = {}): any => {
         if (filters.type === "customers") {
             params.customer = searchValue;
         } else {
+            const cleanDigits = searchValue.replace(/^[#\s]+/, '');
             if (searchValue.includes("@")) {
                 params.customerEmail = searchValue;
-            } else if (/^\d+$/.test(searchValue)) {
-                params.customerId = searchValue;
+            } else if (/^\d+$/.test(cleanDigits)) {
+                params.customerId = cleanDigits;
             } else {
                 params.customerName = searchValue.replace(/\.+$/, "");
             }

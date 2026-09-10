@@ -1,11 +1,12 @@
-export function applyStatusFilter(query: Record<string, any>, searchParams: URLSearchParams): void {
+export function applyStatusFilter(query: Record<string, any>, searchParams: URLSearchParams, andClauses?: Record<string, any>[]): void {
   const raw = searchParams.get('fulfillmentStatus') ||
     searchParams.get('fulfillment_status') ||
     searchParams.get('orderStatus') ||
     searchParams.get('status');
 
-  if (!raw || raw === 'all') return;
+  if (!raw) return;
   const s = raw.toLowerCase().trim().replace(/[\s-]+/g, '_');
+  if (s === 'all' || !s) return;
 
   let condition: Record<string, any> | null = null;
   if (s === 'on_hold' || s === 'hold') {
@@ -38,6 +39,11 @@ export function applyStatusFilter(query: Record<string, any>, searchParams: URLS
     };
   } else {
     condition = { status: s };
+  }
+
+  if (andClauses) {
+    andClauses.push(condition);
+    return;
   }
 
   if (query.$or) {

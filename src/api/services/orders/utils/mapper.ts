@@ -10,11 +10,17 @@ import { resolveRepeatedOrders } from "./repeatedOrders";
  */
 export function mapBackendOrderToFrontend(o: any, forceDocuments?: any, filterHint?: string): OrderType {
     const products = parseProducts(o);
-    const documentItemsStatus = getDocumentItemsStatus(o);
+    const rawDocStatus = getDocumentItemsStatus(o);
     let hasDocs = detectDocsStatus(o);
 
     if (forceDocuments === "Uploaded") hasDocs = true;
     if (forceDocuments === "Not Uploaded") hasDocs = false;
+
+    const documentItemsStatus = {
+        id: forceDocuments === "Uploaded" ? true : (forceDocuments === "Not Uploaded" ? false : (rawDocStatus.id || hasDocs)),
+        fullPhoto: forceDocuments === "Uploaded" ? true : (forceDocuments === "Not Uploaded" ? false : (rawDocStatus.fullPhoto || hasDocs)),
+        video: forceDocuments === "Not Uploaded" ? false : rawDocStatus.video,
+    };
 
     let internalId = o.orderId || o.name || o.order_name;
 

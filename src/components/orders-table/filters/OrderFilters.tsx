@@ -23,7 +23,7 @@ export default function OrderFilters({ filters, setFilters, setPage, pageType, f
         localCustomerName, setLocalCustomerName, 
         localOrderId, setLocalOrderId, 
         localProductName, setLocalProductName,
-        updateFilter, clearFilters 
+        updateFilter, clearFilters, applyFilters 
     } = useOrderFilters(filters, setFilters, setPage, pageType);
 
     if (hideFilters) return null;
@@ -44,6 +44,16 @@ export default function OrderFilters({ filters, setFilters, setPage, pageType, f
         if (key === 'customer') setLocalCustomerName("");
         if (key === 'orderId') setLocalOrderId("");
         if (key === 'productName') setLocalProductName("");
+        if (key === 'status') {
+            updateFilter('fulfillmentStatus', '');
+            updateFilter('status', '');
+            return;
+        }
+        if (key === 'productCategory' || key === 'category') {
+            updateFilter('productCategory', '');
+            updateFilter('category', '');
+            return;
+        }
         updateFilter(key, (key === 'isUrgent' || key === 'isParked') ? false : "");
     };
 
@@ -61,6 +71,7 @@ export default function OrderFilters({ filters, setFilters, setPage, pageType, f
                 filters={filters}
                 updateFilter={updateFilter}
                 clearFilters={clearFilters}
+                applyFilters={applyFilters}
                 localOrderId={localOrderId}
                 setLocalOrderId={setLocalOrderId}
                 localCustomerName={localCustomerName}

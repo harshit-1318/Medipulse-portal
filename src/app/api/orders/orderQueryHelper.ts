@@ -1,22 +1,14 @@
 import { applyStatusFilter } from './orderStatusFilter';
+import { applyProductAndDocFilters } from './orderProductFilter';
+import { applyDateFilter, parseDateBoundary } from './orderDateFilter';
+
+export { parseDateBoundary, applyDateFilter };
 
 export interface OrderQueryParams {
   query: Record<string, any>;
   sortOptions: Record<string, 1 | -1>;
   page: number;
   limit: number;
-}
-
-export function parseDateBoundary(dateStr: string, isEnd = false): Date {
-  const parts = dateStr.split('T')[0].split('-').map(Number);
-  if (parts.length === 3 && !parts.some(isNaN)) {
-    const [year, month, day] = parts;
-    return isEnd
-      ? new Date(Date.UTC(year, month - 1, day, 23, 59, 59, 999))
-      : new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0));
-  }
-  const fallback = new Date(dateStr);
-  return isEnd ? new Date(fallback.setUTCHours(23, 59, 59, 999)) : new Date(fallback.setUTCHours(0, 0, 0, 0));
 }
 
 export function buildOrderQuery(searchParams: URLSearchParams): OrderQueryParams {
@@ -26,42 +18,80 @@ export function buildOrderQuery(searchParams: URLSearchParams): OrderQueryParams
   const sortDir = searchParams.get('sort') === 'asc' ? 1 : -1;
 
   const query: Record<string, any> = {};
+  const andClauses: Record<string, any>[] = [];
 
-  if (searchParams.get('isUrgent') === 'true') query.isUrgent = true;
-  if (searchParams.get('isParked') === 'true') query.isParked = true;
+  if (searchParams.get('isUrgent') === 'true') {
+    andClauses.push({ $or: [{ isUrgent: true }, { urgent: true }, { tags: { $regex: 'makeurgent', $options: 'i' } }] });
+  }
+  if (searchParams.get('isParked') === 'true') {
+    andClauses.push({ $or: [{ isParked: true }, { tags: { $regex: 'parkedorder', $options: 'i' } }] });
+  }
 
   const orderId = searchParams.get('orderId');
-  if (orderId) query.orderNumber = { $regex: orderId.replace('#', '').trim(), $options: 'i' };
+  if (orderId) {
+    const cleanId = orderId.replace('#', '').trim();
+    const pattern = cleanId.replace(/[\s-]+/g, '[- ]?');
+    andClauses.push({
+      $or: [
+        { orderNumber: { $regex: pattern, $options: 'i' } },
+        { shopify_order_id: { $regex: cleanId, $options: 'i' } },
+        { store_order_id: { $regex: cleanId, $options: 'i' } },
+      ],
+    });
+  }
 
-  const customerName = searchParams.get('customerName') || searchParams.get('customer');
+  const customerId = searchParams.get('customerId');
+  if (customerId) {
+    const cleanCid = customerId.replace(/^[#\s]+/, '').trim();
+    andClauses.push({
+      $or: [
+        { store_order_id: { $regex: cleanCid, $options: 'i' } },
+        { shopify_order_id: { $regex: cleanCid, $options: 'i' } },
+        { customerId: { $regex: cleanCid, $options: 'i' } },
+      ],
+    });
+  }
+
+  const customerName = searchParams.get('customerName');
   if (customerName) query.customerName = { $regex: customerName.trim(), $options: 'i' };
 
   const customerEmail = searchParams.get('customerEmail');
   if (customerEmail) query.customerEmail = { $regex: customerEmail.trim(), $options: 'i' };
 
-  const startDate = searchParams.get('startDate');
-  const endDate = searchParams.get('endDate');
-  if (startDate || endDate) {
-    query.createdAt = {};
-    if (startDate) query.createdAt.$gte = parseDateBoundary(startDate, false);
-    if (endDate) query.createdAt.$lte = parseDateBoundary(endDate, true);
+  const generalCustomer = searchParams.get('customer');
+  if (generalCustomer && !customerName && !customerEmail && !customerId) {
+    const val = generalCustomer.trim();
+    const cleanDigits = val.replace(/^[#\s]+/, '');
+    if (val.includes('@')) {
+      query.customerEmail = { $regex: val, $options: 'i' };
+    } else if (/^\d+$/.test(cleanDigits)) {
+      andClauses.push({
+        $or: [
+          { store_order_id: { $regex: cleanDigits, $options: 'i' } },
+          { shopify_order_id: { $regex: cleanDigits, $options: 'i' } },
+          { customerId: { $regex: cleanDigits, $options: 'i' } },
+        ],
+      });
+    } else {
+      query.customerName = { $regex: val, $options: 'i' };
+    }
   }
+
+  applyDateFilter(query, searchParams);
 
   const orderType = searchParams.get('order_type') || searchParams.get('repeatedOrders');
   if (orderType === 'first') {
-    query.$or = [
-      { order_type: 'first' },
-      { repeatedOrders: 0 },
-      { repeatedOrders: { $exists: false } },
-    ];
+    andClauses.push({ $or: [{ order_type: 'first' }, { repeatedOrders: 0 }, { repeatedOrders: { $exists: false } }] });
   } else if (orderType === 'repeat') {
-    query.$or = [
-      { order_type: 'repeat' },
-      { repeatedOrders: { $gt: 0 } },
-    ];
+    andClauses.push({ $or: [{ order_type: 'repeat' }, { repeatedOrders: { $gt: 0 } }] });
   }
 
-  applyStatusFilter(query, searchParams);
+  applyStatusFilter(query, searchParams, andClauses);
+  applyProductAndDocFilters(query, searchParams, andClauses);
+
+  if (andClauses.length > 0) {
+    query.$and = andClauses;
+  }
 
   return { query, sortOptions: { [sortBy]: sortDir }, page, limit };
 }

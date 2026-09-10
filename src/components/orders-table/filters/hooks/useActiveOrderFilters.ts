@@ -3,6 +3,7 @@ import { capitalize } from "@/utils";
 import type { PageType } from "../../types";
 import {
     getStatusOptions,
+    getFulfillmentStatusOptions,
     getCustomerOrderOptions,
     getProductTypeOptions,
     getDocumentOptions,
@@ -13,12 +14,16 @@ export function getActiveOrderFilters(filters: any, pageType: PageType) {
     const activeFilters: { key: string, label: string, value: string | boolean, icon: any, isRemovable?: boolean }[] = [];
 
     if (filters.orderId) activeFilters.push({ key: 'orderId', label: 'Order ID', value: filters.orderId, icon: Search });
-    if (filters.status && filters.status !== 'all') {
+    const statusVal = filters.fulfillmentStatus || filters.status;
+    if (statusVal && statusVal !== 'all') {
         const isLocked = ["on_hold", "unfulfilled", "fulfilled", "cancelled"].includes(pageType);
+        const label = getFulfillmentStatusOptions().find(o => o.value === statusVal || o.label.toLowerCase() === statusVal.toLowerCase())?.label
+            || getStatusOptions(pageType).find(o => o.value === statusVal)?.label
+            || capitalize(statusVal);
         activeFilters.push({ 
             key: 'status', 
             label: 'Status', 
-            value: getStatusOptions(pageType).find(o => o.value === filters.status)?.label || capitalize(filters.status), 
+            value: label, 
             icon: Layers,
             isRemovable: !isLocked
         });
@@ -74,11 +79,17 @@ export function getActiveOrderFilters(filters: any, pageType: PageType) {
         });
     }
     if (filters.startDate) {
-        const dateVal = new Intl.DateTimeFormat("en-GB", { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' }).format(new Date(filters.startDate));
+        const parsed = new Date(filters.startDate);
+        const dateVal = !isNaN(parsed.getTime())
+            ? new Intl.DateTimeFormat("en-GB", { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' }).format(parsed)
+            : String(filters.startDate);
         activeFilters.push({ key: 'startDate', label: 'Start Date', value: dateVal, icon: Calendar });
     }
     if (filters.endDate) {
-        const dateVal = new Intl.DateTimeFormat("en-GB", { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' }).format(new Date(filters.endDate));
+        const parsed = new Date(filters.endDate);
+        const dateVal = !isNaN(parsed.getTime())
+            ? new Intl.DateTimeFormat("en-GB", { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' }).format(parsed)
+            : String(filters.endDate);
         activeFilters.push({ key: 'endDate', label: 'End Date', value: dateVal, icon: Calendar });
     }
 

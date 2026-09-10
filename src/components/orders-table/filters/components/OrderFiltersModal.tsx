@@ -10,6 +10,7 @@ interface Props {
     filters: any;
     updateFilter: (key: string, value: any) => void;
     clearFilters: () => void;
+    applyFilters?: () => void;
     localOrderId: string;
     setLocalOrderId: (v: string) => void;
     localCustomerName: string;
@@ -25,6 +26,7 @@ export function OrderFiltersModal({
     filters,
     updateFilter,
     clearFilters,
+    applyFilters,
     localOrderId,
     setLocalOrderId,
     localCustomerName,
@@ -69,6 +71,10 @@ export function OrderFiltersModal({
                 <OrderFiltersFooter
                     onClear={clearFilters}
                     onClose={() => setFiltersEnabled(false)}
+                    onSearch={() => {
+                        applyFilters?.();
+                        setFiltersEnabled(false);
+                    }}
                 />
             </div>
         </div>

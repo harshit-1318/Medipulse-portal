@@ -1,5 +1,16 @@
 # Frontend Project State
 
+- All Orders Modal Filters Complete Audit & Backend Query Parity Fix (Sep 10 2026):
+	- Multi-Filter Backend Query Parity: Audited all 12 filter controls in the All Orders modal. Resolved critical issues where `product_type` (Injectable/Oral), `product_category` (Weight Loss, ED, etc.), `productName`, `documentStatus` (Uploaded/Not Uploaded), and `customerId` were completely missing from `orderQueryHelper.ts`.
+	- Modular Filter Processing: Implemented `src/app/api/orders/orderProductFilter.ts` (77 LOC) and `src/app/api/orders/orderDateFilter.ts` (29 LOC) to isolate product category, product type, product name, documents filter resolution, and UTC boundary date calculations.
+	- Compound `$and` Architecture: Prevented key overwrite collisions in MongoDB by grouping independent `$or` conditions (order ID, urgency, parked, order type, status, category) into `$and` clauses.
+	- Date Filter Mapping Parity: Supported both snake_case (`start_date`, `end_date`) and camelCase (`startDate`, `endDate`) with UTC boundary parsing for ISO and YYYY-MM-DD date inputs in `orderDateFilter.ts`.
+	- Search Button Immediate Flush: Connected the modal "Search" button to `applyFilters` in `useOrderFilters.ts`, immediately flushing pending debounced inputs (`localOrderId`, `localCustomerName`, `localProductName`) into active filter state without waiting for timeout.
+	- Active Filter Chips Parity: Updated `useActiveOrderFilters.ts` and `OrderFilters.tsx` to check both `fulfillmentStatus` and `status`, ensuring the status chip appears when selected and clears cleanly.
+	- Document Cell Mapping Parity: Enhanced `mapper.ts` so `documentItemsStatus` rows in `DocsCell` reflect forced uploaded/not-uploaded filter states accurately.
+	- Strict < 100 LOC Compliance: All modified/created files (`orderQueryHelper.ts` 82 LOC, `orderDateFilter.ts` 29 LOC, `orderProductFilter.ts` 77 LOC, `orderStatusFilter.ts` 53 LOC, `OrderFiltersFooter.tsx` 23 LOC, `OrderFiltersModal.tsx` 76 LOC, `useActiveOrderFilters.ts` 92 LOC, `useOrderFilters.ts` 89 LOC, `orderFilterUtils.ts` 76 LOC, `orderParamsNormalizer.ts` 37 LOC) strictly adhere to < 100 LOC targets.
+	- Comprehensive Test Suite & 4-Round Browser Automation: 100% Vitest pass rate across `orderQueryHelper.test.ts` (13/13 PASS), 57 order test files (347/347 PASS), and full project (812/812 PASS). Four live automated browser runs confirmed: initial load (42), status on hold (6), customer orders repeat (20), product type injectable (37), order ID search (40), documents not uploaded, urgent toggle (13), category weight loss (37), product name Wegovy (3), customer name Jane (1), first orders + parked toggle (1), and modal clear all (42 restored).
+
 - Order Status Views Filtering Parity & On Hold Segregation (Sep 10 2026):
 	- On Hold Strict Filtering: Resolved bug where On Hold orders view (`/orders/status/on-hold`) returned all database orders with mixed statuses (`PAYMENT PENDING`, `DISPATCHED`, `FULFILLED`). Implemented `applyStatusFilter` in `src/app/api/orders/orderStatusFilter.ts` mapping `fulfillmentStatus`, `fulfillment_status`, `orderStatus`, and `status` to precise MongoDB queries.
 	- Status Page Segregation: Enforced 100% strict status badge parity across all 4 Order Status routes:

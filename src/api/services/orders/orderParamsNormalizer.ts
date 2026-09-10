@@ -19,8 +19,10 @@ export function applyDateAndCategoryFilters(params: any, filters: any) {
     if (filters.search && filters.type !== "customers") params.search = filters.search;
 
     if (filters.documents) {
-        const isUploaded = filters.documents === "Uploaded";
-        params.documentStatus = isUploaded ? "uploaded" : "not_uploaded";
+        const docVal = String(filters.documents).toLowerCase().trim();
+        if (docVal !== "all" && docVal !== "") {
+            params.documentStatus = (docVal === "uploaded" || docVal === "true") ? "uploaded" : "not_uploaded";
+        }
     }
 
     if (filters.products) params.product_type = String(filters.products).toLowerCase();

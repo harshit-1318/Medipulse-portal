@@ -79,11 +79,21 @@ export function useOrderFilters(filters: OrderFilters, setFilters: React.Dispatc
         return () => clearTimeout(timer);
     }, [localProductName, filters.productName, updateFilter]);
 
+    const applyFilters = useCallback(() => {
+        setPage(1);
+        setFilters((prev: any) => ({
+            ...prev,
+            customer: localCustomerName,
+            orderId: localOrderId,
+            productName: localProductName,
+        }));
+    }, [setPage, setFilters, localCustomerName, localOrderId, localProductName]);
+
     return {
         localCustomerName, setLocalCustomerName,
         localOrderId, setLocalOrderId,
         localProductName, setLocalProductName,
-        updateFilter, clearFilters
+        updateFilter, clearFilters, applyFilters
     };
 }
 

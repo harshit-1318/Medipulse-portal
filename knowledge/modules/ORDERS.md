@@ -82,4 +82,18 @@
 	- Fulfilled (`/orders/status/fulfilled`): Strictly filters for `fulfillmentStatus="fulfilled"`. Displays 100% `FULFILLED` badges.
 	- Cancelled (`/orders/status/cancelled`): Strictly filters for `fulfillmentStatus="cancelled"`. Displays 100% `CANCELLED` badges.
 	- API query helper `applyStatusFilter` in `orderStatusFilter.ts` translates `fulfillmentStatus`, `fulfillment_status`, `orderStatus`, and `status` into exact MongoDB `$or` queries matching both `status` and `fulfillment_status` fields without colliding with `order_type`.
+- All Orders Modal Filters Contract (Sep 10 2026):
+	- Multi-field Order ID Search: `orderId` parameter searches `orderNumber`, `shopify_order_id`, and `store_order_id` in MongoDB with automatic `#` prefix stripping.
+	- Comprehensive Customer Search: Supports `customerName`, `customerEmail`, `customerId`, and general `customer` matching name, email, or numeric ID across `store_order_id`, `shopify_order_id`, and `customerId`.
+	- Date Boundary Resolution: Supports both camelCase (`startDate`, `endDate`) and snake_case (`start_date`, `end_date`), parsing ISO strings and YYYY-MM-DD cleanly.
+	- Product Information Filters:
+		- Product Type: `product_type` (`injectable`, `oral`) matches items via `orderProductFilter.ts`.
+		- Product Category: `product_category` matches standard medical categories against item names and order tags.
+		- Product Name: `productName` matches `items.name` via case-insensitive regex.
+		- Documents: `documentStatus` (`uploaded`, `not_uploaded`) matches uploaded vs not-uploaded documents across `hasIdCard`, `hasFullPhoto`, `documentsUploaded`, and tags.
+	- Special Handlers: `isUrgent` and `isParked` match boolean flags and tags (`makeurgent`, `parkedorder`).
+	- Compound `$and` Architecture: All `$or` clauses are collected under `$and` so multiple simultaneous filters never clash or overwrite each other.
+	- Immediate Modal Apply: The modal Search button immediately flushes pending debounce inputs (`localOrderId`, `localCustomerName`, `localProductName`) into active filters.
+	- Active Chips Parity: `useActiveOrderFilters` checks `fulfillmentStatus || status` so status filter chips appear and clear reliably.
+
 
