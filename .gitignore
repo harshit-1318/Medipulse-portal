@@ -32,6 +32,21 @@ pnpm-debug.log*
 .vscode/
 node_modules_list.txt
 node_modules_names.txt
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+desktop.ini
+*.swp
+*.swo
+*~
+
+# Local Caches & Temp Folders
+/scratch/
+.vitest/
+.vercel/
+.claude/
+.gemini/
 
 # Logs
 *.log
