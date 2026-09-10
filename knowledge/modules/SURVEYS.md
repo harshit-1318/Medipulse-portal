@@ -11,3 +11,4 @@
 ## Notes
 - Keep survey public/private endpoint boundaries explicit.
 - Test schema/shape transformations for survey payloads before release.
+- UI aligns with Orders Filters design system: clean single `h1` header and 14px uppercase column headers.

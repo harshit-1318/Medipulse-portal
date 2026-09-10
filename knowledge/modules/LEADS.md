@@ -12,3 +12,4 @@
 ## Notes
 - Keep filter serialization consistent between URL and service calls.
 - Add tests when introducing new lead workflow actions.
+- UI aligns with Orders Filters design system: clean single `h1` header, 14px uppercase column headers, and standardized cyan `ActionButton` for row viewing.

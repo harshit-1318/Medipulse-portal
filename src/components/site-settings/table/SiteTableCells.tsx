@@ -1,4 +1,5 @@
 import { Building2, Globe2, Eye, Pencil } from "lucide-react";
+import { ActionButton } from "@/components/common";
 
 export const NameCell = ({ name, logo }: { name: string, logo?: string }) => (
     <div className="flex items-center justify-center gap-3.5">
@@ -39,20 +40,18 @@ export const StatusCell = ({ active }: { active: boolean }) => (
 );
 
 export const ActionsCell = ({ id }: { id: string }) => (
-    <div className="flex items-center justify-center gap-2.5">
-        <a
+    <div className="flex items-center justify-center gap-2">
+        <ActionButton
+            icon={Eye}
+            label="View"
+            variant="cyan"
             href={`/sites/${id}`}
-            className="inline-flex items-center gap-1 rounded-md border border-slate-200 px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
-        >
-            <Eye size={13} />
-            View
-        </a>
-        <a
+        />
+        <ActionButton
+            icon={Pencil}
+            label="Edit"
+            variant="slate"
             href={`/sites/${id}/edit`}
-            className="inline-flex items-center gap-1 rounded-md border border-slate-200 px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
-        >
-            <Pencil size={13} />
-            Edit
-        </a>
+        />
     </div>
 );

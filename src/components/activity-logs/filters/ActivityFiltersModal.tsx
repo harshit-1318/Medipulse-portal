@@ -1,4 +1,4 @@
-import { m, AnimatePresence } from "framer-motion";
+import { useEffect } from "react";
 import { ActivityFiltersHeader } from "./ActivityFiltersHeader";
 import { ActivityFiltersFooter } from "./ActivityFiltersFooter";
 import { ActivityFiltersForm } from "./ActivityFiltersForm";
@@ -30,37 +30,45 @@ export const ActivityFiltersModal = ({
 }: Props) => {
     const handleClose = () => setFiltersEnabled(false);
 
-    return (
-        <AnimatePresence>
-            {filtersEnabled && (
-                <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
-                    <m.div
-                        initial={{ opacity: 0, scale: 0.95, y: 30 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.95, y: 30 }}
-                        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                        className="bg-white rounded-4xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] w-full max-w-3xl overflow-hidden border border-slate-200/60"
-                    >
-                        <ActivityFiltersHeader onClose={handleClose} />
-                        
-                        <ActivityFiltersForm 
-                            filters={filters}
-                            updateFilter={updateFilter}
-                            localSearch={localSearch}
-                            setLocalSearch={setLocalSearch}
-                            localOrderId={localOrderId}
-                            setLocalOrderId={setLocalOrderId}
-                            siteOptions={siteOptions}
-                        />
+    useEffect(() => {
+        const handleEsc = (e: KeyboardEvent) => {
+            if (e.key === "Escape") handleClose();
+        };
+        window.addEventListener("keydown", handleEsc);
+        return () => window.removeEventListener("keydown", handleEsc);
+    }, []);
 
-                        <ActivityFiltersFooter 
-                            onClear={clearFilters}
-                            onCancel={handleClose}
-                            onApply={handleClose}
-                        />
-                    </m.div>
+    if (!filtersEnabled) return null;
+
+    return (
+        <div
+            className="fixed inset-0 z-100 bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in transition-[left] duration-300 ease-in-out"
+            style={{ left: "var(--sidebar-width, 17.5rem)" }}
+            onClick={(e) => {
+                if (e.target === e.currentTarget) handleClose();
+            }}
+        >
+            <div className="bg-white w-full max-w-4xl rounded-[2.5rem] shadow-[0_30px_70px_rgba(79,70,229,0.18)] overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 slide-in-from-bottom-8 duration-500 border border-slate-100 relative">
+                <ActivityFiltersHeader onClose={handleClose} />
+                
+                <div className="flex-1 overflow-y-auto custom-scrollbar">
+                    <ActivityFiltersForm 
+                        filters={filters}
+                        updateFilter={updateFilter}
+                        localSearch={localSearch}
+                        setLocalSearch={setLocalSearch}
+                        localOrderId={localOrderId}
+                        setLocalOrderId={setLocalOrderId}
+                        siteOptions={siteOptions}
+                    />
                 </div>
-            )}
-        </AnimatePresence>
+
+                <ActivityFiltersFooter 
+                    onClear={clearFilters}
+                    onClose={handleClose}
+                />
+            </div>
+        </div>
     );
 };
+

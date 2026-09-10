@@ -3,6 +3,7 @@ import type { DocmanJobType } from '../types';
 import JobStatusBadge from './JobStatusBadge';
 import { DocmanJobActions } from './DocmanJobActions';
 import { formatJobDate } from '../utils/formatJobDate';
+import { ActionButton } from '@/components/common';
 
 interface DocmanJobRowProps {
     job: DocmanJobType;
@@ -40,10 +41,15 @@ export default function DocmanJobRow({ job, onDelete }: DocmanJobRowProps) {
 
             <td className="py-4 px-5 align-middle">
                 {fileUrl ? (
-                    <a href={fileUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 border border-teal-200 rounded-lg text-[#00a294] hover:bg-teal-100 transition-all text-[11px] font-bold shadow-xs">
-                        <FileText size={13} />
-                        View
-                    </a>
+                    <ActionButton
+                        icon={FileText}
+                        label="View"
+                        variant="cyan"
+                        href={fileUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="w-[78px] h-[32px]"
+                    />
                 ) : (
                     <span className="text-slate-300 font-semibold text-[11px]">NO ASSET</span>
                 )}

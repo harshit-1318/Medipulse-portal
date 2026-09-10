@@ -16,18 +16,18 @@ interface UsersTableProps {
 
 export default function UsersTable({ users, loading, total, page, onPageChange, limit, onToggleUserActive }: UsersTableProps) {
     return (
-        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-[0_4px_24px_rgba(0,0,0,0.02)] font-montserrat w-full overflow-hidden flex flex-col animate-in fade-in duration-500">
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm font-montserrat w-full overflow-hidden flex flex-col animate-in fade-in duration-500">
             <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-white">
                 <div className="inline-flex flex-col">
                     <div className="flex items-center gap-2.5">
-                        <h2 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
+                        <h2 className="text-[18px] font-semibold text-[#003B73] tracking-tight">
                             User Directory
                         </h2>
-                        <span className="bg-[#00a294]/10 text-[#00a294] text-xs font-bold px-2.5 py-0.5 rounded-full border border-[#00a294]/20">
+                        <span className="bg-blue-50 text-[#003B73] text-xs font-semibold px-2 py-0.5 rounded-full border border-blue-100">
                             {total}
                         </span>
                     </div>
-                    <div className="w-12 h-0.75 bg-linear-to-r from-[#00a294] to-[#003B73] mt-1.5 rounded-full shadow-xs" />
+                    <div className="w-12 h-0.75 bg-linear-to-r from-[#00B3CC] to-[#003B73] mt-1 rounded-full shadow-xs" />
                 </div>
             </div>
             <div className="overflow-x-auto custom-scrollbar flex-1">

@@ -44,16 +44,17 @@ export const ActivityTableTitle = ({
             <div className="flex items-center gap-3">
                 <button
                     onClick={() => setFiltersEnabled(!filtersEnabled)}
-                    className={`group flex items-center gap-2 h-8.5 px-3.5 text-[12.5px] font-bold rounded-xl transition-all shadow-xs border cursor-pointer ${
+                    className={`inline-flex items-center gap-2 px-3.5 py-1.5 text-[14px] font-semibold rounded-lg border transition-all duration-200 cursor-pointer ${
                         filtersEnabled || (activeFilters && activeFilters.length > 0)
-                        ? "bg-teal-50 text-[#00a294] border-teal-200 shadow-sm" 
-                        : "bg-white text-slate-600 border-slate-200 hover:text-[#00a294] hover:border-teal-300 hover:bg-slate-50"
+                        ? "bg-indigo-50 text-indigo-700 border-indigo-200 shadow-xs" 
+                        : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50 hover:text-slate-900"
                     }`}
                 >
-                    <Filter size={14} className={filtersEnabled || (activeFilters && activeFilters.length > 0) ? "text-[#00a294]" : "text-slate-400 group-hover:text-[#00a294]"} strokeWidth={2.5} />
-                    <span>{filtersEnabled ? "Close Filters" : "Filters"}</span>
+                    <Filter size={15} className={filtersEnabled || (activeFilters && activeFilters.length > 0) ? "text-indigo-600" : "text-slate-400"} strokeWidth={2.2} />
+                    <span>Filters</span>
                 </button>
             </div>
+
         </div>
     );
 };

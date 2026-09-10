@@ -8,4 +8,5 @@ export * from './UserDetailsDrawer';
 export * from './ResetPasswordModal';
 export * from './EditUserModal';
 export * from './CredentialsTableRow';
+export * from './CredentialsRowMenu';
 export * from './CredentialsTable';

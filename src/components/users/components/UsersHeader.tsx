@@ -1,20 +1,12 @@
-import { Plus, Users } from 'lucide-react';
+import { Plus } from 'lucide-react';
 
 export default function UsersHeader() {
     return (
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-1">
-            <div className="flex items-center gap-3.5">
-                <div className="h-11 w-11 rounded-2xl bg-[#00a294]/10 border border-[#00a294]/20 text-[#00a294] flex items-center justify-center shadow-xs">
-                    <Users size={22} strokeWidth={2.2} />
-                </div>
-                <div>
-                    <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight leading-tight">
-                        User Management
-                    </h1>
-                    <p className="text-xs sm:text-sm text-slate-500 font-medium">
-                        Manage platform staff accounts, assign site permissions, and track status.
-                    </p>
-                </div>
+            <div>
+                <h1 className="text-[22px] font-bold text-slate-900 mb-1 tracking-tight">
+                    User Management
+                </h1>
             </div>
 
             <a

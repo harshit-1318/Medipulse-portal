@@ -34,4 +34,5 @@
 - Users pages should not nest additional `QueryProvider` wrappers; they are already wrapped at app layout level. Nested providers can cause extra full-screen initializing overlays.
 - User creation is handled via `POST /api/users` and `createUser()` in `userService.ts` with MongoDB Atlas persistence and duplicate email validation.
 - User detail/edit/delete operations are handled via `GET`, `PATCH`/`PUT`, and `DELETE` at `/api/users/[id]`.
+- UI aligns with Orders Filters design system: clean single `h1` header, integrated table card header with `[#003B73]` typography, count pill, gradient accent bar, 14px uppercase column headers, and standardized `ActionButton` row buttons.
 

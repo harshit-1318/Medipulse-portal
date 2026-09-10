@@ -16,7 +16,7 @@
 ## Notes
 - Keep filter/sort params centralized in service builders.
 - Validate date filter handling in both SSR and client refresh paths.
-- Activity filters modal intentionally uses no dark/blurred full-screen backdrop; keep the modal container neutral (no `bg-slate-900/60` and no `backdrop-blur-md`) unless product requirements change.
+- Activity filters modal uses standardized `bg-slate-900/60 backdrop-blur-md` overlay, `style={{ left: "var(--sidebar-width)" }}` content centering, `Active Filters` header, and ESC/click-outside dismiss to match the unified portal design system.
 - Super-admin behavior:
 	- default Activity Logs view should load all sites (no implicit site filter).
 	- optional Site dropdown filter should send `siteId` when selected.

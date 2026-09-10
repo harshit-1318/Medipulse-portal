@@ -1,5 +1,5 @@
 
-import { Plus, Building2 } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useSitesPage } from "./hooks/useSitesPage";
 import SitesFilters from "./filters/sites-filters";
 import SitesTable from "./table/sites-table";
@@ -27,11 +27,8 @@ function SitesListContent() {
         <div className="flex flex-col gap-4 font-montserrat animate-in fade-in duration-500 pb-10">
             {/* Header Area */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="flex items-center gap-3 mb-1">
-                    <div className="p-2.5 bg-teal-50 text-[#00a294] rounded-xl border border-teal-100 shadow-sm transition-transform duration-300 hover:rotate-3">
-                        <Building2 size={22} strokeWidth={2.5} />
-                    </div>
-                    <h1 className="text-[22px] font-bold text-slate-900 tracking-tight">
+                <div>
+                    <h1 className="text-[22px] font-bold text-slate-900 mb-1 tracking-tight">
                         Sites Directory
                     </h1>
                 </div>

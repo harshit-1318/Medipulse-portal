@@ -38,22 +38,22 @@ export function ActivityTableHeader({ table }: Props) {
                                     else if (isSorted === "asc") h.column.toggleSorting(true);
                                     else h.column.toggleSorting(undefined);
                                 } : undefined}
-                                    className="flex items-center gap-1 select-none hover:text-[#00a294] transition-colors justify-center w-full group cursor-pointer"
+                                    className="flex items-center gap-1 select-none hover:text-indigo-600 transition-colors justify-center w-full group cursor-pointer"
                                 >
                                     <div className="flex items-center gap-2 group-hover:scale-102 transition-transform duration-300">
-                                        {Icon && <Icon size={14} className="text-slate-400 group-hover:text-[#00a294] transition-colors" />}
-                                        <span className="text-[13px] font-extrabold font-montserrat tracking-widest text-[#003B73]/80 uppercase">
+                                        {Icon && <Icon size={14} className="text-slate-400 group-hover:text-indigo-400 transition-colors" />}
+                                        <span className="text-[14px] font-extrabold font-montserrat tracking-widest text-[#003B73]/80 uppercase">
                                             {flexRender(h.column.columnDef.header, h.getContext())}
                                         </span>
                                     </div>
                                     {canSort && (
                                         <span className="ml-1.5 flex items-center">
                                             {sorted === "asc" ? (
-                                                <ArrowUp size={14} className="text-[#00a294] animate-in slide-in-from-bottom-1 duration-300" />
+                                                <ArrowUp size={14} className="text-indigo-600 animate-in slide-in-from-bottom-1 duration-300" />
                                             ) : sorted === "desc" ? (
-                                                <ArrowDown size={14} className="text-[#00a294] animate-in slide-in-from-top-1 duration-300" />
+                                                <ArrowDown size={14} className="text-indigo-600 animate-in slide-in-from-top-1 duration-300" />
                                             ) : (
-                                                <ArrowUpDown size={14} className="text-slate-300 group-hover:text-[#00a294] transition-colors" />
+                                                <ArrowUpDown size={14} className="text-slate-300 group-hover:text-indigo-400 transition-colors" />
                                             )}
                                         </span>
                                     )}

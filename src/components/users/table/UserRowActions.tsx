@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Eye, Pencil, Power } from 'lucide-react';
 import type { User } from '@/components/users/types';
 import toast from 'react-hot-toast';
+import { ActionButton } from '@/components/common';
 
 interface UserRowActionsProps {
     user: User;
@@ -49,31 +50,31 @@ export function UserRowActions({ user, onToggleUserActive }: UserRowActionsProps
     };
 
     return (
-        <div className="flex items-center justify-center gap-1.5">
-            <a
+        <div className="flex items-center justify-center gap-2">
+            <ActionButton
+                icon={Eye}
+                label="View"
+                variant="cyan"
                 href={`/users/${user._id}`}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/80 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-[#00a294]/10 hover:text-[#00a294] hover:border-[#00a294]/30 active:scale-95 transition-all shadow-2xs"
-            >
-                <Eye size={13} strokeWidth={2} />
-                <span>View</span>
-            </a>
+                className="w-[78px] h-[32px]"
+            />
 
-            <a
+            <ActionButton
+                icon={Pencil}
+                label="Edit"
+                variant="slate"
                 href={`/users/${user._id}/edit`}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/80 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 active:scale-95 transition-all shadow-2xs"
-            >
-                <Pencil size={13} strokeWidth={2} />
-                <span>Edit</span>
-            </a>
+                className="w-[78px] h-[32px]"
+            />
 
             <button
                 type="button"
                 onClick={handleToggle}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/80 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 active:scale-95 transition-all shadow-2xs disabled:cursor-not-allowed disabled:opacity-40"
+                className="h-[32px] px-2.5 rounded-[8px] bg-white border border-rose-200 text-rose-600 hover:bg-rose-50/50 hover:border-rose-300 text-[11px] font-bold font-montserrat tracking-wide flex items-center justify-center gap-1.5 hover:-translate-y-[1.5px] active:translate-y-0 transition-all duration-300 shadow-[0_2px_8px_-2px_rgba(225,29,72,0.12)] disabled:opacity-40 disabled:cursor-not-allowed uppercase"
                 disabled={user.is_super_admin === true || isProcessing}
                 title={user.is_super_admin ? 'Super Admin cannot be disabled from list actions' : undefined}
             >
-                <Power size={13} strokeWidth={2} />
+                <Power size={13} strokeWidth={2.5} className="text-rose-500" />
                 <span>{user.is_active ?? true ? 'Disable' : 'Enable'}</span>
             </button>
         </div>

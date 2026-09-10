@@ -1,5 +1,5 @@
 import { flexRender, type Table } from "@tanstack/react-table";
-import { ChevronDown, ChevronUp, ChevronsUpDown, Building2, Globe2, Activity, Users, ShoppingCart, Settings } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown, Building2, Globe2, Activity, Users, ShoppingCart, Settings } from "lucide-react";
 
 interface Props {
     table: Table<any>;
@@ -38,10 +38,10 @@ export const SitesTableHeader: React.FC<Props> = ({ table }) => {
                                     {header.column.getCanSort() && (
                                         <span className="transition-colors flex shrink-0">
                                             {{
-                                                asc: <ChevronUp size={14} className="text-indigo-600" />,
-                                                desc: <ChevronDown size={14} className="text-indigo-600" />,
+                                                asc: <ArrowUp size={14} className="text-indigo-600" />,
+                                                desc: <ArrowDown size={14} className="text-indigo-600" />,
                                             }[header.column.getIsSorted() as string] ?? (
-                                                <ChevronsUpDown size={14} className="text-slate-300 group-hover:text-slate-500 transition-colors" />
+                                                <ArrowUpDown size={14} className="text-slate-300 group-hover:text-indigo-400 transition-colors" />
                                             )}
                                         </span>
                                     )}

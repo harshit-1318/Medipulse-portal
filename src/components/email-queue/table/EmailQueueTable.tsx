@@ -24,23 +24,33 @@ function StatusPill({ status }: { status: EmailQueueJob['status'] }) {
 
 export function EmailQueueTable({ data }: { data: EmailQueueOverview | null }) {
     return (
-        <div className="rounded-xl border border-slate-200 bg-white shadow-sm">
-            <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
-                <p className="text-sm font-semibold text-slate-800">Recent Queue Jobs</p>
-                <p className="text-xs text-slate-500">Generated: {formatDate(data?.generatedAt ?? null)}</p>
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden font-montserrat flex flex-col">
+            <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-white">
+                <div className="inline-flex flex-col">
+                    <div className="flex items-center gap-2.5">
+                        <h2 className="text-[18px] font-semibold text-[#003B73] tracking-tight">
+                            Recent Queue Jobs
+                        </h2>
+                        <span className="bg-blue-50 text-[#003B73] text-xs font-semibold px-2 py-0.5 rounded-full border border-blue-100">
+                            {data?.jobs?.length ?? 0}
+                        </span>
+                    </div>
+                    <div className="w-12 h-0.75 bg-linear-to-r from-[#00B3CC] to-[#003B73] mt-1 rounded-full shadow-xs" />
+                </div>
+                <p className="text-xs text-slate-500 font-medium">Generated: {formatDate(data?.generatedAt ?? null)}</p>
             </div>
 
             <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-slate-100 text-sm">
-                    <thead className="bg-slate-50/60 text-left text-xs uppercase tracking-wide text-slate-500">
+                    <thead className="bg-[#f8fafc] border-b border-slate-200 font-montserrat sticky top-0 z-10 text-[14px] font-extrabold tracking-widest text-[#003B73]/80 uppercase text-left">
                         <tr>
-                            <th className="px-4 py-3">Status</th>
-                            <th className="px-4 py-3">Order</th>
-                            <th className="px-4 py-3">Type</th>
-                            <th className="px-4 py-3">Attempts</th>
-                            <th className="px-4 py-3">Available At</th>
-                            <th className="px-4 py-3">Processed At</th>
-                            <th className="px-4 py-3">Error</th>
+                            <th className="py-4 px-5">Status</th>
+                            <th className="py-4 px-5">Order</th>
+                            <th className="py-4 px-5">Type</th>
+                            <th className="py-4 px-5">Attempts</th>
+                            <th className="py-4 px-5">Available At</th>
+                            <th className="py-4 px-5">Processed At</th>
+                            <th className="py-4 px-5">Error</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">

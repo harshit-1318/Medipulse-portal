@@ -1,4 +1,5 @@
-import { Trash2, ChevronRight } from 'lucide-react';
+import { Trash2, Eye } from 'lucide-react';
+import { ActionButton } from '@/components/common';
 
 interface DocmanJobActionsProps {
     fileUrl?: string;
@@ -9,20 +10,21 @@ interface DocmanJobActionsProps {
 export function DocmanJobActions({ fileUrl, jobId, onDelete }: DocmanJobActionsProps) {
     return (
         <div className="flex items-center justify-end gap-2 transition-all duration-300">
-            <button
-                onClick={() => fileUrl && window.open(fileUrl, '_blank')}
+            <ActionButton
+                icon={Eye}
+                label="View"
+                variant="cyan"
                 disabled={!fileUrl}
-                className="flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 text-white font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-indigo-700 hover:scale-105 active:scale-95 transition-all shadow-md shadow-indigo-100 disabled:opacity-50"
-            >
-                View
-                <ChevronRight size={12} strokeWidth={4} />
-            </button>
+                onClick={() => fileUrl && window.open(fileUrl, '_blank')}
+                className="w-[78px] h-[32px]"
+            />
             <button
+                type="button"
                 onClick={() => onDelete(jobId)}
-                className="flex items-center justify-center p-2 bg-rose-50 text-rose-500 border border-rose-100 rounded-xl hover:bg-rose-500 hover:text-white hover:scale-105 active:scale-95 transition-all shadow-sm"
+                className="h-[32px] w-[34px] rounded-[8px] bg-white border border-rose-200 text-rose-600 hover:bg-rose-50/50 hover:border-rose-300 flex items-center justify-center hover:-translate-y-[1.5px] active:translate-y-0 transition-all duration-300 shadow-[0_2px_8px_-2px_rgba(225,29,72,0.12)]"
                 title="Delete Job"
             >
-                <Trash2 size={16} strokeWidth={2.5} />
+                <Trash2 size={14} strokeWidth={2.2} />
             </button>
         </div>
     );

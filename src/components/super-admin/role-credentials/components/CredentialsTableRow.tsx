@@ -1,9 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { MoreHorizontal, Eye, UserPen, KeyRound, Copy, UserX, UserCheck } from 'lucide-react';
+import { MoreHorizontal, Eye, Copy } from 'lucide-react';
 import { copyToClipboard } from '../utils';
 import { RoleBadge } from './RoleBadge';
 import { PasswordCell } from './PasswordCell';
+import { CredentialsRowMenu } from './CredentialsRowMenu';
 import type { RoleCredentialUser } from '../types';
+import { ActionButton } from '@/components/common';
 
 interface CredentialsTableRowProps {
   user: RoleCredentialUser;
@@ -102,13 +104,14 @@ export const CredentialsTableRow: React.FC<CredentialsTableRowProps> = ({
 
       {/* Actions */}
       <td className="py-3.5 px-4 text-right whitespace-nowrap">
-        <div className="inline-flex items-center gap-1">
-          <button
+        <div className="inline-flex items-center gap-1.5">
+          <ActionButton
+            icon={Eye}
+            label="View"
+            variant="cyan"
             onClick={() => onViewDetails(user)}
-            className="px-2.5 py-1 text-xs font-medium text-slate-700 hover:text-purple-700 hover:bg-purple-50 rounded-md border border-slate-200/80 transition-colors"
-          >
-            View Details
-          </button>
+            className="h-[32px] w-[78px]"
+          />
 
           <div className="relative" ref={menuRef}>
             <button
@@ -119,33 +122,17 @@ export const CredentialsTableRow: React.FC<CredentialsTableRowProps> = ({
             </button>
 
             {menuOpen && (
-              <div className="absolute right-0 mt-1 w-44 bg-white border border-slate-200 rounded-xl shadow-lg z-30 py-1 text-left text-xs font-medium text-slate-700 animate-in fade-in zoom-in-95 duration-100">
-                <button onClick={() => { setMenuOpen(false); onViewDetails(user); }} className="w-full flex items-center gap-2 px-3 py-2 hover:bg-slate-50">
-                  <Eye className="w-3.5 h-3.5 text-slate-400" /> View Details
-                </button>
-                <button onClick={() => { setMenuOpen(false); onEdit(user); }} className="w-full flex items-center gap-2 px-3 py-2 hover:bg-slate-50">
-                  <UserPen className="w-3.5 h-3.5 text-slate-400" /> Edit User
-                </button>
-                <button onClick={() => { setMenuOpen(false); onResetPassword(user); }} className="w-full flex items-center gap-2 px-3 py-2 hover:bg-slate-50">
-                  <KeyRound className="w-3.5 h-3.5 text-purple-600" /> Reset Password
-                </button>
-                <button onClick={() => { setMenuOpen(false); copyToClipboard(user.email, 'Email copied!'); }} className="w-full flex items-center gap-2 px-3 py-2 hover:bg-slate-50">
-                  <Copy className="w-3.5 h-3.5 text-slate-400" /> Copy Email
-                </button>
-                {revealedPassword && isRevealed && (
-                  <button onClick={() => { setMenuOpen(false); onCopyPassword(revealedPassword); }} className="w-full flex items-center gap-2 px-3 py-2 hover:bg-slate-50">
-                    <Copy className="w-3.5 h-3.5 text-purple-600" /> Copy Password
-                  </button>
-                )}
-                <div className="my-1 border-t border-slate-100" />
-                <button
-                  onClick={() => { setMenuOpen(false); onToggleStatus(user); }}
-                  className={`w-full flex items-center gap-2 px-3 py-2 ${user.is_active ? 'text-rose-600 hover:bg-rose-50' : 'text-emerald-600 hover:bg-emerald-50'}`}
-                >
-                  {user.is_active ? <UserX className="w-3.5 h-3.5" /> : <UserCheck className="w-3.5 h-3.5" />}
-                  {user.is_active ? 'Deactivate Account' : 'Activate Account'}
-                </button>
-              </div>
+              <CredentialsRowMenu
+                user={user}
+                revealedPassword={revealedPassword}
+                isRevealed={isRevealed}
+                onClose={() => setMenuOpen(false)}
+                onViewDetails={onViewDetails}
+                onEdit={onEdit}
+                onResetPassword={onResetPassword}
+                onCopyPassword={onCopyPassword}
+                onToggleStatus={onToggleStatus}
+              />
             )}
           </div>
         </div>

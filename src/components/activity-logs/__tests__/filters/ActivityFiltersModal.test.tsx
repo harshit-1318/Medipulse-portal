@@ -2,13 +2,6 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { ActivityFiltersModal } from '../../filters/ActivityFiltersModal';
 
-vi.mock('framer-motion', () => ({
-    AnimatePresence: ({ children }: any) => children,
-    m: {
-        div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    },
-}));
-
 const baseProps = {
     filtersEnabled: true,
     setFiltersEnabled: vi.fn(),
@@ -29,14 +22,14 @@ const baseProps = {
 };
 
 describe('ActivityFiltersModal', () => {
-    it('renders without dark backdrop overlay class', () => {
+    it('renders with standardized Active Filters title and dark backdrop overlay', () => {
         render(<ActivityFiltersModal {...baseProps} />);
 
-        expect(screen.getByText('Filter Activity')).toBeInTheDocument();
+        expect(screen.getByText('Active Filters')).toBeInTheDocument();
         const hasDarkBackdropClass = Array.from(document.querySelectorAll('div')).some((el) =>
             el.classList.contains('bg-slate-900/60'),
         );
-        expect(hasDarkBackdropClass).toBe(false);
+        expect(hasDarkBackdropClass).toBe(true);
     });
 
     it('closes modal when close button is clicked', () => {
@@ -47,4 +40,13 @@ describe('ActivityFiltersModal', () => {
 
         expect(baseProps.setFiltersEnabled).toHaveBeenCalledWith(false);
     });
+
+    it('closes modal when Escape key is pressed', () => {
+        render(<ActivityFiltersModal {...baseProps} />);
+
+        fireEvent.keyDown(window, { key: 'Escape' });
+
+        expect(baseProps.setFiltersEnabled).toHaveBeenCalledWith(false);
+    });
 });
+

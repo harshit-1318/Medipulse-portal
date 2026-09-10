@@ -1,6 +1,8 @@
 import React from 'react';
+import { Eye } from 'lucide-react';
 import LeadStatusBadge from '../components/LeadStatusBadge';
 import type { Lead } from '@/types/lead';
+import { ActionButton } from '@/components/common';
 
 interface LeadTableRowProps {
     lead: Lead;
@@ -36,12 +38,13 @@ export const LeadTableRow: React.FC<LeadTableRowProps> = ({ lead, onSelectLead, 
                 {lead.notesCount ?? 0}
             </td>
             <td className="px-6 py-4 text-right">
-                <button
+                <ActionButton
+                    icon={Eye}
+                    label="View"
+                    variant="cyan"
                     onClick={e => { e.stopPropagation(); onSelectLead(lead._id); }}
-                    className="h-8 px-3.5 rounded-lg text-[11.5px] font-bold font-montserrat tracking-wide bg-teal-50 text-[#00a294] border border-teal-200 hover:bg-teal-100 transition-all cursor-pointer shadow-xs"
-                >
-                    Open →
-                </button>
+                    className="w-[78px] h-[32px] ml-auto"
+                />
             </td>
         </tr>
     );

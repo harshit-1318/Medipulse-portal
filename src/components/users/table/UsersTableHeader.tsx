@@ -2,7 +2,7 @@ import React from 'react';
 import { UserCircle, Mail, ShieldCheck, Building2, Calendar, Settings } from 'lucide-react';
 
 export const UsersTableHeader: React.FC = () => (
-    <thead className="bg-slate-50/80 text-slate-500 border-b border-slate-200/80 font-montserrat sticky top-0 z-10 text-[11px] font-bold uppercase tracking-wider">
+    <thead className="bg-[#f8fafc] border-b border-slate-200 font-montserrat sticky top-0 z-10 text-[14px] font-extrabold tracking-widest text-[#003B73]/80 uppercase">
         <tr>
             <th className="px-6 py-3.5 text-left">
                 <div className="flex items-center gap-2">

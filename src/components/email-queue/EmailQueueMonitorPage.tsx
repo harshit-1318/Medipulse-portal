@@ -49,8 +49,7 @@ export default function EmailQueueMonitorPage() {
         <div className="space-y-6 pt-4 pb-10">
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-900">Email Queue Monitor</h1>
-                    <p className="text-sm text-slate-500">Live queue health for missing-doc reminders (auto-refresh every 15s).</p>
+                    <h1 className="text-[22px] font-bold text-slate-900 mb-1 tracking-tight">Email Queue Monitor</h1>
                 </div>
 
                 <button

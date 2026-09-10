@@ -1,4 +1,4 @@
-import { Search, X } from "lucide-react";
+import { X, SlidersHorizontal } from "lucide-react";
 
 interface Props {
     onClose: () => void;
@@ -6,24 +6,22 @@ interface Props {
 
 export const ActivityFiltersHeader = ({ onClose }: Props) => {
     return (
-        <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-white relative overflow-hidden group">
+        <div className="flex justify-between items-center px-6 py-4 border-b border-slate-100 bg-white relative">
             <div className="flex items-center gap-4">
-                <div className="p-3 bg-indigo-50 text-indigo-600 rounded-2xl border border-indigo-100/50 shadow-sm transition-transform group-hover:scale-110 duration-500">
-                    <Search size={22} strokeWidth={3} />
+                <div className="p-2.5 bg-indigo-50 text-indigo-600 rounded-2xl border border-indigo-100">
+                    <SlidersHorizontal size={20} strokeWidth={2.5} />
                 </div>
-                <div className="space-y-0.5">
-                    <h2 className="text-[22px] font-black text-[#003B73] tracking-tighter">Filter Activity</h2>
-                    <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Find specific events in your system</p>
-                </div>
+                <h2 className="text-[18px] font-black text-slate-800 tracking-tight">Active Filters</h2>
             </div>
             <button
                 type="button"
                 onClick={onClose}
                 aria-label="Close filters"
-                className="p-2.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-all duration-300 active:scale-95 border border-transparent hover:border-slate-200"
+                className="p-1.5 text-slate-400 hover:text-indigo-600 border border-slate-200 rounded-full transition-all duration-300 hover:bg-slate-50 cursor-pointer"
             >
-                <X size={24} strokeWidth={2.5} />
+                <X size={20} />
             </button>
         </div>
     );
 };
+

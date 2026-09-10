@@ -13,26 +13,32 @@ export const ActivityDateInputs: React.FC<ActivityDateInputsProps> = ({
     updateFilter,
 }) => (
     <>
-        <div className="space-y-2.5">
-            <label className="text-[12px] font-black text-slate-500 uppercase tracking-widest ml-1">Start Date</label>
+        <div className="space-y-1">
+            <label className="flex items-center gap-1.5 text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1 mb-1.5">
+                <Calendar size={13} className="text-slate-400" />
+                Start Date
+            </label>
             <div className="relative group">
-                <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-indigo-500 transition-colors pointer-events-none" />
+                <Calendar size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors pointer-events-none" />
                 <input
                     type="date"
-                    className="w-full h-12 pl-12 pr-4 rounded-2xl bg-white border border-slate-200 text-[14px] font-bold text-slate-700 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 focus:outline-none transition-all shadow-sm hover:border-slate-300 cursor-pointer"
+                    className="w-full h-10 pl-10 pr-4 rounded-xl bg-slate-50 border border-slate-200 text-[13px] font-bold text-slate-700 hover:border-slate-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none cursor-pointer"
                     value={startDate}
                     onChange={(e) => updateFilter("startDate", e.target.value)}
                 />
             </div>
         </div>
 
-        <div className="space-y-2.5">
-            <label className="text-[12px] font-black text-slate-500 uppercase tracking-widest ml-1">End Date</label>
+        <div className="space-y-1">
+            <label className="flex items-center gap-1.5 text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1 mb-1.5">
+                <Calendar size={13} className="text-slate-400" />
+                End Date
+            </label>
             <div className="relative group">
-                <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 group-focus-within:text-indigo-500 transition-colors pointer-events-none" />
+                <Calendar size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-600 transition-colors pointer-events-none" />
                 <input
                     type="date"
-                    className="w-full h-12 pl-12 pr-4 rounded-2xl bg-white border border-slate-200 text-[14px] font-bold text-slate-700 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 focus:outline-none transition-all shadow-sm hover:border-slate-300 cursor-pointer"
+                    className="w-full h-10 pl-10 pr-4 rounded-xl bg-slate-50 border border-slate-200 text-[13px] font-bold text-slate-700 hover:border-slate-300 focus:bg-white focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 transition-all outline-none cursor-pointer"
                     value={endDate}
                     onChange={(e) => updateFilter("endDate", e.target.value)}
                 />
@@ -40,3 +46,4 @@ export const ActivityDateInputs: React.FC<ActivityDateInputsProps> = ({
         </div>
     </>
 );
+

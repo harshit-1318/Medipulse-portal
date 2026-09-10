@@ -51,7 +51,7 @@ export function LeadsTable({
                         <thead className="bg-[#f8fafc] text-slate-800 border-b border-slate-100 font-montserrat">
                             <tr>
                                 {HEADERS.map(h => (
-                                    <th key={h} className={`px-6 py-4 text-left text-[13px] font-extrabold font-montserrat tracking-widest text-[#003B73]/80 uppercase ${h === 'ACTION' ? 'text-right' : ''}`}>
+                                    <th key={h} className={`px-6 py-4 text-left text-[14px] font-extrabold font-montserrat tracking-widest text-[#003B73]/80 uppercase ${h === 'ACTION' ? 'text-right' : ''}`}>
                                         {h}
                                     </th>
                                 ))}

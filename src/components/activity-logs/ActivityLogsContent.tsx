@@ -3,7 +3,6 @@ import ActivityTable from "./ActivityTable";
 import { LazyMotion, domAnimation } from "framer-motion";
 import { useScrollPreservation } from '@/hooks';
 import { useActivityLogs, useActivityLogSites } from "./hooks";
-import { Activity } from "lucide-react";
 import { useUserInfo } from '@/store';
 
 type ActivityLogsContentProps = {
@@ -39,11 +38,10 @@ export default function ActivityLogsContent({
     return (
         <LazyMotion features={domAnimation}>
             <div className="space-y-6 font-montserrat text-[16px] leading-normal pt-2 pb-6">
-                <div className="flex items-center gap-3 mb-1">
-                    <div className="p-2.5 bg-indigo-50 text-indigo-600 rounded-xl border border-indigo-100/50 shadow-sm transition-all duration-300 hover:rotate-3 hover:scale-105">
-                        <Activity size={24} strokeWidth={2.5} />
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h1 className="text-[22px] font-bold text-slate-900 mb-1 tracking-tight">{title}</h1>
                     </div>
-                    <h1 className="text-[24px] font-bold text-slate-900 tracking-tight">{title}</h1>
                 </div>
 
                 <div ref={containerRef} className="w-full">

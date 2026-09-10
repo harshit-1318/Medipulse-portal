@@ -16,10 +16,7 @@ function LeadsContent() {
             <div className="space-y-6 font-montserrat pt-2 pb-6">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold text-slate-800">Leads / CRM</h1>
-                        <p className="text-sm text-slate-500 mt-0.5">
-                            {data?.total ?? 0} lead{(data?.total ?? 0) !== 1 ? 's' : ''}
-                        </p>
+                        <h1 className="text-[22px] font-bold text-slate-900 mb-1 tracking-tight">Leads / CRM</h1>
                     </div>
                 </div>
 

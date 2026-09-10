@@ -1,7 +1,8 @@
 import React from 'react';
-import { ArrowUpDown, ArrowUp, ArrowDown, Users, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowUpDown, ArrowUp, ArrowDown, Users } from 'lucide-react';
 import { CredentialsTableRow } from './CredentialsTableRow';
 import type { RoleCredentialUser, RoleCredentialsPagination } from '../types';
+import { Pagination } from '@/components/common/Pagination';
 
 interface CredentialsTableProps {
   users: RoleCredentialUser[];
@@ -43,30 +44,44 @@ export const CredentialsTable: React.FC<CredentialsTableProps> = ({
   onToggleStatus,
 }) => {
   const renderSortIcon = (col: string) => {
-    if (sortBy !== col) return <ArrowUpDown className="w-3.5 h-3.5 text-slate-400 opacity-60" />;
-    return sort === 'asc' ? <ArrowUp className="w-3.5 h-3.5 text-purple-600" /> : <ArrowDown className="w-3.5 h-3.5 text-purple-600" />;
+    if (sortBy !== col) return <ArrowUpDown className="w-3.5 h-3.5 text-slate-300 group-hover:text-indigo-400" />;
+    return sort === 'asc' ? <ArrowUp className="w-3.5 h-3.5 text-indigo-600" /> : <ArrowDown className="w-3.5 h-3.5 text-indigo-600" />;
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
+    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden font-montserrat flex flex-col">
+      <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-white">
+        <div className="inline-flex flex-col">
+          <div className="flex items-center gap-2.5">
+            <h2 className="text-[18px] font-semibold text-[#003B73] tracking-tight">
+              Role Credentials List
+            </h2>
+            <span className="bg-blue-50 text-[#003B73] text-xs font-semibold px-2 py-0.5 rounded-full border border-blue-100">
+              {pagination.total}
+            </span>
+          </div>
+          <div className="w-12 h-0.75 bg-linear-to-r from-[#00B3CC] to-[#003B73] mt-1 rounded-full shadow-xs" />
+        </div>
+      </div>
+
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-slate-50/80 border-b border-slate-200 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-              <th className="py-3 px-4 cursor-pointer select-none hover:text-slate-800" onClick={() => onSort('name')}>
+            <tr className="bg-[#f8fafc] border-b border-slate-200 font-montserrat sticky top-0 z-10 text-[14px] font-extrabold tracking-widest text-[#003B73]/80 uppercase">
+              <th className="py-4 px-5 cursor-pointer select-none hover:text-indigo-600 group" onClick={() => onSort('name')}>
                 <div className="flex items-center gap-1.5"><span>User</span>{renderSortIcon('name')}</div>
               </th>
-              <th className="py-3 px-4 cursor-pointer select-none hover:text-slate-800" onClick={() => onSort('role')}>
+              <th className="py-4 px-5 cursor-pointer select-none hover:text-indigo-600 group" onClick={() => onSort('role')}>
                 <div className="flex items-center gap-1.5"><span>Role</span>{renderSortIcon('role')}</div>
               </th>
-              <th className="py-3 px-4 cursor-pointer select-none hover:text-slate-800" onClick={() => onSort('email')}>
+              <th className="py-4 px-5 cursor-pointer select-none hover:text-indigo-600 group" onClick={() => onSort('email')}>
                 <div className="flex items-center gap-1.5"><span>Email</span>{renderSortIcon('email')}</div>
               </th>
-              <th className="py-3 px-4 select-none">Password</th>
-              <th className="py-3 px-4 cursor-pointer select-none hover:text-slate-800" onClick={() => onSort('status')}>
+              <th className="py-4 px-5 select-none">Password</th>
+              <th className="py-4 px-5 cursor-pointer select-none hover:text-indigo-600 group" onClick={() => onSort('status')}>
                 <div className="flex items-center gap-1.5"><span>Status</span>{renderSortIcon('status')}</div>
               </th>
-              <th className="py-3 px-4 text-right select-none">Actions</th>
+              <th className="py-4 px-5 text-right select-none">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -111,28 +126,12 @@ export const CredentialsTable: React.FC<CredentialsTableProps> = ({
         </table>
       </div>
 
-      {/* Pagination Bar */}
-      <div className="flex items-center justify-between px-4 py-3 bg-slate-50/50 border-t border-slate-200 text-xs text-slate-600">
-        <div>
-          Showing <span className="font-semibold text-slate-800">{users.length}</span> of <span className="font-semibold text-slate-800">{pagination.total}</span> accounts
-        </div>
-        <div className="flex items-center gap-1.5">
-          <button
-            onClick={() => onPageChange(pagination.page - 1)}
-            disabled={pagination.page <= 1}
-            className="p-1.5 rounded-lg border border-slate-200 hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </button>
-          <span className="px-2 font-medium">Page {pagination.page} of {pagination.totalPages}</span>
-          <button
-            onClick={() => onPageChange(pagination.page + 1)}
-            disabled={pagination.page >= pagination.totalPages}
-            className="p-1.5 rounded-lg border border-slate-200 hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-          >
-            <ChevronRight className="w-4 h-4" />
-          </button>
-        </div>
+      <div className="px-5 py-3 bg-white border-t border-slate-200">
+        <Pagination
+          currentPage={pagination.page}
+          totalPages={pagination.totalPages}
+          onPageChange={onPageChange}
+        />
       </div>
     </div>
   );
