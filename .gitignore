@@ -13,21 +13,35 @@ tsconfig.tsbuildinfo
 # Generated types
 next-env.d.ts
 
-# Debug logs
+# Debug logs & Process IDs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+*.log
+pids
+*.pid
+*.seed
+*.pid.lock
 
-# Environment files
-.env*.local
-.env.development
-.env.production
+# Environment & Secret files
 .env
+.env*.local
+.env.development*
+.env.production*
+.env.test*
+.env.staging*
+!.env.example
 
-# System & IDE files
-.DS_Store
+# Security Certificates & Private Keys
 *.pem
+*.key
+*.crt
+*.pfx
+*.p12
+
+# System, IDE & Temporary files
+.DS_Store
 .idea/
 .vscode/
 node_modules_list.txt
@@ -40,24 +54,31 @@ desktop.ini
 *.swp
 *.swo
 *~
+*.tmp
+*.temp
+*.bak
 
-# Local Caches & Temp Folders
+# Local Caches & Tooling Folders
 /scratch/
+.cache/
 .vitest/
 .vercel/
 .claude/
 .gemini/
 
-# Logs
-*.log
-
 # Test coverage & reports
 coverage/
+*.lcov
 /test-results/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
 
-# Database Backups & Dumps (Sensitive)
+# Database Backups & Local Data Dumps (Sensitive)
 /backups/
+*.sql
+*.dump
+*.sqlite
+*.sqlite3
+
 
