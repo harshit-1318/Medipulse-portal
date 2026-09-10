@@ -27,7 +27,9 @@
 	- `OrderTableHeader` uses `Hash` (`#`) icon for `id` and `shopify_order_id` columns instead of misleading `ExternalLink`.
 	- `OrderTableHeader` uses `mounted` state check to render neutral `ArrowUpDown` during SSR and initial client hydration, eliminating Next.js hydration mismatch errors when client sorting differs from SSR defaults.
 	- `useOrderTableEffects` fallback sorting fixed to `"date"` instead of `"createdAt"` to match the column ID in `OrderColumns`.
-	- `normalizeSortBy` in `urlBase.ts` normalizes `"createdAt"` to `"date"`.
+	- `normalizeSortBy` in `urlBase.ts` normalizes `"createdAt"` to `"date"`, and `"shopify_order_id"`, `"orderId"`, `"order_id"` to `"id"`.
+	- `OrderTable.tsx` uses `resolveSortId` backed by `VALID_SORT_COLUMNS` to ensure non-existent column IDs (e.g. `shopify_order_id`) are never passed to TanStack Table.
+	- All order hooks (`useRepeatOrdersData`, `useFirstOrdersData`, `useCancelledOrdersData`, `useNotUploadedDocsData`) spread `DEFAULT_ORDER_FILTERS`.
 	- `STORAGE_VERSION` bumped to `5` in `orderFilterUtils.ts` with automatic cleanup of legacy `createdAt` and `id` keys.
 - Customer Orders First vs Repeat Contract (Sep 10 2026):
 	- `/orders/customer/first` strictly filters for `order_type: 'first'` / `repeatedOrders: 0`, displaying blue `First Order` badges.
@@ -45,4 +47,32 @@
 	- `OrderFiltersModal` renders directly in the component tree with `z-100` and `bg-slate-900/60 backdrop-blur-md` without portaling to `document.body`.
 	- Uses `left: var(--sidebar-width, 17.5rem)` to offset from the sidebar (`280px` expanded, `80px` collapsed, `0px` mobile).
 	- Keeps the persistent `<Sidebar>` (`z-index: 1000`) completely visible and unblurred, while keeping the modal perfectly centered in the viewable main content area across all screen resolutions (Edge, Chrome, standard 1080p 125% scale 1536x730, etc.).
-
+- 3-State Column Sorting Cycle & Client Sorting Contract (Sep 10 2026):
+	- 3-State Cycle across all 6 sortable columns (Order ID, Order Date, Status, Customer, Orders, Products):
+		1. Click 1 → ASCENDING (`asc`, shows `ArrowUp`).
+		2. Click 2 → DESCENDING (`desc`, shows `ArrowDown`).
+		3. Click 3 → RESET / NO SORT (`undefined`, shows neutral `ArrowUpDown`, restores original dataset order without data mutation).
+		- Repeat: `ASC → DESC → RESET → ASC → DESC → RESET`.
+	- Single Active Sort: Only one column is active at any time. Clicking a different column immediately activates that new column in ASC on its first click, clearing the previous column.
+	- Non-sortable columns: `DOCS` (`documentsUploaded`) and `ACTIONS` explicitly set `enableSorting: false`.
+	- Dedicated Data-Type Comparators in `src/components/orders-table/utils/orderSorting.ts`:
+		- `sortOrderId`: Numeric / string ID sorting (numeric comparison when digits present like `#100` vs `#20`, natural alphanumeric fallback).
+		- `sortOrderDate`: Chronological date sorting (comparing UTC timestamps).
+		- `sortStatus`: Normalized status string comparator (`fulfillment_status` or `status`).
+		- `sortCustomer`: Customer name comparator using `normalizeCustomer(order).name`.
+		- `sortOrdersCount`: Numeric comparator for `repeatedOrders`.
+		- `sortProducts`: Numeric comparator for total product quantity/count using `getProductCount`.
+	- State Preservation: `OrderTable.tsx` uses TanStack Table's `getSortedRowModel()` with `enableMultiSort: false` and `manualSorting: false`, leaving input `orders` untouched so RESET cleanly restores the original default order.
+	- Decoupled Effects: Table header clicks sort client-side in memory without triggering full-page network refetches or loader flashes in `useOrderTableEffects.ts`. External filter changes still sync via `prevFilterSortRef`.
+- Order Date Dynamic Relative Time Contract (Sep 10 2026):
+	- Relative-Time Threshold Logic:
+		- `< 1 minute` → `"Just now"`
+		- `1–59 minutes` → `"X minutes ago"` (`"1 minute ago"` for singular `1`)
+		- `1 hour` → `"1 hour ago"`
+		- `2–23 hours` → `"X hours ago"`
+		- `1 day` (calendar diff = 1 or elapsed 24-47h) → `"Yesterday"`
+		- `2+ days` → `"X days ago"`
+	- Timestamp Extraction: Calculates relative time directly from each order's actual `createdAt`, `orderDate`, or `date` ISO timestamp from MongoDB/API response via `mapBackendOrderToFrontend`.
+	- Wall-Clock & UTC Parity: `getTimeAgo` in `src/api/services/orders/utils/date.ts` gracefully resolves local wall-clock hours persisted into UTC mock seeds while retaining millisecond precision for standard UTC dates.
+	- Live Updates: `DateCell.tsx` mounts a 30-second interval via `useEffect` to periodically refresh relative time strings as time passes without full page reloads or SSR hydration mismatches.
+	- Display Format: Primary value displays formatted UTC date (e.g. `"10 Sept 26"` in `text-slate-800 font-semibold`), secondary value displays dynamic relative time (e.g. `"14 minutes ago"` in `text-slate-400 font-medium`).

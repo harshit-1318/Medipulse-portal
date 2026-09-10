@@ -16,6 +16,7 @@ const ICON_MAP: Record<string, any> = {
     customerName: User,
     repeatedOrders: Users,
     products: Package,
+    product: Package,
     documentsUploaded: FileText,
     docs: FileText,
     actions: FileText 
@@ -31,6 +32,24 @@ export function OrderTableHeader({ table }: Props) {
         setMounted(true);
     }, []);
 
+    const handleSortClick = (column: any) => {
+        const isSorted = column.getIsSorted();
+        if (!isSorted) {
+            // 1. First click → ASCENDING
+            column.toggleSorting(false, false);
+        } else if (isSorted === "asc") {
+            // 2. Second click → DESCENDING
+            column.toggleSorting(true, false);
+        } else {
+            // 3. Third click → RESET / NO SORT
+            if (typeof column.clearSorting === "function") {
+                column.clearSorting();
+            } else {
+                table.setSorting([]);
+            }
+        }
+    };
+
     return (
         <thead className="bg-[#f8fafc] text-slate-800 sticky top-0 z-20 border-b border-slate-100 shadow-sm font-montserrat">
             {table.getHeaderGroups().map((hg) => (
@@ -43,12 +62,7 @@ export function OrderTableHeader({ table }: Props) {
                         return (
                             <th key={h.id} className="px-5 py-4 font-bold whitespace-nowrap border-b border-slate-100 text-center group/th">
                                 <button type="button" 
-                                    onClick={canSort ? () => {
-                                    const isSorted = h.column.getIsSorted();
-                                    if (!isSorted) h.column.toggleSorting(false);
-                                    else if (isSorted === "asc") h.column.toggleSorting(true);
-                                    else h.column.toggleSorting(undefined);
-                                } : undefined} 
+                                    onClick={canSort ? () => handleSortClick(h.column) : undefined} 
                                     className="flex items-center gap-1 select-none hover:text-indigo-600 transition-colors justify-center w-full group">
                                     <div className="flex items-center gap-2 group-hover:scale-105 transition-transform duration-300">
                                         {Icon && <Icon size={14} className="text-slate-400 group-hover:text-indigo-500 transition-colors" />}

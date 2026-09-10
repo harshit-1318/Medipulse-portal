@@ -1,5 +1,5 @@
 import { getCoreRowModel, getExpandedRowModel, getFilteredRowModel, getSortedRowModel, type ExpandedState, type SortingState, useReactTable } from "@tanstack/react-table";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Pagination } from "../../../common/Pagination";
 import { useOrderColumns } from "./OrderColumns";
 import { OrderTableContainer } from "./OrderTableContainer";
@@ -9,6 +9,14 @@ import type { Props } from "../../types";
 import { useOrderTableEffects } from "../../hooks";
 import { useActiveFilters } from "../../hooks";
 import { useScrollPreservation } from '@/hooks';
+import { normalizeSortBy } from '@/utils/url';
+
+const VALID_SORT_COLUMNS = new Set(["id", "date", "status", "customer", "repeatedOrders", "product"]);
+const resolveSortId = (sortBy?: string) => {
+    if (!sortBy) return "";
+    const id = normalizeSortBy(sortBy);
+    return VALID_SORT_COLUMNS.has(id) ? id : "";
+};
 
 export default function OrderTable(props: Props) {
     const { orders, title, subtitle, loading, page, setPage, total, filters, setFilters, pageType, hideFilters, filtersEnabled, setFiltersEnabled } = props;
@@ -18,11 +26,8 @@ export default function OrderTable(props: Props) {
 
     // Initialize sorting from filters
     const [sorting, setSorting] = useState<SortingState>(() => {
-        if (filters.sortBy) {
-            const id = filters.sortBy === "createdAt" ? "date" : filters.sortBy;
-            return [{ id, desc: filters.sort === 'desc' }];
-        }
-        return [];
+        const id = resolveSortId(filters.sortBy);
+        return id ? [{ id, desc: filters.sort === 'desc' }] : [];
     });
     
     const [localFiltersEnabled, setLocalFiltersEnabled] = useState(false);
@@ -30,28 +35,33 @@ export default function OrderTable(props: Props) {
     const setShowFilters = setFiltersEnabled ?? setLocalFiltersEnabled;
     const [pageSize] = useState(20);
 
-    // Sync sorting state with filters (important for initial load and navigation)
+    // Sync sorting state with filters only when external filters actually change
+    const prevFilterSortRef = useRef({ sortBy: filters.sortBy, sort: filters.sort });
     useEffect(() => {
-        if (filters.sortBy) {
-            const sortId = filters.sortBy === "createdAt" ? "date" : filters.sortBy;
-            const currentSort = sorting[0];
-            const shouldUpdate = !currentSort || 
-                               currentSort.id !== sortId || 
-                               (currentSort.desc && filters.sort === 'asc') || 
-                               (!currentSort.desc && filters.sort === 'desc');
-            
-            if (shouldUpdate) {
-                setSorting([{ id: sortId, desc: filters.sort === 'desc' }]);
-            }
+        if (
+            prevFilterSortRef.current.sortBy !== filters.sortBy ||
+            prevFilterSortRef.current.sort !== filters.sort
+        ) {
+            prevFilterSortRef.current = { sortBy: filters.sortBy, sort: filters.sort };
+            const id = resolveSortId(filters.sortBy);
+            setSorting(id ? [{ id, desc: filters.sort === 'desc' }] : []);
         }
     }, [filters.sortBy, filters.sort]);
 
     useOrderTableEffects({ loading, sorting, setPage, setFilters });
     const columns = useOrderColumns(pageType);
     const table = useReactTable({
-        data: orders, columns, state: { sorting, expanded }, onSortingChange: setSorting, onExpandedChange: setExpanded,
-        manualSorting: true, manualFiltering: true,
-        getCoreRowModel: getCoreRowModel(), getFilteredRowModel: getFilteredRowModel(), getSortedRowModel: getSortedRowModel(), getExpandedRowModel: getExpandedRowModel(),
+        data: orders,
+        columns,
+        state: { sorting, expanded },
+        onSortingChange: setSorting,
+        onExpandedChange: setExpanded,
+        enableMultiSort: false,
+        manualFiltering: true,
+        getCoreRowModel: getCoreRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
+        getSortedRowModel: getSortedRowModel(),
+        getExpandedRowModel: getExpandedRowModel(),
         defaultColumn: { sortDescFirst: false },
     });
 

@@ -8,6 +8,7 @@ export const buildOrderParams = (page: number, filters: any = {}): any => {
     const sortMapping: Record<string, string> = {
         date: "createdAt",
         id: "shopify_order_id",
+        shopify_order_id: "shopify_order_id",
         customer: "customer",
         product: "product",
         products: "product",

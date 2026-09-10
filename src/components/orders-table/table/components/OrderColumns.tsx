@@ -9,12 +9,21 @@ import { ActionsCell } from "../../cells";
 import { DateCell } from "../../cells";
 import { DocsCell } from "../../cells";
 import { OrderIdCell } from "../../cells";
+import {
+  sortOrderId,
+  sortOrderDate,
+  sortStatus,
+  sortCustomer,
+  sortOrdersCount,
+  sortProducts,
+} from "../../utils/orderSorting";
 
 export function useOrderColumns(pageType: PageType) {
   return useMemo<ColumnDef<OrderType>[]>(
     () => [
       {
         accessorKey: "id",
+        sortingFn: sortOrderId,
         header: () => (
           <span className="text-[13px] font-extrabold font-montserrat tracking-widest text-[#003B73]/80">ORDER ID</span>
         ),
@@ -22,6 +31,7 @@ export function useOrderColumns(pageType: PageType) {
       },
       {
         accessorKey: "date",
+        sortingFn: sortOrderDate,
         header: () => (
           <span className="text-[13px] font-extrabold font-montserrat tracking-widest text-[#003B73]/80">ORDER DATE</span>
         ),
@@ -29,6 +39,7 @@ export function useOrderColumns(pageType: PageType) {
       },
       {
         accessorKey: "status",
+        sortingFn: sortStatus,
         header: () => (
           <span className="text-[13px] font-extrabold font-montserrat tracking-widest text-[#003B73]/80">STATUS</span>
         ),
@@ -36,6 +47,7 @@ export function useOrderColumns(pageType: PageType) {
       },
       {
         accessorKey: "customer",
+        sortingFn: sortCustomer,
         header: () => (
           <span className="text-[13px] font-extrabold font-montserrat tracking-widest text-[#003B73]/80">CUSTOMER</span>
         ),
@@ -43,6 +55,7 @@ export function useOrderColumns(pageType: PageType) {
       },
       {
         accessorKey: "repeatedOrders",
+        sortingFn: sortOrdersCount,
         header: () => (
           <span className="text-[13px] font-extrabold font-montserrat tracking-widest text-[#003B73]/80">ORDERS</span>
         ),
@@ -62,6 +75,7 @@ export function useOrderColumns(pageType: PageType) {
       {
         accessorKey: "products",
         id: "product",
+        sortingFn: sortProducts,
         header: () => (
           <span className="text-[13px] font-extrabold font-montserrat tracking-widest whitespace-nowrap text-[#003B73]/80">PRODUCTS</span>
         ),
@@ -87,6 +101,7 @@ export function useOrderColumns(pageType: PageType) {
       },
       {
         id: "actions",
+        enableSorting: false,
         header: () => (
           <span className="text-[13px] font-extrabold font-montserrat tracking-widest text-[#003B73]/80">ACTIONS</span>
         ),

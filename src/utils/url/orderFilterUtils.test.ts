@@ -107,5 +107,17 @@ describe('orderFilterUtils', () => {
             expect(result.sortBy).toBe('date');
             expect(result.limit).toBe(30);
         });
+
+        it('cleans up legacy sortBy: shopify_order_id from stored filters and reverts to default sortBy', () => {
+            localStorage.setItem('orders_storage', JSON.stringify({
+                _v: STORAGE_VERSION,
+                sortBy: 'shopify_order_id',
+                limit: 30,
+            }));
+
+            const result = getInitialOrderFilters(defaultFilters, 'orders_storage');
+            expect(result.sortBy).toBe('date');
+            expect(result.limit).toBe(30);
+        });
     });
 });

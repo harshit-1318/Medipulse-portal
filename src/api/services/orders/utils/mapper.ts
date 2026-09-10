@@ -41,7 +41,7 @@ export function mapBackendOrderToFrontend(o: any, forceDocuments?: any, filterHi
         shopify_order_id: String(resolvedShopifyId),
         status: normalizedStatus,
         fulfillment_status: o.fulfillment_status || o.fulfillmentStatus || normalizedStatus,
-        date: o.createdAt || o.created_at || o.date,
+        date: o.createdAt || o.created_at || o.orderDate || o.order_date || o.date,
         updatedAt: o.updatedAt || o.updated_at || o.createdAt || "",
         customer: customerObj,
         products: products,

@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { formatDate } from "@/api/services/orders/utils";
 
 interface DateCellProps {
@@ -5,6 +6,15 @@ interface DateCellProps {
 }
 
 export const DateCell = ({ dateStr }: DateCellProps) => {
+  const [, setTick] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTick((t) => t + 1);
+    }, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
   const { date, subtext } = formatDate(dateStr);
   return (
     <div className="flex flex-col items-center justify-center font-montserrat tracking-wide text-center">

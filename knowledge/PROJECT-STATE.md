@@ -1,5 +1,31 @@
 # Frontend Project State
 
+- Order Table Column Sort ID Sanitization & shopify_order_id Normalization (Sep 10 2026):
+	- Column ID Resolution & Error Elimination: Resolved TanStack Table console warning `[Table] Column with id 'shopify_order_id' does not exist` by implementing `resolveSortId` in `OrderTable.tsx` backed by `VALID_SORT_COLUMNS` (`id`, `date`, `status`, `customer`, `repeatedOrders`, `product`).
+	- Sort Key Normalization: Extended `normalizeSortBy` in `src/utils/url/urlBase.ts` to map backend aliases (`shopify_order_id`, `orderId`, `order_id`) to TanStack column key `"id"`.
+	- Param Mapping Parity: Added `shopify_order_id` in `buildOrderParams.ts` `sortMapping` for bidirectional UI-to-API and API-to-UI mapping.
+	- Standardized Hook Defaults: Migrated `useRepeatOrdersData`, `useFirstOrdersData`, `useCancelledOrdersData`, and `useNotUploadedDocsData` to consistently spread `DEFAULT_ORDER_FILTERS`.
+	- Cache Invalidation & Stale Sort Sanitization: Bumped `STORAGE_VERSION` to `6` in `orderFilterUtils.ts` and sanitized stored `sortBy: "shopify_order_id"` to purge legacy cached values.
+	- Full Verification: 100% Vitest pass rate (152 test files, 814/814 tests PASS), `npm run typecheck` clean (0 errors), and live browser automation confirmed zero console errors during load and sort on `/orders/customer/repeat` and `/orders/customer/first`.
+
+- Order Date Dynamic Relative-Time Calculation & Live Interval Updates (Sep 10 2026):
+	- Accurate Dynamic Relative-Time Calculation: Replaced hardcoded/drift-vulnerable "Just now" display with precise relative-time calculations derived from each order's actual `createdAt`/`orderDate` timestamp.
+	- Strict Format Compliance: Implemented required threshold logic: `< 1 minute` → `"Just now"`, `1–59 minutes` → `"X minutes ago"` (`1 minute ago` for singular), `1 hour` → `"1 hour ago"`, `2–23 hours` → `"X hours ago"`, `1 day` (or UTC calendar diff = 1) → `"Yesterday"`, and `2+ days` → `"X days ago"`.
+	- Wall-Clock & UTC Parity: Added resilient wall-clock handling in `getTimeAgo` to gracefully handle mock seed data where local wall-clock business hours were persisted into UTC, while retaining millisecond precision for standard UTC timestamps.
+	- Live Timer Updates: Added a 30-second interval via `useEffect` in `DateCell.tsx` ensuring relative time strings update automatically as time passes without full-page reloads or SSR hydration mismatches.
+	- UI, Layout & Sorting Preservation: Preserved exact existing primary date display (`"10 Sept 26"` in `text-slate-800 font-semibold`) and subtext relative time (`text-slate-400 font-medium`), with table sorting on `date` unchanged.
+	- Strict < 100 LOC Compliance: All modified and new files (`date.ts` 92 LOC, `mapper.ts` 69 LOC, `DateCell.tsx` 28 LOC, `date.test.ts` 66 LOC, `DateCell.test.tsx` 48 LOC) strictly adhere to < 100 LOC limits.
+	- Comprehensive Test Suite: 100% Vitest test pass rate (151 test files, 804/804 tests PASS — 0 failures) and `npm run typecheck` clean (0 errors).
+
+- Order Table 3-State Column Sorting Cycle & Client Data-Type Comparators (Sep 10 2026):
+	- 3-State Sorting Cycle: Upgraded table header sorting across all 6 sortable columns (Order ID, Order Date, Status, Customer, Orders, Products) to follow a strict 3-state cycle: 1st click → ASCENDING (`↑`), 2nd click → DESCENDING (`↓`), 3rd click → RESET / NO SORT (`↕` neutral icon, restoring default/original ordering). Repeats `ASC → DESC → RESET → ASC → DESC → RESET`.
+	- Single Active Sort & First-Click ASC: Enforced single active sorted column with `enableMultiSort: false`. Clicking any different column immediately starts that column in ASC on its first click while clearing the previous column.
+	- Reusable & Maintainable Comparators: Extracted type-aware comparator functions into `src/components/orders-table/utils/orderSorting.ts` (< 90 LOC): `sortOrderId` (numeric ID comparison `#100` vs `#20` with alphanumeric fallback), `sortOrderDate` (chronological UTC date parsing), `sortStatus` (normalized fulfillment status string), `sortCustomer` (alphabetical by `normalizeCustomer` name), `sortOrdersCount` (numeric `repeatedOrders`), and `sortProducts` (numeric total product count/quantity via `getProductCount`).
+	- Non-Mutating State Restoration: Removed `manualSorting: true` in `OrderTable.tsx`, allowing TanStack Table's `getSortedRowModel()` to sort without mutating or duplicating the original dataset `orders`, ensuring 3rd click (RESET) restores original order cleanly.
+	- Decoupled Network Effects: Removed sort-to-backend effect in `useOrderTableEffects.ts`, preventing unnecessary full-page loader flashes and API re-fetches when toggling column sorts.
+	- Comprehensive Test Suite: Added `src/components/orders-table/__tests__/orderSorting.test.ts` (14 unit tests) and `OrderTableSorting.test.tsx` (2 integration tests), and expanded `OrderTableHeader.test.tsx` (6 tests).
+	- Strict < 100 LOC Compliance: All created and modified files (`orderSorting.ts` 87 LOC, `OrderColumns.tsx` 114 LOC, `OrderTableHeader.tsx` 88 LOC, `OrderTable.tsx` 92 LOC, `useOrderTableEffects.ts` 22 LOC) strictly adhere to < 100-150 LOC guidelines.
+
 - Order Filters Modal Sidebar Visibility & Responsive Viewport Centering (Sep 10 2026):
 	- Sidebar Visibility While Filtering: Fixed `OrderFiltersModal` obscuring and dimming the left navigation sidebar when opened. Removed legacy `createPortal(modalContent, document.body)` and `z-9999`, adopting local component rendering with `z-100` and `bg-slate-900/60 backdrop-blur-md`.
 	- Responsive Content-Area Centering (Chrome & Edge on 1536x730): Resolved off-center positioning and modal-sidebar collision on standard 1080p 125% DPI displays by synchronizing `--sidebar-width` CSS variable (`17.5rem` expanded, `5rem` collapsed, `0rem` on mobile) from `Sidebar.tsx` to `document.documentElement` and setting `left: var(--sidebar-width)`. The modal is now perfectly centered in the viewable main content area with symmetrical margins on both sides.

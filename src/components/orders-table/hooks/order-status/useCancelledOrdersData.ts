@@ -2,22 +2,13 @@ import { useState, useEffect } from "react";
 import { useGlobalLoader } from '@/store';
 import { getOrders, type OrderType } from "@/api/services/orders";
 import type { OrderFilters } from "../../types";
+import { DEFAULT_ORDER_FILTERS } from "../../types";
 import { useUrlSync } from '@/hooks';
 import { getInitialOrderFilters, getUrlParamInt, getDashboardStorageKey } from '@/utils/url';
 
 const DEFAULT_FILTERS: OrderFilters = {
-    orderId: "",
+    ...DEFAULT_ORDER_FILTERS,
     fulfillmentStatus: "cancelled",
-    status: "",
-    customer: "",
-    products: "",
-    category: "",
-    documents: "",
-    startDate: "",
-    endDate: "",
-    repeatedOrders: "all",
-    isUrgent: false,
-    sortBy: "createdAt",
     sort: "asc",
 };
 

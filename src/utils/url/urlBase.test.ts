@@ -37,6 +37,12 @@ describe('urlBase utilities', () => {
             expect(normalizeSortBy('createdAt')).toBe('date');
         });
 
+        it('maps shopify_order_id and orderId aliases to id', () => {
+            expect(normalizeSortBy('shopify_order_id')).toBe('id');
+            expect(normalizeSortBy('orderId')).toBe('id');
+            expect(normalizeSortBy('order_id')).toBe('id');
+        });
+
         it('preserves other sortBy keys', () => {
             expect(normalizeSortBy('date')).toBe('date');
             expect(normalizeSortBy('status')).toBe('status');
