@@ -73,15 +73,13 @@ export default function CustomersTable({
                 )}
             </div>
 
-            {total > limit && (
-                <div className="px-5 py-3 border-t border-slate-200 bg-white">
-                    <Pagination
-                        currentPage={page}
-                        totalPages={Math.ceil(total / limit)}
-                        onPageChange={onPageChange}
-                    />
-                </div>
-            )}
+            <div className="px-5 py-3 border-t border-slate-200 bg-white">
+                <Pagination
+                    currentPage={page}
+                    totalPages={Math.max(1, Math.ceil(total / limit))}
+                    onPageChange={onPageChange}
+                />
+            </div>
         </div>
     );
 }

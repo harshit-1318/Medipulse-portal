@@ -1,10 +1,12 @@
+import { useState, useEffect } from "react";
 import { flexRender, type Table } from "@tanstack/react-table";
-import { ArrowUpDown, ArrowUp, ArrowDown, ExternalLink, User, FileText, Clock, Users, Package } from "lucide-react";
+import { ArrowUpDown, ArrowUp, ArrowDown, Hash, User, FileText, Clock, Users, Package } from "lucide-react";
 
 interface Props { table: Table<any>; }
 
 const ICON_MAP: Record<string, any> = { 
-    createdAt: ExternalLink, 
+    createdAt: Hash, 
+    shopifyOrderId: Hash,
     customerId: User, 
     orderDate: Clock, 
     regNo: Package,
@@ -14,38 +16,54 @@ const ICON_MAP: Record<string, any> = {
 };
 
 export default function PrescriptionsTableHeader({ table }: Props) {
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    const handleSortClick = (column: any) => {
+        const isSorted = column.getIsSorted();
+        if (!isSorted) {
+            column.toggleSorting(false, false);
+        } else if (isSorted === "asc") {
+            column.toggleSorting(true, false);
+        } else {
+            if (typeof column.clearSorting === "function") {
+                column.clearSorting();
+            } else {
+                table.setSorting([]);
+            }
+        }
+    };
+
     return (
         <thead className="bg-[#f8fafc] text-slate-800 sticky top-0 z-20 border-b border-slate-100 shadow-sm font-montserrat">
             {table.getHeaderGroups().map((hg) => (
                 <tr key={hg.id}>
                     {hg.headers.map((h) => {
                         const canSort = h.column.getCanSort();
-                        const sorted = h.column.getIsSorted();
+                        const sorted = mounted ? h.column.getIsSorted() : false;
                         const Icon = ICON_MAP[h.column.id] || ICON_MAP[(h.column.columnDef as any).accessorKey];
                         return (
                             <th key={h.id} className="px-5 py-4 font-bold whitespace-nowrap border-b border-slate-100 text-center group/th">
                                 <button type="button" 
-                                    onClick={canSort ? () => {
-                                    const isSorted = h.column.getIsSorted();
-                                    if (!isSorted) h.column.toggleSorting(false);
-                                    else if (isSorted === "asc") h.column.toggleSorting(true);
-                                    else h.column.toggleSorting(undefined);
-                                } : undefined} 
-                                    className="flex items-center gap-1 select-none hover:text-[#00a294] transition-colors justify-center w-full group cursor-pointer">
-                                    <div className="flex items-center gap-2 group-hover:scale-102 transition-transform duration-300">
-                                        {Icon && <Icon size={14} className="text-slate-400 group-hover:text-[#00a294] transition-colors" />}
-                                        <span className="text-[13px] font-extrabold font-montserrat tracking-widest text-[#003B73]/80 uppercase">
+                                    onClick={canSort ? () => handleSortClick(h.column) : undefined} 
+                                    className="flex items-center gap-1 select-none hover:text-indigo-600 transition-colors justify-center w-full group cursor-pointer">
+                                    <div className="flex items-center gap-2 group-hover:scale-105 transition-transform duration-300">
+                                        {Icon && <Icon size={14} className="text-slate-400 group-hover:text-indigo-500 transition-colors" />}
+                                        <span className="text-[14px] font-extrabold font-montserrat tracking-widest text-[#003B73]/80 uppercase">
                                             {flexRender(h.column.columnDef.header, h.getContext())}
                                         </span>
                                     </div>
                                     {canSort && (
-                                        <span className="ml-1.5 flex items-center">
+                                        <span className="ml-1.5 flex items-center" suppressHydrationWarning>
                                             {sorted === "asc" ? (
-                                                <ArrowUp size={14} className="text-[#00a294] animate-in slide-in-from-bottom-1 duration-300" />
+                                                <ArrowUp size={14} className="text-indigo-600 animate-in slide-in-from-bottom-1 duration-300" />
                                             ) : sorted === "desc" ? (
-                                                <ArrowDown size={14} className="text-[#00a294] animate-in slide-in-from-top-1 duration-300" />
+                                                <ArrowDown size={14} className="text-indigo-600 animate-in slide-in-from-top-1 duration-300" />
                                             ) : (
-                                                <ArrowUpDown size={14} className="text-slate-300 group-hover:text-[#00a294] transition-colors" />
+                                                <ArrowUpDown size={14} className="text-slate-300 group-hover:text-indigo-400 transition-colors" />
                                             )}
                                         </span>
                                     )}

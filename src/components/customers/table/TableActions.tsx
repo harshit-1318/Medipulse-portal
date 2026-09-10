@@ -26,18 +26,14 @@ export default function TableActions({
 
             <button 
                 onClick={() => setFiltersEnabled(!filtersEnabled)}
-                className={`flex items-center gap-2 h-8.5 px-3.5 text-[12.5px] font-bold rounded-xl transition-all shadow-xs border cursor-pointer ${
+                className={`flex items-center gap-2 px-3.5 py-1.5 text-[14px] font-semibold rounded-lg transition-all shadow-sm cursor-pointer ${
                     filtersEnabled || activeFiltersCount > 0
-                    ? "bg-teal-50 text-[#00a294] border-teal-200 shadow-sm" 
-                    : "bg-white text-slate-600 border-slate-200 hover:text-[#00a294] hover:border-teal-300 hover:bg-slate-50"
+                        ? "bg-indigo-50 text-indigo-700 border border-indigo-200" 
+                        : "bg-white text-slate-700 border border-slate-200 hover:text-indigo-700 hover:border-indigo-300 hover:bg-indigo-50/50"
                 }`}
             >
-                <Filter 
-                    size={14} 
-                    strokeWidth={2.5} 
-                    className={filtersEnabled || activeFiltersCount > 0 ? "text-[#00a294]" : "text-slate-400"}
-                />
-                <span>Filters</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={filtersEnabled || activeFiltersCount > 0 ? "text-indigo-600" : "text-slate-500"}><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+                Filters
             </button>
 
         </div>

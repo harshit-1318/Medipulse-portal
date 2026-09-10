@@ -1,4 +1,4 @@
-import { X, Hash, UserCircle, Calendar, CalendarCheck, User, ExternalLink } from "lucide-react";
+import { Hash, UserCircle, Calendar, CalendarCheck, User, ExternalLink } from "lucide-react";
 
 export type ActiveFilterChipData = {
     key: string;
@@ -25,33 +25,26 @@ export default function ActiveFilterChips({ chips, onRemove }: Props) {
     if (chips.length === 0) return null;
 
     return (
-        <div className="flex flex-wrap items-center justify-end gap-2 overflow-hidden py-1">
+        <div className="hidden md:flex items-center gap-2 mr-2 animate-in fade-in slide-in-from-right-4 duration-500">
             {chips.map((chip) => {
                 const Icon = chip.icon ? IconMap[chip.icon] : null;
-                
+
                 return (
-                    <div 
-                        key={chip.key} 
-                        className="group flex items-center gap-2 px-3 py-1.5 bg-linear-to-b from-white to-indigo-50/10 text-indigo-700 text-[12px] font-bold rounded-full border border-indigo-100/60 shadow-xs hover:shadow-md hover:border-indigo-300 transition-all duration-300 animate-in fade-in zoom-in-95 cursor-default translate-y-0 hover:-translate-y-0.5"
+                    <span
+                        key={chip.key}
+                        className="group flex items-center gap-1.5 px-3 py-1 text-[11px] font-bold text-indigo-700 bg-white border border-indigo-100 rounded-full whitespace-nowrap shadow-sm ring-1 ring-indigo-200/20 hover:border-indigo-300 transition-all duration-300"
                     >
-                        <span className="flex items-center gap-1.5">
-                            {Icon && (
-                                <span className="text-indigo-500/80 group-hover:text-indigo-600 transition-colors">
-                                    <Icon size={12} strokeWidth={2.5} />
-                                </span>
-                            )}
-                            <span className="text-slate-400 font-bold uppercase text-[10px] tracking-widest">{chip.label}</span>
-                            <div className="w-px h-3 bg-indigo-100" />
-                            <span className="text-indigo-700">{chip.value}</span>
-                        </span>
+                        {Icon && <Icon size={12} className="text-indigo-500 group-hover:scale-110 transition-transform" />}
+                        <span className="opacity-60 tracking-tight">{chip.label}:</span>
+                        <span className="tracking-tight">{chip.value}</span>
                         <button
                             onClick={(e) => { e.stopPropagation(); onRemove(chip.key); }}
-                            className="p-1 hover:bg-red-50 hover:text-red-500 rounded-full transition-colors ml-0.5"
+                            className="hover:bg-red-50 hover:text-red-600 rounded-full p-0.5 transition-colors ml-0.5 cursor-pointer"
                             title={`Remove ${chip.label} filter`}
                         >
-                            <X size={12} strokeWidth={3} />
+                            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                         </button>
-                    </div>
+                    </span>
                 );
             })}
         </div>

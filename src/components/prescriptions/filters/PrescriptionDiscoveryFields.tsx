@@ -13,24 +13,26 @@ export const PrescriptionDiscoveryFields: React.FC<Props> = ({
     localOrderId, setLocalOrderId, localPrescriber, setLocalPrescriber, localCustomerId, setLocalCustomerId
 }) => {
     return (
-        <section className="space-y-3.5 text-left bg-slate-50/30 p-3.5 rounded-2xl border border-slate-100/50">
-            <div className="flex items-center gap-3 px-1 group/section">
-                <div className="relative p-2 bg-white text-indigo-600 rounded-xl border border-indigo-100 shadow-sm transition-all duration-300">
-                    <User size={15} strokeWidth={2.5} />
+        <section className="space-y-1.5 text-left">
+            <div className="flex items-center gap-2">
+                <div className="p-1 bg-[#00a294]/10 text-[#00a294] rounded-md border border-[#00a294]/20 shadow-xs">
+                    <User size={13} strokeWidth={2.5} />
                 </div>
-                <div className="flex flex-col">
-                    <h3 className="text-[12px] font-black text-slate-800 tracking-[0.15em] uppercase leading-none">Order & Prescriber Discovery</h3>
-                    <div className="h-0.5 w-12 bg-indigo-500/30 mt-1.5 rounded-full" />
-                </div>
+                <h3 className="text-[11px] font-black text-slate-700 tracking-[0.12em] uppercase">Order & Prescriber Discovery</h3>
+                <div className="h-px flex-1 bg-slate-200/70 ml-2 rounded-full" />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-                <div className="col-span-12 md:col-span-3 flex flex-col gap-2">
-                    <label className="text-[12px] font-bold text-slate-500 ml-1 uppercase tracking-wider">Order ID</label>
-                    <div className="relative group/input">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within/input:text-indigo-600 transition-colors" />
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
+                <div className="col-span-12 md:col-span-3 flex flex-col gap-1 text-left group">
+                    <label className="text-[11px] font-bold text-slate-500 ml-1 uppercase tracking-wider group-focus-within:text-[#00a294] transition-colors">
+                        Order ID
+                    </label>
+                    <div className="relative">
+                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#00a294] transition-colors pointer-events-none">
+                            <Search size={15} strokeWidth={2.5} />
+                        </div>
                         <input
-                            className="w-full h-11 pl-12 pr-4 rounded-2xl bg-slate-50 border border-slate-200 text-[14px] focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white focus:outline-none shadow-xs transition-all placeholder:text-slate-400 font-bold text-slate-700"
+                            className="w-full h-9.5 pl-9 pr-3.5 rounded-xl bg-slate-50/70 border border-slate-200 text-[13.5px] font-semibold text-slate-800 placeholder:text-slate-400 focus:ring-4 focus:ring-[#00a294]/10 focus:border-[#00a294] focus:bg-white focus:outline-none transition-all duration-200 hover:border-slate-300 shadow-xs"
                             value={localOrderId}
                             onChange={(e) => setLocalOrderId(e.target.value)}
                             placeholder="Order ID..."
@@ -38,12 +40,16 @@ export const PrescriptionDiscoveryFields: React.FC<Props> = ({
                     </div>
                 </div>
 
-                <div className="col-span-12 md:col-span-3 flex flex-col gap-2">
-                    <label className="text-[12px] font-bold text-slate-500 ml-1 uppercase tracking-wider">Customer ID</label>
-                    <div className="relative group/input">
-                        <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within/input:text-indigo-600 transition-colors" />
+                <div className="col-span-12 md:col-span-3 flex flex-col gap-1 text-left group">
+                    <label className="text-[11px] font-bold text-slate-500 ml-1 uppercase tracking-wider group-focus-within:text-[#00a294] transition-colors">
+                        Customer ID
+                    </label>
+                    <div className="relative">
+                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#00a294] transition-colors pointer-events-none">
+                            <User size={15} strokeWidth={2.5} />
+                        </div>
                         <input
-                            className="w-full h-11 pl-12 pr-4 rounded-2xl bg-slate-50 border border-slate-200 text-[14px] focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white focus:outline-none shadow-xs transition-all placeholder:text-slate-400 font-bold text-slate-700"
+                            className="w-full h-9.5 pl-9 pr-3.5 rounded-xl bg-slate-50/70 border border-slate-200 text-[13.5px] font-semibold text-slate-800 placeholder:text-slate-400 focus:ring-4 focus:ring-[#00a294]/10 focus:border-[#00a294] focus:bg-white focus:outline-none transition-all duration-200 hover:border-slate-300 shadow-xs"
                             value={localCustomerId}
                             onChange={(e) => setLocalCustomerId(e.target.value)}
                             placeholder="Customer ID..."
@@ -51,12 +57,16 @@ export const PrescriptionDiscoveryFields: React.FC<Props> = ({
                     </div>
                 </div>
 
-                <div className="col-span-12 md:col-span-6 flex flex-col gap-2">
-                    <label className="text-[12px] font-bold text-slate-500 ml-1 uppercase tracking-wider">Prescriber</label>
-                    <div className="relative group/input">
-                        <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within/input:text-indigo-600 transition-colors" />
+                <div className="col-span-12 md:col-span-6 flex flex-col gap-1 text-left group">
+                    <label className="text-[11px] font-bold text-slate-500 ml-1 uppercase tracking-wider group-focus-within:text-[#00a294] transition-colors">
+                        Prescriber
+                    </label>
+                    <div className="relative">
+                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#00a294] transition-colors pointer-events-none">
+                            <User size={15} strokeWidth={2.5} />
+                        </div>
                         <input
-                            className="w-full h-11 pl-12 pr-4 rounded-2xl bg-slate-50 border border-slate-200 text-[14px] focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white focus:outline-none shadow-xs transition-all placeholder:text-slate-400 font-bold text-slate-700"
+                            className="w-full h-9.5 pl-9 pr-3.5 rounded-xl bg-slate-50/70 border border-slate-200 text-[13.5px] font-semibold text-slate-800 placeholder:text-slate-400 focus:ring-4 focus:ring-[#00a294]/10 focus:border-[#00a294] focus:bg-white focus:outline-none transition-all duration-200 hover:border-slate-300 shadow-xs"
                             value={localPrescriber}
                             onChange={(e) => setLocalPrescriber(e.target.value)}
                             placeholder="Search Prescriber (Name, Email, RegNo)"

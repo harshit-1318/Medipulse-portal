@@ -53,19 +53,22 @@ export default function PrescriptionsTable({
                     <div className="w-12 h-0.75 bg-linear-to-r from-[#00B3CC] to-[#003B73] mt-1 rounded-full shadow-xs" />
                 </div>
 
-                <div className="flex items-center gap-3 animate-in fade-in slide-in-from-right-2 duration-500">
+                <div className="flex items-center gap-3">
                     <ActiveFilterChips
                         chips={activeFilterChips}
                         onRemove={onRemoveFilter}
                     />
 
-                    <button onClick={() => setFiltersEnabled(!filtersEnabled)}
-                        className={`flex items-center gap-2 h-8.5 px-3.5 text-[12.5px] font-bold rounded-xl transition-all shadow-xs border cursor-pointer ${filtersEnabled || activeFilterChips.length > 0
-                            ? "bg-teal-50 text-[#00a294] border-teal-200 shadow-sm"
-                            : "bg-white text-slate-600 border-slate-200 hover:text-[#00a294] hover:border-teal-300 hover:bg-slate-50"
-                            }`}>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={filtersEnabled || activeFilterChips.length > 0 ? "text-[#00a294]" : "text-slate-400"}><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
-                        <span>Filters</span>
+                    <button
+                        onClick={() => setFiltersEnabled(!filtersEnabled)}
+                        className={`flex items-center gap-2 px-3.5 py-1.5 text-[14px] font-semibold rounded-lg transition-all shadow-sm cursor-pointer ${
+                            filtersEnabled || activeFilterChips.length > 0
+                                ? "bg-indigo-50 text-indigo-700 border border-indigo-200"
+                                : "bg-white text-slate-700 border border-slate-200 hover:text-indigo-700 hover:border-indigo-300 hover:bg-indigo-50/50"
+                        }`}
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={filtersEnabled || activeFilterChips.length > 0 ? "text-indigo-600" : "text-slate-500"}><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+                        Filters
                     </button>
                 </div>
             </div>
@@ -81,11 +84,9 @@ export default function PrescriptionsTable({
                 )}
             </div>
 
-            {total > limit && (
-                <div className="px-5 py-3 border-t border-slate-200 bg-white shadow-[0_-4px_12px_-4px_rgba(0,0,0,0.03)]">
-                    <Pagination currentPage={page} totalPages={Math.ceil(total / limit)} onPageChange={onPageChange} />
-                </div>
-            )}
+            <div className="px-5 py-3 border-t border-slate-200 bg-white">
+                <Pagination currentPage={page} totalPages={Math.max(1, Math.ceil(total / limit))} onPageChange={onPageChange} />
+            </div>
         </div>
     );
 }
