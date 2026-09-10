@@ -20,12 +20,23 @@ export function useSidebarState(initialPath: string = '/dashboard') {
     }, []);
 
     const [currentPath, setCurrentPath] = useState(initialPath);
+    const prevAutoOpenPathRef = useRef(initialPath);
     const [openSections, setOpenSections] = useState<Record<string, boolean>>({
         'Dashboard': true,
         'Pages': true,
         'Admin': true,
     });
-    const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({});
+    const [openMenus, setOpenMenus] = useState<Record<string, boolean>>(() => {
+        const initial: Record<string, boolean> = {};
+        navItems.forEach((group) => {
+            group.items.forEach((item) => {
+                if (item.children && isNavItemActive(item, initialPath)) {
+                    initial[item.title] = true;
+                }
+            });
+        });
+        return initial;
+    });
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
@@ -37,29 +48,39 @@ export function useSidebarState(initialPath: string = '/dashboard') {
     const isActive = (path: string) => currentPath === path && path !== '#';
 
     useEffect(() => {
+        if (initialPath && initialPath !== currentPath) {
+            setCurrentPath(initialPath);
+        }
+    }, [initialPath]);
+
+    useEffect(() => {
         if (typeof window !== 'undefined') {
             const handlePathChange = () => setCurrentPath(window.location.pathname);
-            handlePathChange();
             window.addEventListener('popstate', handlePathChange);
             return () => window.removeEventListener('popstate', handlePathChange);
         }
     }, []);
 
     useEffect(() => {
-        const nextOpenMenus: Record<string, boolean> = { ...openMenus };
-        let hasChanges = false;
-        navItems.forEach((group) => {
-            group.items.forEach((item) => {
-                if (item.children && isNavItemActive(item, currentPath)) {
-                    if (!nextOpenMenus[item.title]) {
-                        nextOpenMenus[item.title] = true;
-                        hasChanges = true;
+        if (prevAutoOpenPathRef.current === currentPath) return;
+        prevAutoOpenPathRef.current = currentPath;
+
+        setOpenMenus((prev) => {
+            const next = { ...prev };
+            let hasChanges = false;
+            navItems.forEach((group) => {
+                group.items.forEach((item) => {
+                    if (item.children && isNavItemActive(item, currentPath)) {
+                        if (!next[item.title]) {
+                            next[item.title] = true;
+                            hasChanges = true;
+                        }
                     }
-                }
+                });
             });
+            return hasChanges ? next : prev;
         });
-        if (hasChanges) setOpenMenus(nextOpenMenus);
-    }, [currentPath, openMenus]);
+    }, [currentPath]);
 
     useEffect(() => {
         if (!isMounted.current) return;

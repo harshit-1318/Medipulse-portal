@@ -57,4 +57,21 @@ describe('useSidebarState', () => {
         expect(result.current.isCollapsed).toBe(true);
         expect(localStorage.getItem('sidebar-collapsed')).toBe('true');
     });
+
+    it('collapses an active menu when clicked and keeps it collapsed without forcing it open', () => {
+        const { result } = renderHook(() => useSidebarState('/orders/all'));
+
+        expect(result.current.openMenus['Orders Filters']).toBe(true);
+
+        act(() => {
+            result.current.toggleMenu('Orders Filters', { preventDefault: () => {} } as any);
+        });
+        expect(result.current.openMenus['Orders Filters']).toBe(false);
+
+        // Re-toggle opens it again
+        act(() => {
+            result.current.toggleMenu('Orders Filters', { preventDefault: () => {} } as any);
+        });
+        expect(result.current.openMenus['Orders Filters']).toBe(true);
+    });
 });

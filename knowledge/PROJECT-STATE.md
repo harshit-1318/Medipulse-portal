@@ -1,5 +1,11 @@
 # Frontend Project State
 
+- Sidebar Navigation Menu Accordion Collapse & Toggle Parity (Sep 10 2026):
+	- Active Menu Re-collapse Bug Fix: Resolved bug where clicking on the active dropdown menu (e.g. "Orders Filters") in the left sidebar failed to collapse. Identified root cause in `useSidebarState.ts` where `useEffect` had `openMenus` in its dependency array, immediately forcing any active menu back to `true` whenever toggled.
+	- Navigation-Only Auto-Expand: Refactored `useSidebarState.ts` (95 LOC) to track route transitions using `prevAutoOpenPathRef`. Auto-expansion now triggers strictly when navigating to a new route, leaving user-initiated collapses and toggles completely intact.
+	- Smooth AnimatePresence Collapse Animation: Updated `SidebarSubNavList.tsx` (43 LOC) moving `{isOpen && (...)}` inside `<AnimatePresence>` so Framer Motion executes clean exit and enter transitions between height `0` and `auto`.
+	- Comprehensive Test Suite & Browser Verification: Added unit test in `useSidebarState.test.ts` verifying active menus collapse and stay collapsed. 100% Vitest pass rate across all 6 sidebar test files (19/19 tests PASS). Live browser subagent confirmed "Orders Filters" collapses cleanly on click and smoothly re-expands on second click.
+
 - All Orders Modal Filters Complete Audit & Backend Query Parity Fix (Sep 10 2026):
 	- Multi-Filter Backend Query Parity: Audited all 12 filter controls in the All Orders modal. Resolved critical issues where `product_type` (Injectable/Oral), `product_category` (Weight Loss, ED, etc.), `productName`, `documentStatus` (Uploaded/Not Uploaded), and `customerId` were completely missing from `orderQueryHelper.ts`.
 	- Modular Filter Processing: Implemented `src/app/api/orders/orderProductFilter.ts` (77 LOC) and `src/app/api/orders/orderDateFilter.ts` (29 LOC) to isolate product category, product type, product name, documents filter resolution, and UTC boundary date calculations.
