@@ -43,7 +43,7 @@ export const LeadTableRow: React.FC<LeadTableRowProps> = ({ lead, onSelectLead, 
                     label="View"
                     variant="cyan"
                     onClick={e => { e.stopPropagation(); onSelectLead(lead._id); }}
-                    className="w-[78px] h-[32px] ml-auto"
+                    className="w-19.5 h-8 ml-auto"
                 />
             </td>
         </tr>

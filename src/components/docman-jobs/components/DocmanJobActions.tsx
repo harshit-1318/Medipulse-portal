@@ -16,12 +16,12 @@ export function DocmanJobActions({ fileUrl, jobId, onDelete }: DocmanJobActionsP
                 variant="cyan"
                 disabled={!fileUrl}
                 onClick={() => fileUrl && window.open(fileUrl, '_blank')}
-                className="w-[78px] h-[32px]"
+                className="w-19.5 h-8"
             />
             <button
                 type="button"
                 onClick={() => onDelete(jobId)}
-                className="h-[32px] w-[34px] rounded-[8px] bg-white border border-rose-200 text-rose-600 hover:bg-rose-50/50 hover:border-rose-300 flex items-center justify-center hover:-translate-y-[1.5px] active:translate-y-0 transition-all duration-300 shadow-[0_2px_8px_-2px_rgba(225,29,72,0.12)]"
+                className="h-8 w-8.5 rounded-lg bg-white border border-rose-200 text-rose-600 hover:bg-rose-50/50 hover:border-rose-300 flex items-center justify-center hover:-translate-y-[1.5px] active:translate-y-0 transition-all duration-300 shadow-[0_2px_8px_-2px_rgba(225,29,72,0.12)]"
                 title="Delete Job"
             >
                 <Trash2 size={14} strokeWidth={2.2} />

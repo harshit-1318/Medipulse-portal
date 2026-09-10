@@ -56,7 +56,7 @@ export function UserRowActions({ user, onToggleUserActive }: UserRowActionsProps
                 label="View"
                 variant="cyan"
                 href={`/users/${user._id}`}
-                className="w-[78px] h-[32px]"
+                className="w-19.5 h-8"
             />
 
             <ActionButton
@@ -64,13 +64,13 @@ export function UserRowActions({ user, onToggleUserActive }: UserRowActionsProps
                 label="Edit"
                 variant="slate"
                 href={`/users/${user._id}/edit`}
-                className="w-[78px] h-[32px]"
+                className="w-19.5 h-8"
             />
 
             <button
                 type="button"
                 onClick={handleToggle}
-                className="h-[32px] px-2.5 rounded-[8px] bg-white border border-rose-200 text-rose-600 hover:bg-rose-50/50 hover:border-rose-300 text-[11px] font-bold font-montserrat tracking-wide flex items-center justify-center gap-1.5 hover:-translate-y-[1.5px] active:translate-y-0 transition-all duration-300 shadow-[0_2px_8px_-2px_rgba(225,29,72,0.12)] disabled:opacity-40 disabled:cursor-not-allowed uppercase"
+                className="h-8 px-2.5 rounded-lg bg-white border border-rose-200 text-rose-600 hover:bg-rose-50/50 hover:border-rose-300 text-[11px] font-bold font-montserrat tracking-wide flex items-center justify-center gap-1.5 hover:-translate-y-[1.5px] active:translate-y-0 transition-all duration-300 shadow-[0_2px_8px_-2px_rgba(225,29,72,0.12)] disabled:opacity-40 disabled:cursor-not-allowed uppercase"
                 disabled={user.is_super_admin === true || isProcessing}
                 title={user.is_super_admin ? 'Super Admin cannot be disabled from list actions' : undefined}
             >

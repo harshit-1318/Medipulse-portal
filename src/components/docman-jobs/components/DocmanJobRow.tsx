@@ -48,7 +48,7 @@ export default function DocmanJobRow({ job, onDelete }: DocmanJobRowProps) {
                         href={fileUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="w-[78px] h-[32px]"
+                        className="w-19.5 h-8"
                     />
                 ) : (
                     <span className="text-slate-300 font-semibold text-[11px]">NO ASSET</span>

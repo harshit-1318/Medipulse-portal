@@ -110,7 +110,7 @@ export const CredentialsTableRow: React.FC<CredentialsTableRowProps> = ({
             label="View"
             variant="cyan"
             onClick={() => onViewDetails(user)}
-            className="h-[32px] w-[78px]"
+            className="h-8 w-19.5"
           />
 
           <div className="relative" ref={menuRef}>
