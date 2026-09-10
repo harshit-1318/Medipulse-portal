@@ -36,8 +36,12 @@ node_modules_names.txt
 # Logs
 *.log
 
-# Test coverage
+# Test coverage & reports
 coverage/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
 
 # Database Backups & Dumps (Sensitive)
 /backups/
