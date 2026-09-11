@@ -14,6 +14,7 @@ export const ACTION_OPTIONS = [
     { label: "Webhook Processed", value: "webhook_processed" },
     // Auth
     { label: "Login", value: "login_success" },
+    { label: "Logout", value: "logout" },
 ];
 
 export const PAGE_OPTIONS = [
@@ -23,4 +24,13 @@ export const PAGE_OPTIONS = [
     { label: "Users", value: "users" },
     { label: "Shopify Import", value: "shopify-import" },
     { label: "Shopify Webhook", value: "shopify-webhook" },
+];
+
+export const ROLE_OPTIONS = [
+    { label: "All Roles", value: "" },
+    { label: "Super Admin", value: "super_admin" },
+    { label: "Admin", value: "admin" },
+    { label: "Prescriber", value: "prescriber" },
+    { label: "Pharmacist", value: "pharmacist" },
+    { label: "Customer Support", value: "customer_support" },
 ];

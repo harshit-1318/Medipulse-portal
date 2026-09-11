@@ -5,6 +5,7 @@ import {
     Eye,
     FileJson,
     LogIn,
+    LogOut,
     Mail,
     Search,
     ShoppingCart,
@@ -20,6 +21,9 @@ import {
 export const getActionConfig = (action?: string) => {
     const normalizedAction = action?.toLowerCase() || "";
 
+    if (normalizedAction.includes("logout")) {
+        return { label: "Logout", icon: LogOut, color: "#e11d48", bg: "#fff1f2", border: "#fecdd3" };
+    }
     if (normalizedAction.includes("login")) {
         return { label: "Login", icon: LogIn, color: "#10B981", bg: "#ECFDF5", border: "#D1FAE5" };
     }

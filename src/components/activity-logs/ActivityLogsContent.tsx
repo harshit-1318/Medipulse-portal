@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ActivityTable from "./ActivityTable";
 import { LazyMotion, domAnimation } from "framer-motion";
 import { useScrollPreservation } from '@/hooks';
@@ -16,10 +16,12 @@ export default function ActivityLogsContent({
     title = "Activity Logs",
     storageSuffix = "activity_logs",
     defaultAction = "",
-    enableOrderSubgrouping = true,
+    enableOrderSubgrouping = false,
 }: ActivityLogsContentProps) {
     const user = useUserInfo();
-    const isSuperAdmin = user?.effectiveRole === "super_admin" || user?.is_super_admin === true;
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => { setMounted(true); }, []);
+    const isSuperAdmin = mounted && (user?.effectiveRole === "super_admin" || user?.is_super_admin === true);
     const { page, setPage, sortBy, setSortBy, sortDir, setSortDir, filters, setFilters, logs, loading, total } = useActivityLogs({
         storageSuffix,
         defaultFilters: defaultAction ? { action: defaultAction } : {},

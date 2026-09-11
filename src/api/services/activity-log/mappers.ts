@@ -16,6 +16,7 @@ export const mapToActivityLog = (log: any): ActivityLogType => {
         target: log.target_guid || log.target || log.view || log.page,
         details: log.details || "",
         createdAt: log.createdAt,
+        role: log.role || log.user_role || log.userRole || "",
         count: typeof log.count === "number" ? log.count : 1,
     };
 };
@@ -33,6 +34,7 @@ export const mapToActivityLogBySite = (log: any): ActivityLogType => {
         target: log.target_guid ?? log.view,
         details: log.details ?? log.action_type ?? "",
         createdAt: log.createdAt,
+        role: log.role || log.user_role || log.userRole || "",
         count: typeof log.count === "number" ? log.count : 1,
     };
 };

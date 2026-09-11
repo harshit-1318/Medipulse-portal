@@ -48,5 +48,31 @@ describe('ActivityFiltersModal', () => {
 
         expect(baseProps.setFiltersEnabled).toHaveBeenCalledWith(false);
     });
+
+    it('renders User Role filter dropdown', () => {
+        render(<ActivityFiltersModal {...baseProps} />);
+
+        expect(screen.getByText('User Role')).toBeInTheDocument();
+    });
+
+    it('triggers setLocalSearch and setLocalOrderId on input changes', () => {
+        render(<ActivityFiltersModal {...baseProps} />);
+
+        const searchInput = screen.getByPlaceholderText(/e\.g\. john@example\.com/i);
+        fireEvent.change(searchInput, { target: { value: 'harshit' } });
+        expect(baseProps.setLocalSearch).toHaveBeenCalledWith('harshit');
+
+        const orderInput = screen.getByPlaceholderText(/e\.g\. 1277551893/i);
+        fireEvent.change(orderInput, { target: { value: 'MP-46287' } });
+        expect(baseProps.setLocalOrderId).toHaveBeenCalledWith('MP-46287');
+    });
+
+    it('calls clearFilters when Clear All button is clicked', () => {
+        render(<ActivityFiltersModal {...baseProps} />);
+
+        const clearBtn = screen.getByRole('button', { name: /clear all/i });
+        fireEvent.click(clearBtn);
+        expect(baseProps.clearFilters).toHaveBeenCalled();
+    });
 });
 

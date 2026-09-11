@@ -45,7 +45,7 @@ export const ActivityTableRow = ({ log }: Props) => {
             >
                 <ActivityActionCell config={config} Icon={config.icon} count={log.count} />
                 
-                <ActivityUserCell userName={log.userName} userEmail={log.userEmail} />
+                <ActivityUserCell userName={log.userName} userEmail={log.userEmail} userRole={log.role} />
 
                 <td className="px-5 py-3.5 align-middle text-center">
                     <div className="flex flex-col items-center justify-center leading-tight">

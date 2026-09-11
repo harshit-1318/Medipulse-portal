@@ -81,4 +81,6 @@ coverage/
 *.sqlite
 *.sqlite3
 
-
+# Scratch & runtime artifacts
+scratch_*.*
+.system_generated/

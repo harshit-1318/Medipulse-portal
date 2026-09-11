@@ -8,6 +8,7 @@ export interface ActivityLogType {
     target: string;
     details: string;
     createdAt: string;
+    role?: string;
     count?: number; // number of grouped occurrences (1 = not grouped)
 }
 
@@ -21,6 +22,7 @@ export interface ActivityLogsResponse {
 export interface ActivityFilterParams {
     siteId?: string;
     search?: string;
+    role?: string;
     sortBy?: string;
     sortDir?: "asc" | "desc";
     startDate?: string;

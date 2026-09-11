@@ -45,7 +45,7 @@ export default function ActivityTable(props: Props) {
     } = props;
 
     const pageSize = 20;
-    const totalPages = Math.max(1, Math.ceil(total / pageSize));
+    const totalPages = loading && total === 0 ? Math.max(1, page) : Math.max(1, Math.ceil(total / pageSize));
 
     const { table, columns } = useActivityTableReactTable(logs, onSort);
     const { activeFilters, removeFilter, clearFilters, updateFilter, localSearch, setLocalSearch, localOrderId, setLocalOrderId } = useActivityFilters(filters, setFilters, setPage, siteOptions);

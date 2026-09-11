@@ -1,3 +1,4 @@
+export * from './ActivityLog';
 export * from './Customer';
 export * from './DocmanJob';
 export * from './Lead';

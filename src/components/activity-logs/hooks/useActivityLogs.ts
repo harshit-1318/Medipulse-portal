@@ -3,7 +3,7 @@ import { type ActivityLogType, getActivityLogs } from "@/api/services/log/logSer
 import { useUrlSync } from '@/hooks';
 import { getUrlParamInt, getInitialStateFromUrl, getDashboardStorageKey } from '@/utils/url';
 
-const DEFAULT_FILTERS = { siteId: "", search: "", orderId: "", action: "", view: "", startDate: "", endDate: "", sortBy: "", sortDir: "desc" };
+const DEFAULT_FILTERS = { role: "", siteId: "", search: "", orderId: "", action: "", view: "", startDate: "", endDate: "", sortBy: "", sortDir: "desc" };
 
 type UseActivityLogsOptions = {
     storageSuffix?: string;
@@ -20,20 +20,40 @@ export function useActivityLogs(options: UseActivityLogsOptions = {}) {
 
     const storageKey = getDashboardStorageKey(storageSuffix);
     const mergedDefaultFilters = { ...DEFAULT_FILTERS, ...defaultFilters };
-    const [page, setPage] = useState(() => getUrlParamInt("page", 1, storageKey));
+    const [page, setPage] = useState(1);
     
-    const initialState = getInitialStateFromUrl(mergedDefaultFilters, storageKey);
     const [filters, setFilters] = useState({
-        siteId: initialState.siteId,
-        search: initialState.search,
-        orderId: initialState.orderId,
-        action: initialState.action,
-        view: initialState.view,
-        startDate: initialState.startDate,
-        endDate: initialState.endDate,
+        role: mergedDefaultFilters.role || "",
+        siteId: mergedDefaultFilters.siteId || "",
+        search: mergedDefaultFilters.search || "",
+        orderId: mergedDefaultFilters.orderId || "",
+        action: mergedDefaultFilters.action || "",
+        view: mergedDefaultFilters.view || "",
+        startDate: mergedDefaultFilters.startDate || "",
+        endDate: mergedDefaultFilters.endDate || "",
     });
-    const [sortBy, setSortBy] = useState(initialState.sortBy);
-    const [sortDir, setSortDir] = useState<"asc" | "desc">(initialState.sortDir as "asc" | "desc");
+    const [sortBy, setSortBy] = useState(mergedDefaultFilters.sortBy || "");
+    const [sortDir, setSortDir] = useState<"asc" | "desc">((mergedDefaultFilters.sortDir as "asc" | "desc") || "desc");
+
+    useEffect(() => {
+        const initialState = getInitialStateFromUrl(mergedDefaultFilters, storageKey);
+        setFilters(prev => ({
+            ...prev,
+            role: initialState.role || "",
+            siteId: initialState.siteId || "",
+            search: initialState.search || "",
+            orderId: initialState.orderId || "",
+            action: initialState.action || "",
+            view: initialState.view || "",
+            startDate: initialState.startDate || "",
+            endDate: initialState.endDate || "",
+        }));
+        if (initialState.sortBy) setSortBy(initialState.sortBy);
+        if (initialState.sortDir) setSortDir(initialState.sortDir as "asc" | "desc");
+
+        const initialPage = getUrlParamInt("page", 1);
+        if (initialPage > 1) setPage(initialPage);
+    }, [storageKey]);
 
     const [logs, setLogs] = useState<ActivityLogType[]>([]);
     const [loading, setLoading] = useState(true);

@@ -12,6 +12,7 @@ describe('mapToActivityLog', () => {
             object_guid: '9999',
             details: 'Order #9999 viewed by john',
             createdAt: '2026-04-23T10:00:00Z',
+            role: 'prescriber',
             count: 3,
         };
 
@@ -24,6 +25,7 @@ describe('mapToActivityLog', () => {
             userEmail: 'john@clinic.com',
             userName: 'john',
             orderId: '9999',
+            role: 'prescriber',
             details: 'Order #9999 viewed by john',
             createdAt: '2026-04-23T10:00:00Z',
             count: 3,

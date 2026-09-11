@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
-import { ACTION_OPTIONS, PAGE_OPTIONS } from "../utils/filterConstants";
+import { ACTION_OPTIONS, PAGE_OPTIONS, ROLE_OPTIONS } from "../utils/filterConstants";
 
 type SiteOption = { label: string; value: string };
 
@@ -21,7 +21,7 @@ export const useActivityFilters = (
         setPage(1);
         setLocalSearch("");
         setLocalOrderId("");
-        setFilters({ siteId: "", search: "", orderId: "", action: "", view: "", startDate: "", endDate: "" });
+        setFilters({ siteId: "", search: "", role: "", orderId: "", action: "", view: "", startDate: "", endDate: "" });
     };
 
     useEffect(() => { setLocalSearch(filters.search || ""); }, [filters.search]);
@@ -47,6 +47,7 @@ export const useActivityFilters = (
 
     const activeFilters: { key: string, label: string, value: string }[] = [];
     if (filters.search) activeFilters.push({ key: 'search', label: 'Search', value: filters.search });
+    if (filters.role) activeFilters.push({ key: 'role', label: 'Role', value: ROLE_OPTIONS.find(o => o.value === filters.role)?.label || filters.role });
     if (filters.orderId) activeFilters.push({ key: 'orderId', label: 'Subject', value: filters.orderId });
     if (filters.action) activeFilters.push({ key: 'action', label: 'Action', value: ACTION_OPTIONS.find(o => o.value === filters.action)?.label || filters.action });
     if (filters.view) activeFilters.push({ key: 'view', label: 'Page', value: PAGE_OPTIONS.find(o => o.value === filters.view)?.label || filters.view });

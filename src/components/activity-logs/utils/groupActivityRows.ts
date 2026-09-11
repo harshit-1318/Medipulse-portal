@@ -7,7 +7,7 @@ export const normalizeValue = (value: unknown): string => {
 export const hasUsableOrderId = (orderId: string): boolean => {
     if (!orderId) return false;
     const lowered = orderId.toLowerCase();
-    return lowered !== "0" && lowered !== "null" && lowered !== "undefined";
+    return lowered !== "0" && lowered !== "null" && lowered !== "undefined" && lowered !== "-";
 };
 
 export function groupActivityRows(rows: any[]) {

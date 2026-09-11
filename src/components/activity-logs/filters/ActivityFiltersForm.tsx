@@ -1,6 +1,6 @@
-import { Search, Layers, RefreshCcw, Building2, LayoutGrid } from "lucide-react";
+import { Search, Layers, RefreshCcw, Building2, LayoutGrid, Shield } from "lucide-react";
 import CustomDropdown from "@/components/orders-table/ui";
-import { ACTION_OPTIONS, PAGE_OPTIONS } from "../utils";
+import { ACTION_OPTIONS, PAGE_OPTIONS, ROLE_OPTIONS } from "../utils";
 import { ActivityDateInputs } from "./ActivityDateInputs";
 
 interface Props {
@@ -64,6 +64,14 @@ export const ActivityFiltersForm = ({
                         />
                     </div>
                 </div>
+
+                <CustomDropdown
+                    label="User Role"
+                    icon={Shield}
+                    value={filters.role || ""}
+                    onChange={(v) => updateFilter("role", v)}
+                    options={ROLE_OPTIONS}
+                />
 
                 <CustomDropdown
                     label="Action Type"

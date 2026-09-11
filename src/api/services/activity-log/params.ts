@@ -34,6 +34,7 @@ export const buildActivityLogParams = (
     }
 
     if (filters.search) params.search = filters.search;
+    if (filters.role) params.role = filters.role;
     if (filters.orderId) {
         params.orderId = filters.orderId;
         params.subject_guid = filters.orderId;
@@ -68,6 +69,7 @@ export const hasAnyFilters = (filters: ActivityFilterParams) => {
     return !!(
         filters.siteId ||
         filters.search ||
+        filters.role ||
         filters.orderId ||
         filters.action ||
         filters.view ||

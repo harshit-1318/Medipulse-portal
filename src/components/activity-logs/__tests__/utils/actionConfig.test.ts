@@ -8,6 +8,12 @@ describe("actionConfig", () => {
         expect(config.color).toBe("#ec4899");
     });
 
+    it("returns correct config for logout actions", () => {
+        const config = getActionConfig("logout");
+        expect(config.label).toBe("Logout");
+        expect(config.color).toBe("#e11d48");
+    });
+
     it("returns correct config for imported actions", () => {
         const config = getActionConfig("order_imported");
         expect(config.label).toBe("Imported");

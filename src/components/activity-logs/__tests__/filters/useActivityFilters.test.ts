@@ -56,11 +56,33 @@ describe('useActivityFilters', () => {
         expect(setFilters).toHaveBeenCalledWith({
             siteId: '',
             search: '',
+            role: '',
             orderId: '',
             action: '',
             view: '',
             startDate: '',
             endDate: '',
         });
+    });
+
+    it('includes Role chip label in activeFilters when role filter is active', () => {
+        const filters = {
+            role: 'prescriber',
+            siteId: '',
+            search: '',
+            orderId: '',
+            action: '',
+            view: '',
+            startDate: '',
+            endDate: '',
+        };
+
+        const { result } = renderHook(() => useActivityFilters(filters, setFilters, setPage, []));
+
+        expect(result.current.activeFilters).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({ key: 'role', label: 'Role', value: 'Prescriber' }),
+            ]),
+        );
     });
 });

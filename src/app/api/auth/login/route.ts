@@ -3,6 +3,7 @@ import { connectToDatabase } from '@/lib/db/mongodb';
 import { User } from '@/lib/db/models/User';
 import { verifyUserPassword, checkIsSuperAdmin, buildAuthPayload, setAuthCookies } from './helpers';
 import { getRolePermissions } from './permissions';
+import { recordActivity } from '@/lib/db/logActivityHelper';
 
 // Auth login route handler
 export async function POST(request: Request) {
@@ -66,6 +67,21 @@ export async function POST(request: Request) {
     });
 
     setAuthCookies(response, token, userPayload.effectiveRole, name, userPayload.site_id);
+
+    void recordActivity({
+      action: 'login_success',
+      action_type: 'login_success',
+      user: name,
+      user_name: name,
+      user_email: emailStr,
+      role: userPayload.effectiveRole,
+      user_role: userPayload.effectiveRole,
+      details: `${name} (${userPayload.effectiveRole}) logged in successfully`,
+      page: 'auth',
+      view: 'auth',
+      site_id: userPayload.site_id,
+    });
+
     return response;
   } catch (error: any) {
     console.error('Error in auth login API:', error);

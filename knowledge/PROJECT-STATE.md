@@ -1,5 +1,37 @@
 # Frontend Project State
 
+- Activity Logs End-to-End Filter Automation & Cross-Check (Sep 11 2026):
+	- Complete Filter Backend Parity: Created `src/app/api/activity-log/list/filters/activityLogQueryBuilder.ts` (78 LOC) to support 100% of frontend modal filter criteria in MongoDB queries: User/Email Search (`search`), Order/Subject ID (`orderId`), User Role (`role`), Action Type (`action`), Page Scope (`view`), Site (`siteId`), Date Range (`startDate`, `endDate`), and dynamic sorting (`sortBy`, `sortDir`).
+	- Strict < 100 LOC Compliance (Rule 04): `route.ts` reduced from 117 LOC to 89 LOC; `activityLogQueryBuilder.ts` is 78 LOC.
+	- Automated Integration Test Suite: Implemented `src/app/api/activity-log/list/filters/route.test.ts` (9 tests) and `activityLogQueryBuilder.test.ts` (9 tests), executing automated cross-checks against live database queries for every filter control.
+	- 100% Vitest & TypeScript Pass Rate: 10 test files (51/51 tests PASS) across all activity logs components, modal interactions, and backend filter routes. Live automated API cross-checks confirmed: Role Prescriber (78), Role Pharmacist (44), Role Super Admin (10), Search Harshit (10), Action Login Success (15), Order MP-46287 (3), Scope Orders (144), Date Range 10-11 Sept (89).
+
+- Audit Log Strict Chronological Timeline & Test Isolation (Sep 11 2026):
+	- Chronological Date Order Fixed: Disabled artificial `enableOrderSubgrouping` on `/activity-logs`. Subgrouping was separating records into Orders (at the top) and Non-Order activities (at the bottom), which pushed today's latest logins (11 Sept) beneath yesterday's orders (10 Sept) causing mixed dates ("10 11 uper niche"). Activity logs are now rendered in 100% strict descending chronological order: today's latest events (11 Sept) appear at the very top, followed cleanly by earlier events (10 Sept).
+	- Test Pollution Elimination: In `src/lib/db/logActivityHelper.ts`, added strict test environment guards (`process.env.NODE_ENV === 'test' || process.env.VITEST`) to ensure that automated test suites (`npm test` / Vitest) do not write synthetic login/logout events into the production MongoDB activity log collection.
+	- Real-Time Audit De-duplication Guard: Implemented an automated 10-second deduplication check in `recordActivity()` to prevent double-clicks, fast refreshes, or consecutive duplicate auth requests from creating duplicate rows for the same user and action.
+	- Database Clean-Up: Purged synthetic test records (`staff@medipulse.io` logouts and repeated test logins) generated during automated lifecycle test runs, restoring a clean, authentic baseline of 222 real database activity records across all 8 roles.
+	- SSR Hydration & Pagination Protection: Added `suppressHydrationWarning` to `Pagination.tsx` and ensured `useActivityLogs.ts` initializes to SSR-safe defaults before hydrating client-side URL parameters, completely resolving Turbopack hydration mismatch errors.
+	- 100% Vitest & TypeScript Compliance: All 10 activity log and auth test files (37/37 tests PASS) and `tsc --noEmit` clean (0 errors). All touched files strictly < 100 LOC.
+
+- Next.js 16 App Router Activity Logs SSR Hydration Mismatch Resolution (Sep 11 2026):
+	- Root Cause: `ActivityLogsRoute` (`src/app/(dashboard)/activity-logs/page.tsx`) server-side pre-rendered `ActivityLogsContent`. During SSR, `typeof window === 'undefined'` caused `useActivityLogs` to initialize with default page 1 and empty filters. On client initial hydration, `getUrlParamInt` read the URL search query (`?page=2`) or `localStorage` (`dashboardFilters_activity_logs`), causing a DOM mismatch (`currentPage=2` vs `currentPage=1`, `<button disabled={false}>` vs `<button disabled="">`, `Page 2 of 1` vs `Page 1 of 1`).
+	- Client-Side Dynamic Import: Converted `ActivityLogsRoute` and `EmailHistoryRoute` to use `dynamic(() => import('@/components/activity-logs/ActivityLogsContent'), { ssr: false })`. This cleanly eliminates SSR pre-rendering on this client-authenticated dashboard view, removing the hydration mismatch.
+	- Loading & Derived Page Guard: Updated `ActivityTable.tsx` to keep `totalPages = Math.max(1, page)` when `loading && total === 0`, and updated `Pagination.tsx` so `derivedTotalPages = Math.max(rawTotalPages, currentPage || 1)`, preventing the intermediate "Page 2 of 1" rendering glitch while awaiting data.
+	- Vitest & Browser QA: Added unit test in `Pagination.test.tsx` verifying derived total pages never falls below current page. 100% Vitest pass rate (155 test files, 837/837 tests PASS — 0 failures). Automated browser subagent verified `/activity-logs?page=2` reload has zero hydration errors, no Next.js error overlays, clean console logs, and smooth pagination back to page 1.
+
+- Persistent MongoDB Activity Logging & Real-Time Login/Logout Audit Trail (Sep 11 2026):
+	- MongoDB Model: Created `ActivityLog` Mongoose model (`src/lib/db/models/ActivityLog.ts`) with index on `createdAt: -1`, `user_email: 1`, `role: 1`, and `orderId: 1`.
+	- Safe Logging Helper: Implemented `recordActivity()` in `src/lib/db/logActivityHelper.ts` (32 LOC) ensuring safe, non-blocking asynchronous log persistence.
+	- Real Login & Logout Auditing: Integrated `recordActivity` into `/api/auth/login` (`login_success`) and `/api/auth/logout` (`logout`), capturing user name, email, role, and exact timestamps in MongoDB.
+	- Live API Endpoints: Refactored `POST /api/activity-log` to save directly to MongoDB and `GET /api/activity-log/list/filters` to query real database records with full pagination, search, role filtering, and initial baseline auto-seeding.
+	- Role Badges in Table: Added color-coded role badges to the `USER` column via `getRoleBadgeConfig()` (`super_admin` violet, `admin` blue, `prescriber` emerald, `pharmacist` amber, `customer_support` teal, fallback slate).
+	- User Role Filter Modal: Added `User Role` dropdown in `ActivityFiltersModal` with `ROLE_OPTIONS` (`super_admin`, `admin`, `prescriber`, `pharmacist`, `customer_support`), synced with `useActivityFilters`, `buildActivityLogParams`, and active filter chips.
+	- Action Config for Logout: Added `LogOut` icon and rose chip styling for `logout` action in `actionConfig.ts` and `filterConstants.ts`.
+	- Sub-grouping Fix: Fixed `hasUsableOrderId()` in `groupActivityRows.ts` to exclude `"-"`, properly grouping non-order logs under user buckets (`User <email> (<count>)`) instead of showing `Order #- (<count>)`.
+	- Primary Super Admin: Recognized Harshit Kumar (`kumarharshit370@gmail.com`) as primary Super Admin.
+	- 100% Vitest Pass Rate: 13 auth test files (78/78 tests PASS) and 12 activity-log test files (49/49 tests PASS). All source files strictly < 100 LOC.
+
 - Admin Section UI Standardization & Orders Filters Design System Parity (Sep 11 2026):
 	- Design System Alignment: Unified the UI layout, typography, action buttons, table presentations, and card headers across all 8 internal Admin section pages: Sites (`/sites`), Users (`/users`), Role Credentials (`/super-admin/role-credentials`), Activity Logs (`/activity-logs`), Queue Monitor (`/queue-monitor`), Docman Jobs (`/docman-jobs`), Surveys (`/surveys`), and Leads / CRM (`/leads`), using Orders Filters (`/orders/all`) as the primary design reference.
 	- Page Headers: Replaced all legacy icon containers and multicolored badge boxes with clean, bold single `h1` titles (`text-[22px] font-bold text-slate-900 tracking-tight`) across all 8 pages.

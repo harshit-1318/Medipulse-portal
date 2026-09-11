@@ -47,4 +47,18 @@ describe('Pagination Component', () => {
         expect(screen.getByRole('button', { name: /next/i })).toBeDisabled();
         expect(screen.getByRole('button', { name: /previous/i })).not.toBeDisabled();
     });
+
+    it('ensures derived total pages is never less than current page during loading states', () => {
+        render(
+            <Pagination
+                currentPage={2}
+                totalPages={1}
+                onPageChange={vi.fn()}
+            />
+        );
+
+        expect(screen.getByText('Page 2 of 2')).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /previous/i })).not.toBeDisabled();
+        expect(screen.getByRole('button', { name: /next/i })).toBeDisabled();
+    });
 });

@@ -13,6 +13,7 @@ const makeLog = (overrides: Partial<ActivityLogType> = {}): ActivityLogType => (
     target: overrides.target ?? "",
     details: overrides.details ?? "details",
     createdAt: overrides.createdAt ?? "2026-04-28T10:00:00.000Z",
+    role: overrides.role,
     count: overrides.count ?? 1,
 });
 
@@ -75,5 +76,22 @@ describe("ActivityTableBody", () => {
 
         expect(screen.queryByText(/Order #100/)).not.toBeInTheDocument();
         expect(screen.queryByText(/User/)).not.toBeInTheDocument();
+    });
+
+    it("renders role badge when role is present on the log", () => {
+        const logs = [
+            makeLog({ id: "1", orderId: "100", role: "prescriber", userName: "Dr. Sarah" }),
+        ];
+
+        const table = makeTable(logs) as any;
+
+        render(
+            <table>
+                <ActivityTableBody table={table} columnsCount={5} enableOrderSubgrouping={false} />
+            </table>,
+        );
+
+        expect(screen.getByText("Prescriber")).toBeInTheDocument();
+        expect(screen.getByText("Dr. Sarah")).toBeInTheDocument();
     });
 });

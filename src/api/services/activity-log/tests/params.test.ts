@@ -49,4 +49,9 @@ describe('buildActivityLogParams', () => {
         const params = buildActivityLogParams(1, 20, {});
         expect(params.search).toBeUndefined();
     });
+
+    it('passes role through when provided', () => {
+        const params = buildActivityLogParams(1, 20, { role: 'prescriber' });
+        expect(params.role).toBe('prescriber');
+    });
 });
