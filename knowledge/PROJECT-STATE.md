@@ -1,6 +1,15 @@
 # Frontend Project State
 
-- Activity Logs End-to-End Filter Automation & Cross-Check (Sep 11 2026):
+- Active Filters Modal Senior QA Automation & Combination Testing (Sep 11 2026):
+	- Comprehensive 10-Phase Automation Architecture: Developed automated Playwright E2E test suite `e2e/activity-filters-combinations.spec.ts` (84 LOC), Page Object `e2e/pages/ActivityLogsPage.ts` (99 LOC), Super Admin test fixture `e2e/fixtures/activityTestBase.ts` (64 LOC), and standalone multi-scenario runner `scripts/qa-combination-runner.mjs` executing 127 combination & boundary tests.
+	- 10-Phase Testing Coverage: Verified Phase 1 (8 primary filter progressive chains), Phase 2 (2-filter, 3-filter, and 8-filter multi-intersections), Phase 3 (positive precision, pagination, and sorting), Phase 4 (14 negative test cases including regex injection, boundary dates, and conflicting filters), Phase 5 (Clear All state reset and dataset restoration), Phase 6 (Close button, Escape key, and header X dismiss with state persistence), Phase 7 (date boundaries and ranges), Phase 8 (all dropdown options across Role, Action, Scope, and Site), Phase 9 (UI/UX visual layout, typography, borders, and responsive design), and Phase 10 (automated dynamic assertions on intersection logic).
+	- All 4 Defects Resolved & Verified (100% Pass Rate):
+		1. Regex Special Characters Sanitized: Added `escapeRegex` in `activityLogQueryBuilder.ts` to escape special characters (`(`, `[`, `*`, `+`, `\`, `?`), eliminating the 500 internal server error.
+		2. 1-2 Char Debounce Threshold Fixed: Removed 3-char minimum dead zone in `useActivityFilters.ts`, enabling active search matching for 1-2 chars while trimming whitespace.
+		3. Immediate Flush on Close Added: Implemented `applyFilters` in `useActivityFilters.ts`, `ActivityFiltersModal.tsx`, and `ActivityTable.tsx`, flushing pending inputs immediately upon modal close.
+		4. System Roles Parity: Expanded `ROLE_OPTIONS` in `filterConstants.ts` with `Pharmacy Staff` (`pharmacy_staff`), `Driver` (`driver`), and `Customer` (`customer`).
+	- Test & Build Health: 100% Vitest pass rate across entire suite (159 test files, 870/870 tests PASS — 0 failures), Playwright E2E suite (4/4 tests PASS), `scripts/qa-combination-runner.mjs` (127/127 PASS), `tsc --noEmit` clean (0 errors), and live browser session video & screenshot artifacts captured.
+
 	- Complete Filter Backend Parity: Created `src/app/api/activity-log/list/filters/activityLogQueryBuilder.ts` (78 LOC) to support 100% of frontend modal filter criteria in MongoDB queries: User/Email Search (`search`), Order/Subject ID (`orderId`), User Role (`role`), Action Type (`action`), Page Scope (`view`), Site (`siteId`), Date Range (`startDate`, `endDate`), and dynamic sorting (`sortBy`, `sortDir`).
 	- Strict < 100 LOC Compliance (Rule 04): `route.ts` reduced from 117 LOC to 89 LOC; `activityLogQueryBuilder.ts` is 78 LOC.
 	- Automated Integration Test Suite: Implemented `src/app/api/activity-log/list/filters/route.test.ts` (9 tests) and `activityLogQueryBuilder.test.ts` (9 tests), executing automated cross-checks against live database queries for every filter control.

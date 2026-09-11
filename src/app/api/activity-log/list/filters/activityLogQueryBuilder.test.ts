@@ -106,4 +106,16 @@ describe('buildActivityLogQuery', () => {
 
     expect(sort).toEqual({ action: 1 });
   });
+
+  it('escapes special regex characters in search and orderId to prevent RegExp crash', () => {
+    const params = new URLSearchParams('search=(test)&orderId=[id]');
+    const { query } = buildActivityLogQuery(params);
+
+    expect(query.$and).toBeDefined();
+    const searchClause = query.$and?.find((c: any) => Boolean(c.$or?.[0]?.user));
+    expect(searchClause.$or[0].user.$regex).toBe('\\(test\\)');
+
+    const orderClause = query.$and?.find((c: any) => Boolean(c.$or?.[0]?.orderId));
+    expect(orderClause.$or[0].orderId.$regex).toBe('\\[id\\]');
+  });
 });

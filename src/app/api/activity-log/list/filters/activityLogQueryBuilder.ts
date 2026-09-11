@@ -18,12 +18,15 @@ export function buildActivityLogQuery(searchParams: URLSearchParams) {
     andConditions.push({ $or: [{ action: actionParam }, { action_type: actionParam }] });
   }
 
+  const escapeRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
   if (orderIdParam) {
+    const safeOrderId = escapeRegex(orderIdParam);
     andConditions.push({
       $or: [
-        { orderId: { $regex: orderIdParam, $options: 'i' } },
-        { object_guid: { $regex: orderIdParam, $options: 'i' } },
-        { target_guid: { $regex: orderIdParam, $options: 'i' } },
+        { orderId: { $regex: safeOrderId, $options: 'i' } },
+        { object_guid: { $regex: safeOrderId, $options: 'i' } },
+        { target_guid: { $regex: safeOrderId, $options: 'i' } },
       ],
     });
   }
@@ -58,12 +61,13 @@ export function buildActivityLogQuery(searchParams: URLSearchParams) {
   }
 
   if (searchParam) {
+    const safeSearch = escapeRegex(searchParam);
     andConditions.push({
       $or: [
-        { user: { $regex: searchParam, $options: 'i' } },
-        { user_name: { $regex: searchParam, $options: 'i' } },
-        { user_email: { $regex: searchParam, $options: 'i' } },
-        { details: { $regex: searchParam, $options: 'i' } },
+        { user: { $regex: safeSearch, $options: 'i' } },
+        { user_name: { $regex: safeSearch, $options: 'i' } },
+        { user_email: { $regex: safeSearch, $options: 'i' } },
+        { details: { $regex: safeSearch, $options: 'i' } },
       ],
     });
   }

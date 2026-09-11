@@ -48,7 +48,7 @@ export default function ActivityTable(props: Props) {
     const totalPages = loading && total === 0 ? Math.max(1, page) : Math.max(1, Math.ceil(total / pageSize));
 
     const { table, columns } = useActivityTableReactTable(logs, onSort);
-    const { activeFilters, removeFilter, clearFilters, updateFilter, localSearch, setLocalSearch, localOrderId, setLocalOrderId } = useActivityFilters(filters, setFilters, setPage, siteOptions);
+    const { activeFilters, removeFilter, clearFilters, updateFilter, applyFilters, localSearch, setLocalSearch, localOrderId, setLocalOrderId } = useActivityFilters(filters, setFilters, setPage, siteOptions);
 
     return (
         <div className="bg-[#ffffff] rounded-2xl border border-slate-200 shadow-sm font-montserrat w-full overflow-hidden flex flex-col h-[calc(100vh-160px)]">
@@ -73,6 +73,7 @@ export default function ActivityTable(props: Props) {
                 localOrderId={localOrderId}
                 setLocalOrderId={setLocalOrderId}
                 siteOptions={siteOptions}
+                applyFilters={applyFilters}
             />
 
             <div className="flex-1 overflow-auto w-full relative border-t border-slate-100 bg-white">

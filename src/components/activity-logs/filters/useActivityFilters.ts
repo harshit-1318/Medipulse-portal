@@ -30,20 +30,29 @@ export const useActivityFilters = (
     useEffect(() => {
         const timer = setTimeout(() => {
             if ((filters.search || "") !== localSearch) {
-                if (localSearch.length === 0 || localSearch.length >= 3) updateFilter("search", localSearch);
+                updateFilter("search", localSearch.trim());
             }
-        }, 900);
+        }, 500);
         return () => clearTimeout(timer);
     }, [localSearch, filters.search, updateFilter]);
 
     useEffect(() => {
         const timer = setTimeout(() => {
             if ((filters.orderId || "") !== localOrderId) {
-                if (localOrderId.length === 0 || localOrderId.length >= 3) updateFilter("orderId", localOrderId);
+                updateFilter("orderId", localOrderId.trim());
             }
-        }, 900);
+        }, 500);
         return () => clearTimeout(timer);
     }, [localOrderId, filters.orderId, updateFilter]);
+
+    const applyFilters = useCallback(() => {
+        setPage(1);
+        setFilters((prev: any) => ({
+            ...prev,
+            search: localSearch.trim(),
+            orderId: localOrderId.trim(),
+        }));
+    }, [setPage, setFilters, localSearch, localOrderId]);
 
     const activeFilters: { key: string, label: string, value: string }[] = [];
     if (filters.search) activeFilters.push({ key: 'search', label: 'Search', value: filters.search });
@@ -68,6 +77,7 @@ export const useActivityFilters = (
         setLocalOrderId,
         updateFilter,
         clearFilters,
+        applyFilters,
         activeFilters,
         removeFilter
     };

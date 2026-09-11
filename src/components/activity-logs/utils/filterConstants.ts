@@ -32,5 +32,8 @@ export const ROLE_OPTIONS = [
     { label: "Admin", value: "admin" },
     { label: "Prescriber", value: "prescriber" },
     { label: "Pharmacist", value: "pharmacist" },
+    { label: "Pharmacy Staff", value: "pharmacy_staff" },
     { label: "Customer Support", value: "customer_support" },
+    { label: "Driver", value: "driver" },
+    { label: "Customer", value: "customer" },
 ];

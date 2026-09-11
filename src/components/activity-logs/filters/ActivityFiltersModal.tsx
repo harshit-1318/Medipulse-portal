@@ -14,6 +14,7 @@ interface Props {
     localOrderId: string;
     setLocalOrderId: (v: string) => void;
     siteOptions?: Array<{ label: string; value: string }>;
+    applyFilters?: () => void;
 }
 
 export const ActivityFiltersModal = ({
@@ -26,9 +27,13 @@ export const ActivityFiltersModal = ({
     setLocalSearch,
     localOrderId,
     setLocalOrderId,
-    siteOptions = []
+    siteOptions = [],
+    applyFilters,
 }: Props) => {
-    const handleClose = () => setFiltersEnabled(false);
+    const handleClose = () => {
+        applyFilters?.();
+        setFiltersEnabled(false);
+    };
 
     useEffect(() => {
         const handleEsc = (e: KeyboardEvent) => {

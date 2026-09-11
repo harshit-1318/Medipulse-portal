@@ -85,4 +85,21 @@ describe('useActivityFilters', () => {
             ]),
         );
     });
+
+    it('applyFilters immediately flushes localSearch and localOrderId to filters', () => {
+        const filters = { search: '', orderId: '' };
+        const { result } = renderHook(() => useActivityFilters(filters, setFilters, setPage, []));
+
+        act(() => {
+            result.current.setLocalSearch('dr.watson');
+            result.current.setLocalOrderId('MP-46287');
+        });
+
+        act(() => {
+            result.current.applyFilters();
+        });
+
+        expect(setPage).toHaveBeenCalledWith(1);
+        expect(setFilters).toHaveBeenCalled();
+    });
 });

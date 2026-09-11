@@ -11,6 +11,7 @@ interface Props {
     localOrderId: string;
     setLocalOrderId: (v: string) => void;
     siteOptions?: Array<{ label: string; value: string }>;
+    applyFilters?: () => void;
 }
 
 export default function ActivityFilters({
@@ -23,7 +24,8 @@ export default function ActivityFilters({
     setLocalSearch,
     localOrderId,
     setLocalOrderId,
-    siteOptions = []
+    siteOptions = [],
+    applyFilters,
 }: Props) {
     return (
         <ActivityFiltersModal
@@ -37,6 +39,7 @@ export default function ActivityFilters({
             localOrderId={localOrderId}
             setLocalOrderId={setLocalOrderId}
             siteOptions={siteOptions}
+            applyFilters={applyFilters}
         />
     );
 }

@@ -70,9 +70,13 @@ desktop.ini
 coverage/
 *.lcov
 /test-results/
+test-results/
 /playwright-report/
+playwright-report/
 /blob-report/
+blob-report/
 /playwright/.cache/
+playwright/.cache/
 
 # Database Backups & Local Data Dumps (Sensitive)
 /backups/
