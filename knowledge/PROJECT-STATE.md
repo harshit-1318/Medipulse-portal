@@ -1,5 +1,11 @@
 # Frontend Project State
 
+- Repository Security Audit & .gitignore Hardening (Oct 14 2026):
+	- Complete Repository & Tooling Audit: Analyzed repository root, dependencies, Next.js 16 build targets, TypeScript incremental compilation, Vitest & Playwright test reporters, MongoDB/Mongoose dumps, and multi-tenant environment files.
+	- .gitignore Hardening: Added protection for MongoDB dumps (dump/, *.bson), cache dumps (*.rdb), build/ directory, *.tsbuildinfo, logs/, extended certificates/keys (*.cer, *.der, *.p8, *.keystore), and OS/workspace metadata. Added safe template exceptions (!.env.sample, !.env.template, !.env.*.example).
+	- Deduplicated Rules & Normalized Paths: Removed 4 redundant test-path duplicate rules and standardized leading-slash patterns to universal directory patterns.
+	- Verification & Security: Full Git index and commit history audit confirmed 0 sensitive files tracked. 100% Vitest pass rate (159 test files, 870/870 tests PASS), tsc --noEmit clean (0 errors), git diff --check clean (0 warnings).
+
 - Active Filters Modal Senior QA Automation & Combination Testing (Sep 11 2026):
 	- Comprehensive 10-Phase Automation Architecture: Developed automated Playwright E2E test suite `e2e/activity-filters-combinations.spec.ts` (84 LOC), Page Object `e2e/pages/ActivityLogsPage.ts` (99 LOC), Super Admin test fixture `e2e/fixtures/activityTestBase.ts` (64 LOC), and standalone multi-scenario runner `scripts/qa-combination-runner.mjs` executing 127 combination & boundary tests.
 	- 10-Phase Testing Coverage: Verified Phase 1 (8 primary filter progressive chains), Phase 2 (2-filter, 3-filter, and 8-filter multi-intersections), Phase 3 (positive precision, pagination, and sorting), Phase 4 (14 negative test cases including regex injection, boundary dates, and conflicting filters), Phase 5 (Clear All state reset and dataset restoration), Phase 6 (Close button, Escape key, and header X dismiss with state persistence), Phase 7 (date boundaries and ranges), Phase 8 (all dropdown options across Role, Action, Scope, and Site), Phase 9 (UI/UX visual layout, typography, borders, and responsive design), and Phase 10 (automated dynamic assertions on intersection logic).

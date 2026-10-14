@@ -1,37 +1,48 @@
+# ==============================================================================
+# MediPulse Portal — Git Ignore Configuration
+# ==============================================================================
+
 # Dependencies
-/node_modules
-/.pnpm
-/.yarn
+node_modules/
+.pnpm/
+.yarn/
+.pnp
+.pnp.*
 
-# Next.js Build Output
-/.next/
-/out/
-/dist/
-/.turbo/
-tsconfig.tsbuildinfo
-
-# Generated types
+# Next.js & Build Outputs
+.next/
+out/
+dist/
+build/
+.turbo/
+*.tsbuildinfo
 next-env.d.ts
 
-# Debug logs & Process IDs
+# Debug Logs & Process IDs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+bun-debug.log*
 *.log
+logs/
 pids
 *.pid
 *.seed
 *.pid.lock
 
-# Environment & Secret files
+# Environment Variables & Local Secrets
 .env
 .env*.local
 .env.development*
 .env.production*
 .env.test*
 .env.staging*
+.env.preview*
 !.env.example
+!.env.sample
+!.env.template
+!.env.*.example
 
 # Security Certificates & Private Keys
 *.pem
@@ -39,18 +50,29 @@ pids
 *.crt
 *.pfx
 *.p12
+*.cer
+*.der
+*.p8
+*.keystore
 
-# System, IDE & Temporary files
+# Operating System Files
 .DS_Store
-.idea/
-.vscode/
-node_modules_list.txt
-node_modules_names.txt
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
 Thumbs.db
 Thumbs.db:encryptable
 ehthumbs.db
 ehthumbs_vista.db
 desktop.ini
+$RECYCLE.BIN/
+
+# IDE & Editor Configuration
+.idea/
+.vscode/
+*.code-workspace
+*.sublime-workspace
 *.swp
 *.swo
 *~
@@ -58,33 +80,35 @@ desktop.ini
 *.temp
 *.bak
 
-# Local Caches & Tooling Folders
-/scratch/
-.cache/
-.vitest/
-.vercel/
-.claude/
-.gemini/
-
-# Test coverage & reports
+# Testing & Coverage Artifacts
 coverage/
 *.lcov
-/test-results/
+*.clover
+.nyc_output/
+.vitest/
 test-results/
-/playwright-report/
 playwright-report/
-/blob-report/
 blob-report/
-/playwright/.cache/
 playwright/.cache/
 
 # Database Backups & Local Data Dumps (Sensitive)
-/backups/
+backups/
+dump/
 *.sql
 *.dump
+*.bson
 *.sqlite
 *.sqlite3
+*.rdb
 
-# Scratch & runtime artifacts
+# AI Agents & Local Caches / Scratch
+scratch/
+.scratch/
 scratch_*.*
+node_modules_list.txt
+node_modules_names.txt
+.cache/
+.vercel/
+.claude/
+.gemini/
 .system_generated/
