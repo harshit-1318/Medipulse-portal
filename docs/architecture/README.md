@@ -24,7 +24,10 @@ Welcome to the comprehensive system architecture documentation for **MediPulse P
 
 ---
 
-## 🛠️ How to View Interactive Diagrams
+## 🛠️ How to View & Run Interactive Diagrams
+- ⚡ **Command Guide & Quick Launchers**: 👉 **[HOW_TO_RUN_DIAGRAMS.md](./HOW_TO_RUN_DIAGRAMS.md)** (PowerShell one-liners, local HTTP server, and Windows shortcuts)
+- 🖱️ **Windows 1-Click Launcher**: Double-click [`open-diagrams.bat`](./open-diagrams.bat) to launch all diagrams in browser tabs.
+
 All `.html` files in this directory are **standalone, self-contained interactive visual architectures** built with zero external dependencies. You can open any `.html` file directly in Google Chrome, Microsoft Edge, or Firefox:
 - **Pan & Zoom**: Click and drag to pan across the architecture canvas; use mouse wheel to zoom in and out.
 - **Interactive Nodes**: Click any component or handler node to inspect its verified source code location, file path, and implementation details.
