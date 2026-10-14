@@ -90,8 +90,14 @@ test-results/
 playwright-report/
 blob-report/
 playwright/.cache/
+.playwright/
 *-results.json
 test-results*.json
+
+# Linters & Build Caches
+.eslintcache
+.stylelintcache
+.parcel-cache/
 
 
 # Database Backups & Local Data Dumps (Sensitive)
