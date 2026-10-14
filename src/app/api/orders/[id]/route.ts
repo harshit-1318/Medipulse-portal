@@ -25,6 +25,18 @@ export async function GET(request: Request, { params }: RouteContext) {
       ],
     }).lean();
 
+    if (!orderDoc) {
+      return NextResponse.json(
+        {
+          status: 'ERROR',
+          success: false,
+          message: 'Order not found',
+          data: null,
+        },
+        { status: 404 }
+      );
+    }
+
     const orderData = buildOrderDetailPayload(orderDoc, cleanId);
 
     return NextResponse.json({

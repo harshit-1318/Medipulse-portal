@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
+    "test": "vitest run --pool=forks --maxWorkers=4",
     "test:e2e": "playwright test",
     "seed": "node scripts/seed.mjs"
   },

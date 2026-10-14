@@ -25,8 +25,11 @@ export const DEFAULT_PHARMACIST_INFO = {
 };
 
 export const createOrderCommActions = (cleanId: string) => ({
-  sendVideoConsultation: { enabled: true, roomUrl: '', method: 'POST', payload: {} },
-  sendDocumentReminder: { enabled: true, actionUrl: '', method: 'POST', payload: {} },
-  sendPrescriptionReminder: { enabled: true, actionUrl: '', method: 'POST', payload: {} },
-  sendMessage: { enabled: true, actionUrl: '', method: 'POST', payload: { id: cleanId, message: '' } },
+  sendVideoConsultation: { enabled: true, roomUrl: `/api/video/create-room/${cleanId}`, method: 'GET', payload: {} },
+  sendDocumentReminder: { enabled: true, actionUrl: `/api/orders/${cleanId}/document-reminder`, method: 'POST', payload: {} },
+  sendPrescriptionReminder: { enabled: true, actionUrl: `/api/orders/${cleanId}/prescription-reminder`, method: 'POST', payload: {} },
+  sendMessage: { enabled: true, actionUrl: `/api/orders/${cleanId}/message`, method: 'POST', payload: { id: cleanId, message: '' } },
+  sendGpEmail: { enabled: true, actionUrl: `/api/orders/${cleanId}/gp-email`, method: 'POST', payload: {} },
+  ageVerifiedEmail: { enabled: true, actionUrl: `/api/orders/${cleanId}/age-verification`, method: 'POST', payload: {} },
+  sendSixMonthReview: { enabled: true, actionUrl: `/api/orders/${cleanId}/six-month-review`, method: 'POST', payload: {} },
 });

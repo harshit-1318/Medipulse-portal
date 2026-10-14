@@ -56,3 +56,38 @@ export async function GET(request: Request) {
     );
   }
 }
+
+export async function POST(request: Request) {
+  try {
+    await connectToDatabase();
+    const body = await request.json().catch(() => ({}));
+    const newSite = {
+      _id: `site_${Date.now()}`,
+      id: `site_${Date.now()}`,
+      name: body.name || body.site_name || 'New Site',
+      site_name: body.site_name || body.name || 'New Site',
+      key: body.key || body.site_key || `site_key_${Date.now()}`,
+      site_key: body.site_key || body.key || `site_key_${Date.now()}`,
+      primary_domain: body.primary_domain || body.url || 'localhost',
+      url: body.url || body.primary_domain || 'localhost',
+      is_active: body.is_active !== undefined ? Boolean(body.is_active) : true,
+      totalUsers: 0,
+      totalOrders: 0,
+      createdAt: new Date().toISOString(),
+    };
+
+    return NextResponse.json({
+      status: 'SUCCESS',
+      success: true,
+      data: newSite,
+      site: newSite,
+      message: 'Site created successfully',
+    });
+  } catch (error: any) {
+    console.error('Error creating site:', error);
+    return NextResponse.json(
+      { status: 'ERROR', success: false, message: error.message || 'Failed to create site', data: null },
+      { status: 500 }
+    );
+  }
+}

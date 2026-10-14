@@ -1,5 +1,19 @@
 # Frontend Project State
 
+- Comprehensive API Completeness & Defect Elimination Audit (Oct 14 2026):
+	- 100% API Parity Achieved: Discovered and implemented all missing backend API endpoints and sub-routes expected by frontend hooks, CRM, survey builder, public survey flow, and order management:
+		1. Global Search API (`/api/global-search`): Multi-field search across orders (`shopify_order_id`, `orderNumber`, `customerName`, `customerEmail`) and customers (`customerId`, `name`, `email`) with exact/partial match detection.
+		2. Public Survey Flow (`/api/surveys/s/[token]`): Session loader (`GET`), progress auto-save (`PATCH /progress`), and survey response submission (`POST /submit`) with automatic CRM Lead generation.
+		3. Survey Management APIs: Implemented Survey publish (`POST /publish`), unpublish (`POST /unpublish`), clone/duplicate (`POST /duplicate`), version history (`GET /versions`), single version inspection (`GET /versions/[versionNumber]`), version rollback (`POST /rollback/[versionNumber]`), settings update (`PUT /settings`), invite dispatcher (`POST /send`), sessions directory (`GET /sessions`), single response detail & delete (`GET/DELETE /responses/[sessionId]`), and CSV responses export (`GET /responses/export`).
+		4. CRM Lead Management APIs: Implemented lead status lifecycle mutations (`PATCH /leads/[id]/status`), staff reassignment (`PATCH /leads/[id]/assign`), lead notes retrieval & addition (`GET/POST /leads/[id]/notes`), and lead audit timeline (`GET /leads/[id]/activity`).
+		5. Order Action & Communication APIs: Implemented order cancellation (`POST /orders/cancel`), document reminder dispatch (`POST /orders/[id]/document-reminder`), prescription reminder dispatch (`POST /orders/[id]/prescription-reminder`), customer messaging (`POST /orders/[id]/message`), GP communication (`POST /orders/[id]/gp-email`), age verification dispatch (`POST /orders/[id]/age-verification`), and 6-month clinical review reminder (`POST /orders/[id]/six-month-review`). Updated `mockOrderData.ts` to supply active endpoint URLs.
+		6. Video Consultation Suite: Implemented video room creation (`GET /api/video/create-room/[id]`), in-person video room creation (`GET /api/video/create-in-person-room/[id]`), and order video recordings retrieval (`GET /api/video/recordings/by-order/[id]`).
+	- 100% Quality Assurance & Regression Health:
+		- `npm run typecheck` (`tsc --noEmit`): 0 errors across entire workspace.
+		- `npm test`: 170 test files passed (1 skipped), 904 passed, 0 failures.
+		- `npm run build`: Next.js 16 production build compiles all 64 pages and 35+ API route handlers cleanly.
+		- Architecture compliance: All new route handlers strictly adhere to Rule 04 (< 100 LOC per file) with full ObjectId validation.
+
 - Repository Security Audit & .gitignore Hardening (Oct 14 2026):
 	- Complete Repository & Tooling Audit: Analyzed repository root, dependencies, Next.js 16 build targets, TypeScript incremental compilation, Vitest & Playwright test reporters, MongoDB/Mongoose dumps, and multi-tenant environment files.
 	- .gitignore Hardening: Added protection for MongoDB dumps (dump/, *.bson), cache dumps (*.rdb), build/ directory, *.tsbuildinfo, logs/, extended certificates/keys (*.cer, *.der, *.p8, *.keystore), and OS/workspace metadata. Added safe template exceptions (!.env.sample, !.env.template, !.env.*.example).

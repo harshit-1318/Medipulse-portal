@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import mongoose from 'mongoose';
 import { connectToDatabase } from '@/lib/db/mongodb';
 import { Survey } from '@/lib/db/models/Survey';
 
@@ -7,9 +8,15 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    await connectToDatabase();
     const { id } = await params;
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+      return NextResponse.json(
+        { status: 'ERROR', success: false, message: 'Survey not found', data: null },
+        { status: 404 }
+      );
+    }
 
+    await connectToDatabase();
     const survey = await Survey.findById(id).lean();
     if (!survey) {
       return NextResponse.json(
@@ -38,8 +45,15 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    await connectToDatabase();
     const { id } = await params;
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+      return NextResponse.json(
+        { status: 'ERROR', success: false, message: 'Survey not found', data: null },
+        { status: 404 }
+      );
+    }
+
+    await connectToDatabase();
     const body = await request.json();
 
     const updated = await Survey.findByIdAndUpdate(id, body, { new: true }).lean();
@@ -70,9 +84,15 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    await connectToDatabase();
     const { id } = await params;
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+      return NextResponse.json(
+        { status: 'ERROR', success: false, message: 'Survey not found', data: null },
+        { status: 404 }
+      );
+    }
 
+    await connectToDatabase();
     await Survey.findByIdAndDelete(id);
 
     return NextResponse.json({
