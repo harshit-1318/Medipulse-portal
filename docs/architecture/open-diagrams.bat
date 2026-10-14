@@ -3,19 +3,19 @@ echo ====================================================
 echo   MediPulse Architecture Diagrams Launcher
 echo ====================================================
 echo.
-echo Opening all architecture diagrams in your default browser...
+echo Opening all 7 architecture diagrams in sequential learning order...
 echo.
 
-start "" "login-flow\login-architecture.html"
-start "" "orders-flow\orders-architecture.html"
-start "" "multi-site-flow\multi-site-architecture.html"
-start "" "survey-flow\survey-architecture.html"
-start "" "customer-flow\customer-architecture.html"
-start "" "activity-log-flow\activity-log-architecture.html"
-start "" "docman-flow\docman-architecture.html"
+start "" "01-login-flow\login-architecture.html"
+start "" "02-multi-site-flow\multi-site-architecture.html"
+start "" "03-survey-flow\survey-architecture.html"
+start "" "04-orders-flow\orders-architecture.html"
+start "" "05-customer-flow\customer-architecture.html"
+start "" "06-docman-flow\docman-architecture.html"
+start "" "07-activity-log-flow\activity-log-architecture.html"
 start "" "medipulse-architecture.html"
 
 echo.
-echo All 7 diagrams launched successfully!
+echo All diagrams launched successfully in order!
 echo ====================================================
 pause

@@ -1,20 +1,20 @@
 # MediPulse Architecture Documentation Hub
 
-Welcome to the comprehensive system architecture documentation for **MediPulse Portal**. This repository directory houses all system workflow diagrams, interactive visual models, and senior architectural technical reports.
+Welcome to the comprehensive system architecture documentation for **MediPulse Portal**. This repository directory houses all system workflow diagrams, interactive visual models, and senior architectural technical reports, organized in sequential learning order.
 
 ---
 
-## 🧭 Architecture Flows Index
+## 🧭 Architecture Flows Index (Sequential Order)
 
-| Flow # | System Workflow | Interactive Diagram (HTML) | Mermaid Source | Architectural Deep-Dive |
-| :---: | :--- | :--- | :--- | :--- |
-| **0** | **Login & Authentication Flow** | [Open Diagram](./login-flow/login-architecture.html) | [`login-flow.mmd`](./login-flow/login-flow.mmd) | [Full Report](./login-flow/login-flow-report.md) |
-| **1** | **Orders Lifecycle & Clinical Workflow** | [Open Diagram](./orders-flow/orders-architecture.html) | [`orders-flow.mmd`](./orders-flow/orders-flow.mmd) | [Full Report](./orders-flow/orders-flow-report.md) |
-| **2** | **Multi-Tenant & Multi-Site Routing Flow** | [Open Diagram](./multi-site-flow/multi-site-architecture.html) | [`multi-site-flow.mmd`](./multi-site-flow/multi-site-flow.mmd) | [Full Report](./multi-site-flow/multi-site-flow-report.md) |
-| **3** | **SurveyJS & Clinical Lead Intake Flow** | [Open Diagram](./survey-flow/survey-architecture.html) | [`survey-flow.mmd`](./survey-flow/survey-flow.mmd) | [Full Report](./survey-flow/survey-flow-report.md) |
-| **4** | **Dual-Endpoint Customers & Sort Parity** | [Open Diagram](./customer-flow/customer-architecture.html) | [`customer-flow.mmd`](./customer-flow/customer-flow.mmd) | [Full Report](./customer-flow/customer-flow-report.md) |
-| **5** | **Real-Time Audit Activity Logging Flow** | [Open Diagram](./activity-log-flow/activity-log-architecture.html) | [`activity-log-flow.mmd`](./activity-log-flow/activity-log-flow.mmd) | [Full Report](./activity-log-flow/activity-log-flow-report.md) |
-| **6** | **Docman Jobs & Document Processing Flow** | [Open Diagram](./docman-flow/docman-architecture.html) | [`docman-flow.mmd`](./docman-flow/docman-flow.mmd) | [Full Report](./docman-flow/docman-flow-report.md) |
+| # | System Workflow | Purpose & Scope | Interactive Diagram (HTML) | Mermaid Source | Architectural Deep-Dive |
+| :-: | :--- | :--- | :--- | :--- | :--- |
+| **01** | **Login & Authentication Flow** | JWT Cookies, HMAC SHA-256, Edge Proxy RBAC | [Open Diagram](./01-login-flow/login-architecture.html) | [`login-flow.mmd`](./01-login-flow/login-flow.mmd) | [Full Report](./01-login-flow/login-flow-report.md) |
+| **02** | **Multi-Tenant Site Routing Flow** | Domain Detection, SiteStore & Header Interceptor | [Open Diagram](./02-multi-site-flow/multi-site-architecture.html) | [`multi-site-flow.mmd`](./02-multi-site-flow/multi-site-flow.mmd) | [Full Report](./02-multi-site-flow/multi-site-flow-report.md) |
+| **03** | **SurveyJS & Clinical Intake Flow** | SurveyJS Creator, Public Runner & Lead Intake | [Open Diagram](./03-survey-flow/survey-architecture.html) | [`survey-flow.mmd`](./03-survey-flow/survey-flow.mmd) | [Full Report](./03-survey-flow/survey-flow-report.md) |
+| **04** | **Orders Lifecycle & Clinical Workflow** | TanStack Table, Order Params & Status Transitions | [Open Diagram](./04-orders-flow/orders-architecture.html) | [`orders-flow.mmd`](./04-orders-flow/orders-flow.mmd) | [Full Report](./04-orders-flow/orders-flow-report.md) |
+| **05** | **Dual-Endpoint Customers & Sort Parity** | CRM Customer Routing & BIGINT ID Deserialization | [Open Diagram](./05-customer-flow/customer-architecture.html) | [`customer-flow.mmd`](./05-customer-flow/customer-flow.mmd) | [Full Report](./05-customer-flow/customer-flow-report.md) |
+| **06** | **Docman Jobs & Document Processing** | NHS/Clinic Asynchronous Document Dispatch Queue | [Open Diagram](./06-docman-flow/docman-architecture.html) | [`docman-flow.mmd`](./06-docman-flow/docman-flow.mmd) | [Full Report](./06-docman-flow/docman-flow-report.md) |
+| **07** | **Real-Time Audit Activity Logging Flow** | Non-blocking Audit Logging & Query Filtering | [Open Diagram](./07-activity-log-flow/activity-log-architecture.html) | [`activity-log-flow.mmd`](./07-activity-log-flow/activity-log-flow.mmd) | [Full Report](./07-activity-log-flow/activity-log-flow-report.md) |
 
 ---
 

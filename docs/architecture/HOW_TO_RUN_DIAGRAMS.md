@@ -19,14 +19,14 @@ Get-ChildItem -Recurse -Filter "*architecture.html" docs/architecture | ForEach-
 
 | फ़्लो | कमांड (PowerShell) | विवरण |
 | :--- | :--- | :--- |
-| **0. Global Overview** | `Start-Process "docs\architecture\medipulse-architecture.html"` | पूरा हाई-लेवल आर्किटेक्चर मॉडल |
-| **1. Login & Auth Flow** | `Start-Process "docs\architecture\login-flow\login-architecture.html"` | HMAC-SHA256, Cookies & Edge Proxy |
-| **2. Orders Lifecycle** | `Start-Process "docs\architecture\orders-flow\orders-architecture.html"` | TanStack Table, Order Params & Transition |
-| **3. Multi-Site Routing** | `Start-Process "docs\architecture\multi-site-flow\multi-site-architecture.html"` | Multi-Tenant Header Interceptor Flow |
-| **4. SurveyJS Intake** | `Start-Process "docs\architecture\survey-flow\survey-architecture.html"` | SurveyJS Creator, Runner & Lead Conversion |
-| **5. Dual-Endpoint Customer** | `Start-Process "docs\architecture\customer-flow\customer-architecture.html"` | Dual-Endpoint Routing & BIGINT ID Fix |
-| **6. Real-Time Activity Log** | `Start-Process "docs\architecture\activity-log-flow\activity-log-architecture.html"` | Non-blocking Audit Logging & Deduplication |
-| **7. Docman Jobs** | `Start-Process "docs\architecture\docman-flow\docman-architecture.html"` | Asynchronous Document Processing Pipeline |
+| **00. Global Overview** | `Start-Process "docs\architecture\medipulse-architecture.html"` | पूरा हाई-लेवल आर्किटेक्चर मॉडल |
+| **01. Login & Auth Flow** | `Start-Process "docs\architecture\01-login-flow\login-architecture.html"` | HMAC-SHA256, Cookies & Edge Proxy |
+| **02. Multi-Site Routing** | `Start-Process "docs\architecture\02-multi-site-flow\multi-site-architecture.html"` | Multi-Tenant Header Interceptor Flow |
+| **03. SurveyJS Intake** | `Start-Process "docs\architecture\03-survey-flow\survey-architecture.html"` | SurveyJS Creator, Runner & Lead Conversion |
+| **04. Orders Lifecycle** | `Start-Process "docs\architecture\04-orders-flow\orders-architecture.html"` | TanStack Table, Order Params & Transition |
+| **05. Dual-Endpoint Customer** | `Start-Process "docs\architecture\05-customer-flow\customer-architecture.html"` | Dual-Endpoint Routing & BIGINT ID Fix |
+| **06. Docman Jobs** | `Start-Process "docs\architecture\06-docman-flow\docman-architecture.html"` | Asynchronous Document Processing Pipeline |
+| **07. Real-Time Activity Log** | `Start-Process "docs\architecture\07-activity-log-flow\activity-log-architecture.html"` | Non-blocking Audit Logging & Deduplication |
 
 ---
 
@@ -58,7 +58,7 @@ python -m http.server 3333 -d docs/architecture
    ```
    D:\New projects\1 MediPulse\docs\architecture
    ```
-2. किसी भी फ़ोल्डर में जाएं (उदा. `login-flow`, `orders-flow`).
+2. किसी भी फ़ोल्डर में जाएं (उदा. `01-login-flow`, `04-orders-flow`).
 3. उस फ़ोल्डर की `.html` फ़ाइल पर **Double Click** करें। यह सीधे आपके डिफ़ॉल्ट ब्राउज़र (Chrome / Edge / Firefox) में खुल जाएगी!
 
 ---

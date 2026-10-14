@@ -352,7 +352,7 @@ All technologies referenced are confirmed in [`package.json`](file:///D:/New%20p
 
 ## 7. Artifact Deliverables Summary
 
-Under `docs/architecture/login-flow/`:
+Under `docs/architecture/01-login-flow/`:
 1. **`login-architecture.html`**: Standalone, interactive Archeify-style diagram with pan/drag, zoom in/out, execution step player, visual tiers, node cards, clickable inspection side panel with line-level code excerpts, and search filter.
 2. **`login-flow.mmd`**: Valid Mermaid source flowchart detailing all 19 execution steps, decision diamonds, and error branches.
 3. **`login-flow-report.md`**: This comprehensive architectural report.
