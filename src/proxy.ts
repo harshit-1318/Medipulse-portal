@@ -38,10 +38,28 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL(`/orders/search${search}`, request.url));
   }
 
-  // Prevent logged-in users from viewing /login
-  if (pathname === '/login' && token) {
-    const destination = isSuperAdmin ? '/super-dashboard' : '/dashboard';
-    return NextResponse.redirect(new URL(destination, request.url));
+  // Prevent logged-in users from viewing /login, unless explicitly logging out
+  if (pathname === '/login') {
+    if (request.nextUrl.searchParams.get('logout') === 'true') {
+      const response = NextResponse.next();
+      const isProd = process.env.NODE_ENV === 'production';
+      const clearOpts = {
+        path: '/',
+        maxAge: 0,
+        expires: new Date(0),
+        sameSite: 'lax' as const,
+        secure: isProd,
+      };
+      response.cookies.set('token', '', { ...clearOpts, httpOnly: true });
+      response.cookies.set('role', '', { ...clearOpts, httpOnly: false });
+      response.cookies.set('username', '', { ...clearOpts, httpOnly: false });
+      response.cookies.set('site_id', '', { ...clearOpts, httpOnly: false });
+      return response;
+    }
+    if (token) {
+      const destination = isSuperAdmin ? '/super-dashboard' : '/dashboard';
+      return NextResponse.redirect(new URL(destination, request.url));
+    }
   }
 
   // Fast bypass for static files & public routes

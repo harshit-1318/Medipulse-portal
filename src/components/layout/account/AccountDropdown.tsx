@@ -20,6 +20,7 @@ export default function AccountDropdown() {
     const displayAvatar = getGravatarUrl(userEmailSafe, 80);
 
     const handleLogout = () => {
+        setIsOpen(false);
         actions.logout();
     };
 

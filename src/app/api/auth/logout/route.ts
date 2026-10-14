@@ -43,16 +43,31 @@ function handleLogout(request?: Request) {
     data: null,
   });
 
-  const clearCookieOpts = {
+  const isProd = process.env.NODE_ENV === 'production';
+
+  // Clear httpOnly token cookie with exact security flags matching login
+  response.cookies.set('token', '', {
     path: '/',
     maxAge: 0,
     expires: new Date(0),
+    httpOnly: true,
+    secure: isProd,
+    sameSite: 'lax',
+  });
+
+  // Clear non-httpOnly client hydration cookies
+  const clientClearOpts = {
+    path: '/',
+    maxAge: 0,
+    expires: new Date(0),
+    httpOnly: false,
+    secure: isProd,
+    sameSite: 'lax' as const,
   };
 
-  response.cookies.set('token', '', clearCookieOpts);
-  response.cookies.set('role', '', clearCookieOpts);
-  response.cookies.set('username', '', clearCookieOpts);
-  response.cookies.set('site_id', '', clearCookieOpts);
+  response.cookies.set('role', '', clientClearOpts);
+  response.cookies.set('username', '', clientClearOpts);
+  response.cookies.set('site_id', '', clientClearOpts);
 
   return response;
 }

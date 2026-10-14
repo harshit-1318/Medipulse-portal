@@ -60,16 +60,23 @@ export const useUserStore = create<UserState>((set) => ({
             set({ token });
         },
 
-        logout: () => {
-            try {
-                if (typeof window !== 'undefined') {
-                    fetch('/api/auth/logout', { method: 'POST' }).catch(() => {});
-                }
-            } catch {}
+        logout: async () => {
             clearUserSessionStorage();
             set({ user: null, token: null });
-            if (typeof window !== 'undefined') {
-                window.location.href = '/login';
+            try {
+                if (typeof window !== 'undefined') {
+                    await fetch('/api/auth/logout', {
+                        method: 'POST',
+                        credentials: 'include',
+                        keepalive: true,
+                    }).catch(() => {});
+                }
+            } catch {
+                // Ignore network errors to guarantee logout
+            } finally {
+                if (typeof window !== 'undefined') {
+                    window.location.replace('/login?logout=true');
+                }
             }
         },
 

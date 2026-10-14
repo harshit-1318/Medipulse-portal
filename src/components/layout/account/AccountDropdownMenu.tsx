@@ -50,8 +50,9 @@ export const AccountDropdownMenu: React.FC<AccountDropdownMenuProps> = ({
             <div className="h-px bg-slate-100 my-1 mx-2" />
 
             <button
+                type="button"
                 onClick={handleLogout}
-                className="w-full flex items-center gap-2.5 px-3 py-2 text-sm font-bold text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                className="w-full flex items-center gap-2.5 px-3 py-2 text-sm font-bold text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
             >
                 <LogOut size={16} />
                 Logout

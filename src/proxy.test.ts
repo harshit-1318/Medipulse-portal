@@ -38,6 +38,14 @@ describe('proxy (Next.js 16 Proxy Convention)', () => {
     if (redirect) expect(res.headers.get('location')).toBe(redirect);
   });
 
+  it('clears cookies and serves /login when logout=true query parameter is present', () => {
+    const res = proxy(req('http://localhost:3000/login?logout=true', { token: 'active-jwt', role: 'super_admin' }));
+    expect(res.status).toBe(200);
+    const setCookie = res.headers.get('set-cookie') || '';
+    expect(setCookie).toContain('token=');
+    expect(setCookie).toContain('Max-Age=0');
+  });
+
   it('redirects unauthenticated user on protected route to /login with returnUrl', () => {
     const res = proxy(req('http://localhost:3000/orders?status=active'));
     expect(res.status).toBe(307);
