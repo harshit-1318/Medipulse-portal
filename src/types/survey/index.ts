@@ -63,15 +63,23 @@ export interface SurveySession {
 
 export interface SurveyResponse {
     _id: string;
-    survey: { _id: string; title: string };
-    customer: { _id: string; name: string; email: string };
+    survey?: { _id?: string; title?: string };
+    customer?: { _id?: string; name?: string; email?: string };
+    surveyId?: string;
+    surveyTitle?: string;
+    sessionId?: string;
+    customerName?: string;
+    customerEmail?: string;
+    status?: string;
     orderId?: string;
-    submittedResponse: Record<string, any>;
-    submittedAt: string;
-    metadata: {
-        ipAddress: string;
-        userAgent: string;
-        source: string;
+    submittedResponse?: Record<string, any>;
+    answers?: Record<string, any>;
+    submittedAt?: string;
+    createdAt?: string;
+    metadata?: {
+        ipAddress?: string;
+        userAgent?: string;
+        source?: string;
     };
     leadId?: string;
 }

@@ -23,16 +23,35 @@ export async function GET(request: Request, { params }: RouteContext) {
       _id: sessionId,
       surveyId: id,
       sessionId,
+      survey: {
+        _id: id,
+        title: 'Survey Response',
+      },
+      surveyTitle: 'Survey Response',
       customer: {
+        _id: lead?._id ? String(lead._id) : 'cust_101',
         name: lead?.customerName || 'Patient Sample',
         email: lead?.customerEmail || 'patient@example.com',
       },
+      customerName: lead?.customerName || 'Patient Sample',
+      customerEmail: lead?.customerEmail || 'patient@example.com',
       submittedResponse: {
         customerName: lead?.customerName || 'Patient Sample',
         customerEmail: lead?.customerEmail || 'patient@example.com',
         symptoms: 'None',
       },
+      answers: {
+        customerName: lead?.customerName || 'Patient Sample',
+        customerEmail: lead?.customerEmail || 'patient@example.com',
+        symptoms: 'None',
+      },
       submittedAt: lead?.createdAt ? new Date(lead.createdAt).toISOString() : new Date().toISOString(),
+      createdAt: lead?.createdAt ? new Date(lead.createdAt).toISOString() : new Date().toISOString(),
+      metadata: {
+        ipAddress: '127.0.0.1',
+        userAgent: 'Mozilla/5.0',
+        source: 'email',
+      },
     };
 
     return NextResponse.json({

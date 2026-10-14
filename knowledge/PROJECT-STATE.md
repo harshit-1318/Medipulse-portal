@@ -1,5 +1,16 @@
 # Frontend Project State
 
+- Survey Responses Runtime TypeError Fix & Error Boundary Hardening (Oct 15 2026):
+	- Root Cause Resolved: Addressed `TypeError: Cannot read properties of undefined (reading 'name')` on `/surveys/responses`. The backend API mock returns flat fields (`customerName`, `customerEmail`, `surveyTitle`, `createdAt`, `answers`), whereas `SurveyResponseRow.tsx` and `ResponseMetaSections.tsx` accessed un-nested `resp.customer.name` without optional chaining or fallbacks, crashing React in production into Next.js default "This page couldn't load" screen.
+	- Resilient Component & Schema Defenses:
+		- Updated `SurveyResponseRow.tsx`: Safeguarded customer (`resp?.customer?.name || resp?.customerName || 'Anonymous Customer'`), email (`resp?.customer?.email || resp?.customerEmail || '—'`), survey title (`resp?.survey?.title || resp?.surveyTitle || '—'`), and date (`resp?.submittedAt || resp?.createdAt`). Added safe `formatDate` parser handling empty/invalid dates.
+		- Updated `ResponseMetaSections.tsx` & `SurveyResponseDetail.tsx`: Applied defensive extraction and answer fallback (`response.submittedResponse ?? response.answers ?? {}`).
+		- Updated `src/types/survey/index.ts`: Made `customer`, `survey`, `submittedAt`, and `submittedResponse` optionally present on `SurveyResponse` while adding flat aliases (`customerName`, `customerEmail`, `surveyTitle`, `answers`, etc.).
+		- Updated API routes: Enriched `/api/surveys/responses`, `/api/surveys/[id]/responses`, and `/api/surveys/[id]/responses/[sessionId]` to return both nested objects and legacy flat fields for 100% backward/forward compatibility.
+	- Route-Level Error Boundaries Added:
+		- Added `src/app/(dashboard)/surveys/responses/error.tsx` and `src/app/(dashboard)/surveys/error.tsx` with user-friendly retry buttons to prevent any uncaught client exception from breaking out of the dashboard layout.
+	- Vitest Unit Test Coverage: Added `src/components/surveys/responses/table/__tests__/SurveyResponseRow.test.tsx` (4 tests) and `SurveyResponsesTable.test.tsx` (2 tests), covering nested, flat, and bare response payloads.
+
 - Comprehensive API Completeness & Defect Elimination Audit (Oct 14 2026):
 	- 100% API Parity Achieved: Discovered and implemented all missing backend API endpoints and sub-routes expected by frontend hooks, CRM, survey builder, public survey flow, and order management:
 		1. Global Search API (`/api/global-search`): Multi-field search across orders (`shopify_order_id`, `orderNumber`, `customerName`, `customerEmail`) and customers (`customerId`, `name`, `email`) with exact/partial match detection.

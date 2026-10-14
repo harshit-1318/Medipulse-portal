@@ -23,8 +23,13 @@ export function SurveyResponsesTable({
     onSelectResponse,
     onDeleteResponse,
 }: SurveyResponsesTableProps) {
-    const formatDate = (iso: string) =>
-        new Date(iso).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    const formatDate = (iso?: string) => {
+        if (!iso) return '—';
+        const d = new Date(iso);
+        return isNaN(d.getTime())
+            ? '—'
+            : d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    };
 
     return (
         <div className={`bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden transition-opacity ${loading ? 'opacity-60' : ''}`}>
@@ -34,7 +39,7 @@ export function SurveyResponsesTable({
                 </div>
             ) : (
                 <div className="overflow-x-auto">
-                    <table className="w-full border-collapse min-w-[700px]">
+                    <table className="w-full border-collapse min-w-175">
                         <thead>
                             <tr className="bg-slate-50/50 border-b border-slate-100">
                                 {['Customer', surveyId ? '' : 'Survey', 'Submitted', 'Source', 'Actions']
@@ -47,9 +52,9 @@ export function SurveyResponsesTable({
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-50">
-                            {items.map(resp => (
+                            {items.map((resp, idx) => (
                                 <SurveyResponseRow
-                                    key={resp._id}
+                                    key={resp._id || resp.sessionId || `resp-${idx}`}
                                     resp={resp}
                                     surveyId={surveyId}
                                     onSelectResponse={onSelectResponse}

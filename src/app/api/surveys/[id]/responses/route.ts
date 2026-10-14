@@ -13,16 +13,34 @@ export async function GET(request: Request, { params }: RouteContext) {
     const page = Number(searchParams.get('page')) || 1;
     const limit = Number(searchParams.get('limit')) || 20;
 
+    const now = new Date().toISOString();
     const sampleResponses = [
       {
         _id: 'resp_1',
         sessionId: 'sess_101',
         surveyId: id,
+        survey: {
+          _id: id,
+          title: 'Weight Loss Consultation Survey',
+        },
+        surveyTitle: 'Weight Loss Consultation Survey',
+        customer: {
+          _id: 'cust_101',
+          name: 'Oliver Smith',
+          email: 'oliver.smith@example.com',
+        },
         customerName: 'Oliver Smith',
         customerEmail: 'oliver.smith@example.com',
         status: 'completed',
+        submittedResponse: { bmi: '26.4', medical_conditions: 'No' },
         answers: { bmi: '26.4', medical_conditions: 'No' },
-        createdAt: new Date().toISOString(),
+        submittedAt: now,
+        createdAt: now,
+        metadata: {
+          ipAddress: '127.0.0.1',
+          userAgent: 'Mozilla/5.0',
+          source: 'email',
+        },
       },
     ];
 

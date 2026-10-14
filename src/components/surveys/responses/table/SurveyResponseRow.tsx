@@ -7,7 +7,7 @@ interface SurveyResponseRowProps {
     surveyId?: string;
     onSelectResponse: (resp: SurveyResponse) => void;
     onDeleteResponse: (sessionId: string) => void;
-    formatDate: (iso: string) => string;
+    formatDate: (iso?: string) => string;
 }
 
 export const SurveyResponseRow: React.FC<SurveyResponseRowProps> = ({
@@ -16,48 +16,57 @@ export const SurveyResponseRow: React.FC<SurveyResponseRowProps> = ({
     onSelectResponse,
     onDeleteResponse,
     formatDate,
-}) => (
-    <tr className="hover:bg-slate-50/50 transition-colors">
-        <td className="px-6 py-4">
-            <p className="text-sm font-semibold text-slate-800">{resp.customer.name}</p>
-            <p className="text-xs text-slate-400">{resp.customer.email}</p>
-        </td>
-        {!surveyId && (
-            <td className="px-6 py-4 text-sm text-slate-600">
-                {resp.survey.title}
+}) => {
+    const customerName = resp?.customer?.name || resp?.customerName || 'Anonymous Customer';
+    const customerEmail = resp?.customer?.email || resp?.customerEmail || '—';
+    const surveyTitle = resp?.survey?.title || resp?.surveyTitle || '—';
+    const submittedDate = resp?.submittedAt || resp?.createdAt;
+    const source = resp?.metadata?.source ?? 'email';
+    const targetSessionId = resp?.sessionId || resp?._id;
+
+    return (
+        <tr className="hover:bg-slate-50/50 transition-colors">
+            <td className="px-6 py-4">
+                <p className="text-sm font-semibold text-slate-800">{customerName}</p>
+                <p className="text-xs text-slate-400">{customerEmail}</p>
             </td>
-        )}
-        <td className="px-6 py-4 text-sm text-slate-500">
-            {formatDate(resp.submittedAt)}
-        </td>
-        <td className="px-6 py-4">
-            <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-medium capitalize">
-                {resp.metadata?.source ?? 'email'}
-            </span>
-        </td>
-        <td className="px-6 py-4">
-            <div className="flex items-center gap-1">
-                <button
-                    onClick={() => onSelectResponse(resp)}
-                    className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-teal-600 transition-colors"
-                    title="View response"
-                >
-                    <Eye size={15} />
-                </button>
-                {surveyId && (
+            {!surveyId && (
+                <td className="px-6 py-4 text-sm text-slate-600">
+                    {surveyTitle}
+                </td>
+            )}
+            <td className="px-6 py-4 text-sm text-slate-500">
+                {formatDate(submittedDate)}
+            </td>
+            <td className="px-6 py-4">
+                <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-medium capitalize">
+                    {source}
+                </span>
+            </td>
+            <td className="px-6 py-4">
+                <div className="flex items-center gap-1">
                     <button
-                        onClick={() => {
-                            if (window.confirm('Delete this response?')) {
-                                onDeleteResponse(resp._id);
-                            }
-                        }}
-                        className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors"
-                        title="Delete response"
+                        onClick={() => onSelectResponse(resp)}
+                        className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-teal-600 transition-colors cursor-pointer"
+                        title="View response"
                     >
-                        <Trash2 size={15} />
+                        <Eye size={15} />
                     </button>
-                )}
-            </div>
-        </td>
-    </tr>
-);
+                    {surveyId && (
+                        <button
+                            onClick={() => {
+                                if (window.confirm('Delete this response?') && targetSessionId) {
+                                    onDeleteResponse(targetSessionId);
+                                }
+                            }}
+                            className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors cursor-pointer"
+                            title="Delete response"
+                        >
+                            <Trash2 size={15} />
+                        </button>
+                    )}
+                </div>
+            </td>
+        </tr>
+    );
+};

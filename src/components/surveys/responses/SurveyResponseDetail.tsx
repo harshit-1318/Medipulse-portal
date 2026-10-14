@@ -12,13 +12,19 @@ interface SurveyResponseDetailProps {
 export default function SurveyResponseDetail({ response, onClose }: SurveyResponseDetailProps) {
     if (!response) return null;
 
-    const formatDate = (iso: string) =>
-        new Date(iso).toLocaleString('en-GB', {
-            day: '2-digit', month: 'short', year: 'numeric',
-            hour: '2-digit', minute: '2-digit',
-        });
+    const formatDate = (iso?: string) => {
+        if (!iso) return '—';
+        const d = new Date(iso);
+        return isNaN(d.getTime())
+            ? '—'
+            : d.toLocaleString('en-GB', {
+                day: '2-digit', month: 'short', year: 'numeric',
+                hour: '2-digit', minute: '2-digit',
+            });
+    };
 
-    const responseData = response.submittedResponse ?? {};
+    const responseData = response.submittedResponse ?? response.answers ?? {};
+    const submittedDate = response.submittedAt || response.createdAt;
 
     return (
         <AnimatePresence>
@@ -41,7 +47,7 @@ export default function SurveyResponseDetail({ response, onClose }: SurveyRespon
                         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 shrink-0">
                             <div>
                                 <p className="font-semibold text-slate-800">Response Detail</p>
-                                <p className="text-xs text-slate-400 mt-0.5">{formatDate(response.submittedAt)}</p>
+                                <p className="text-xs text-slate-400 mt-0.5">{formatDate(submittedDate)}</p>
                             </div>
                             <button
                                 onClick={onClose}
