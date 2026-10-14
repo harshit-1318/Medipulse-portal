@@ -1,0 +1,77 @@
+%% =========================================================================
+%% MediPulse Healthcare Portal — Multi-Tenant & Multi-Site Routing Architecture
+%% Standard: Mermaid Flowchart TD
+%% Verified against Next.js 16 App Router & MongoDB codebase
+%% =========================================================================
+
+flowchart TD
+    %% Styling Classes
+    classDef clientTier fill:#0e1726,stroke:#38bdf8,stroke-width:2px,color:#f8fafc;
+    classDef storeTier fill:#0b192c,stroke:#818cf8,stroke-width:2px,color:#f8fafc;
+    classDef apiTier fill:#09212b,stroke:#2dd4bf,stroke-width:2px,color:#f8fafc;
+    classDef interceptorTier fill:#1a102f,stroke:#c084fc,stroke-width:2px,color:#f8fafc;
+    classDef dbTier fill:#052e16,stroke:#34d399,stroke-width:2px,color:#f8fafc;
+
+    %% -------------------------------------------------------------------------
+    %% 1. DOMAIN RESOLUTION & CLIENT INITIALIZATION
+    %% -------------------------------------------------------------------------
+    subgraph ClientInitTier [" 1. Domain Detection & App Mount Tier "]
+        direction TB
+        M01["<b>#01. App Shell Mount</b><br/>src/app/(dashboard)/layout.tsx<br/><i>Calls initializeSite() on mount</i>"]:::clientTier
+        M02["<b>#02. Host Domain Detection</b><br/>src/store/site/siteActions.ts<br/><i>currentDomain = window.location.host</i>"]:::clientTier
+        M03{"Cached in LocalStorage?"}:::clientTier
+
+        M01 --> M02
+        M02 --> M03
+    end
+
+    %% -------------------------------------------------------------------------
+    %% 2. SITE DISCOVERY API
+    %% -------------------------------------------------------------------------
+    subgraph DiscoveryTier [" 2. Multi-Site Resolution API Tier "]
+        direction TB
+        M04["<b>#03. fetchSiteInfo(domain)</b><br/>src/api/services/site/siteService.ts<br/><i>apiClient.post('/sites/get-info-by-domain')</i>"]:::apiTier
+        M05["<b>#04. GET/POST /api/sites/get-info-by-domain</b><br/>src/app/api/sites/get-info-by-domain/route.ts<br/><i>Returns SiteInfo (id, key, name, logo, themeColor)</i>"]:::apiTier
+
+        M03 -- "Cache Miss / Outdated" --> M04
+        M04 --> M05
+    end
+
+    %% -------------------------------------------------------------------------
+    %% 3. SITE STORE & PERSISTENCE
+    %% -------------------------------------------------------------------------
+    subgraph StoreTier [" 3. Zustand siteStore & LocalStorage Headers "]
+        direction TB
+        M06["<b>#05. siteStore Hydration</b><br/>src/store/site/siteStore.ts<br/><i>Persists SiteInfo to site-storage in localStorage</i>"]:::storeTier
+        M07["<b>#06. Multi-Tenant Header Persistence</b><br/>localStorage.setItem('X-SITE-ID', siteInfo.id)<br/><i>localStorage.setItem('X-SITE-KEY', siteInfo.key)</i><br/><i>localStorage.setItem('X-SITE-HOST', domain)</i>"]:::storeTier
+        M08["<b>#07. Dynamic Brand Favicon</b><br/>src/utils/branding.ts (applySiteFavicon)<br/><i>Sets document favicon to small_icon_url</i>"]:::storeTier
+
+        M05 --> M06
+        M03 -- "Cache Hit" --> M07
+        M06 --> M07
+        M07 --> M08
+    end
+
+    %% -------------------------------------------------------------------------
+    %% 4. AUTOMATIC HEADER INJECTION
+    %% -------------------------------------------------------------------------
+    subgraph InterceptorTier [" 4. Centralized Network Interceptor Injection "]
+        direction TB
+        M09["<b>#08. Subsequent API Calls</b><br/>Orders, Prescriptions, Surveys, Customers<br/><i>Triggered across feature pages</i>"]:::interceptorTier
+        M10["<b>#09. apiClient Request Interceptor</b><br/>src/lib/api/interceptors.ts (lines 26-33)<br/><i>Injects headers automatically on every request:</i><br/>• config.headers['X-SITE-ID'] = lsSiteId<br/>• config.headers['X-SITE-KEY'] = lsSiteKey<br/>• config.headers['X-SITE-HOST'] = lsSiteHost"]:::interceptorTier
+
+        M08 -.-> M09
+        M09 --> M10
+    end
+
+    %% -------------------------------------------------------------------------
+    %% 5. BACKEND MULTI-TENANT ISOLATION
+    %% -------------------------------------------------------------------------
+    subgraph DbIsolationTier [" 5. Backend Tenant Isolation & Queries "]
+        direction TB
+        M11["<b>#10. API Route Handlers</b><br/>/api/orders, /api/customers, /api/surveys<br/><i>Reads headers or query site parameter</i>"]:::apiTier
+        M12["<b>#11. MongoDB Site Partition Filter</b><br/>User.find({ site_id }), Order.find({ siteId })<br/><i>Strict tenant data segregation</i>"]:::dbTier
+
+        M10 -->|"Headers Attached"| M11
+        M11 --> M12
+    end

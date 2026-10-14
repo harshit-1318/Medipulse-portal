@@ -1,0 +1,77 @@
+%% =========================================================================
+%% MediPulse Healthcare Portal — Real-Time Audit Activity Logging Architecture
+%% Standard: Mermaid Flowchart TD
+%% Verified against Next.js 16 App Router & MongoDB activitylogs
+%% =========================================================================
+
+flowchart TD
+    %% Styling Classes
+    classDef clientTier fill:#0e1726,stroke:#38bdf8,stroke-width:2px,color:#f8fafc;
+    classDef helperTier fill:#0b192c,stroke:#818cf8,stroke-width:2px,color:#f8fafc;
+    classDef apiTier fill:#09212b,stroke:#2dd4bf,stroke-width:2px,color:#f8fafc;
+    classDef dbTier fill:#052e16,stroke:#34d399,stroke-width:2px,color:#f8fafc;
+    classDef filterTier fill:#1a102f,stroke:#c084fc,stroke-width:2px,color:#f8fafc;
+
+    %% -------------------------------------------------------------------------
+    %% 1. AUDIT EVENT INITIATORS
+    %% -------------------------------------------------------------------------
+    subgraph TriggerTier [" 1. Clinical Action Trigger Tier "]
+        direction TB
+        L01["<b>#01. User Authentication</b><br/>POST /api/auth/login or logout<br/><i>login_success, logout events</i>"]:::clientTier
+        L02["<b>#02. Clinical Prescription Actions</b><br/>Doctor sign, pharmacist dispense<br/><i>prescriptions:write, orders:dispense</i>"]:::clientTier
+        L03["<b>#03. Order Mutations</b><br/>Mark urgent, parked, customer edits<br/><i>order_update, make_urgent events</i>"]:::clientTier
+    end
+
+    %% -------------------------------------------------------------------------
+    %% 2. ASYNCHRONOUS LOGGER & DEDUPLICATION
+    %% -------------------------------------------------------------------------
+    subgraph HelperTier [" 2. Asynchronous Logger & Deduplication Tier "]
+        direction TB
+        L04["<b>#04. recordActivity() Helper</b><br/>src/lib/db/logActivityHelper.ts<br/><i>Non-blocking asynchronous background execution</i>"]:::helperTier
+        L05{"<b>#05. 10-Second Deduplication Check</b><br/>ActivityLog.findOne({ user_email, action, createdAt: -10s })"}:::helperTier
+        L06_Drop["<b>Discard Duplicate Event</b><br/>Prevents spamming DB with duplicate clicks"]:::helperTier
+        L07_Create["<b>#06. ActivityLog.create()</b><br/>Persists event details, role, user, timestamp"]:::helperTier
+
+        L01 --> L04
+        L02 --> L04
+        L03 --> L04
+        L04 --> L05
+        L05 -- "Duplicate Found" --> L06_Drop
+        L05 -- "Unique Event" --> L07_Create
+    end
+
+    %% -------------------------------------------------------------------------
+    %% 3. PERSISTENCE TIER
+    %% -------------------------------------------------------------------------
+    subgraph DbTier [" 3. MongoDB Atlas Audit Persistence Tier "]
+        direction TB
+        DB_LogModel["<b>ActivityLog Model</b><br/>src/lib/db/models/ActivityLog.ts<br/><i>Collection: activitylogs (Immutable HIPAA Trail)</i>"]:::dbTier
+
+        L07_Create --> DB_LogModel
+    end
+
+    %% -------------------------------------------------------------------------
+    %% 4. REAL-TIME AUDIT LOG QUERY PIPELINE
+    %% -------------------------------------------------------------------------
+    subgraph QueryTier [" 4. Real-Time Audit Query Pipeline Tier "]
+        direction TB
+        L08["<b>#07. GET /api/activity-log/list/filters</b><br/>src/app/api/activity-log/list/filters/route.ts<br/><i>Paginated activity log reader</i>"]:::apiTier
+        L09["<b>#08. activityLogQueryBuilder()</b><br/>activityLogQueryBuilder.ts<br/><i>Date ranges, role filters, action types, search</i>"]:::filterTier
+        L10["<b>#09. Mongo Aggregation & Lean Read</b><br/>ActivityLog.find(query).sort().skip().limit()"]:::dbTier
+        L11["<b>#10. Hydration-Safe JSON Response</b><br/>Returns { logs, total, page, limit }"]:::apiTier
+
+        DB_LogModel -.-> L10
+        L08 --> L09
+        L09 --> L10
+        L10 --> L11
+    end
+
+    %% -------------------------------------------------------------------------
+    %% 5. AUDIT LOGS DASHBOARD UI
+    %% -------------------------------------------------------------------------
+    subgraph DashboardUiTier [" 5. Audit Logs Dashboard Presentation Tier "]
+        direction TB
+        L12["<b>#11. Activity Logs Page</b><br/>src/app/(dashboard)/activity-logs/page.tsx<br/><i>Role badges, date pickers, real-time table</i>"]:::clientTier
+
+        L11 --> L12
+    end

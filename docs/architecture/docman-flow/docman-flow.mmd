@@ -1,0 +1,60 @@
+%% =========================================================================
+%% MediPulse Healthcare Portal — Docman Jobs & Asynchronous Document Processing Architecture
+%% Standard: Mermaid Flowchart TD
+%% Verified against Next.js 16 App Router & DocmanJob model
+%% =========================================================================
+
+flowchart TD
+    %% Styling Classes
+    classDef clientTier fill:#0e1726,stroke:#38bdf8,stroke-width:2px,color:#f8fafc;
+    classDef jobTier fill:#0b192c,stroke:#818cf8,stroke-width:2px,color:#f8fafc;
+    classDef apiTier fill:#09212b,stroke:#2dd4bf,stroke-width:2px,color:#f8fafc;
+    classDef dbTier fill:#052e16,stroke:#34d399,stroke-width:2px,color:#f8fafc;
+    classDef extTier fill:#1a102f,stroke:#c084fc,stroke-width:2px,color:#f8fafc;
+
+    %% -------------------------------------------------------------------------
+    %% 1. DOCUMENT GENERATION TRIGGERS
+    %% -------------------------------------------------------------------------
+    subgraph TriggerTier [" 1. Document Trigger & Clinical Generation Tier "]
+        direction TB
+        D01["<b>#01. Prescription PDF Generation</b><br/>Doctor signs digital prescription<br/><i>Medical summary & dosage schedule</i>"]:::clientTier
+        D02["<b>#02. GP Notification Letter</b><br/>Patient medical intake notification<br/><i>Sent to NHS General Practitioner Practice</i>"]:::clientTier
+    end
+
+    %% -------------------------------------------------------------------------
+    %% 2. ASYNC DOCMAN QUEUE & WORKERS
+    %% -------------------------------------------------------------------------
+    subgraph QueueTier [" 2. Asynchronous Queue & Idempotency Tier "]
+        direction TB
+        D03["<b>#03. Queue Docman Job</b><br/>command_type: 'SendDocument'<br/><i>Generates unique idempotencyKey</i>"]:::jobTier
+        D04["<b>#04. Patient & GP Payload Schema</b><br/>Patient (Identifier, FamilyName, GivenNames, BirthDate)<br/><i>Document (Description, FileUrl, FileHash, RecipientOdsCode)</i>"]:::jobTier
+        D05["<b>#05. Asynchronous Worker Processing</b><br/>Worker polls queue with workerId<br/><i>Status: pending ➔ processing ➔ completed</i>"]:::jobTier
+
+        D01 --> D03
+        D02 --> D03
+        D03 --> D04
+        D04 --> D05
+    end
+
+    %% -------------------------------------------------------------------------
+    %% 3. PERSISTENCE TIER
+    %% -------------------------------------------------------------------------
+    subgraph PersistenceTier [" 3. MongoDB Atlas Docman Persistence Tier "]
+        direction TB
+        DB_Docman["<b>DocmanJob Model</b><br/>src/lib/db/models/DocmanJob.ts<br/><i>laravel_document_id, status, payload, completed_at</i>"]:::dbTier
+
+        D04 --> DB_Docman
+        D05 -.->|"Updates Status & completed_at"| DB_Docman
+    end
+
+    %% -------------------------------------------------------------------------
+    %% 4. DOCMAN DASHBOARD MONITORING TIER
+    %% -------------------------------------------------------------------------
+    subgraph MonitoringTier [" 4. Docman Jobs Monitoring Dashboard Tier "]
+        direction TB
+        D06["<b>#06. GET /api/docman-jobs</b><br/>src/app/api/docman-jobs/route.ts<br/><i>Filtered by status, search, and pagination</i>"]:::apiTier
+        D07["<b>#07. Docman Jobs Table UI</b><br/>src/app/(dashboard)/docman-jobs/page.tsx<br/><i>Live job status chips, patient NHS ID, recipient ODS code</i>"]:::clientTier
+
+        DB_Docman -.-> D06
+        D06 --> D07
+    end

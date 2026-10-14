@@ -1,0 +1,98 @@
+%% =========================================================================
+%% MediPulse Healthcare Portal — Orders Lifecycle & Clinical Workflow Architecture
+%% Standard: Mermaid Flowchart TD
+%% Verified against Next.js 16 App Router & MongoDB codebase
+%% =========================================================================
+
+flowchart TD
+    %% Styling Classes
+    classDef clientTier fill:#0e1726,stroke:#38bdf8,stroke-width:2px,color:#f8fafc;
+    classDef networkTier fill:#0b192c,stroke:#818cf8,stroke-width:2px,color:#f8fafc;
+    classDef apiTier fill:#09212b,stroke:#2dd4bf,stroke-width:2px,color:#f8fafc;
+    classDef dbTier fill:#052e16,stroke:#34d399,stroke-width:2px,color:#f8fafc;
+    classDef clinicalTier fill:#271c04,stroke:#fbbf24,stroke-width:2px,color:#f8fafc;
+    classDef errorBranch fill:#3b0710,stroke:#f43f5e,stroke-width:1.5px,stroke-dasharray: 4 4,color:#fecdd3;
+    classDef successBranch fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#a7f3d0;
+
+    %% -------------------------------------------------------------------------
+    %% 1. PRESENTATION TIER (ORDERS TABLE & FILTERS)
+    %% -------------------------------------------------------------------------
+    subgraph PresentationTier [" 1. Presentation Tier (React 19 & Next.js 16 UI) "]
+        direction TB
+        O01["<b>#01. Orders Route Mount</b><br/>src/app/(dashboard)/orders/all/page.tsx<br/><i>Renders OrdersPageLayout shell</i>"]:::clientTier
+        O02["<b>#02. Hook useAllOrdersData</b><br/>src/components/orders-table/hooks/useAllOrdersData.ts<br/><i>useUrlSync() syncs filters with browser query URL</i>"]:::clientTier
+        O03["<b>#03. Orders Table View & Filters</b><br/>OrdersTableView.tsx & TableFilters.tsx<br/><i>Search, Status, Date range, Category, Repeated</i>"]:::clientTier
+        O04["<b>#04. Order Details Drawer</b><br/>src/components/order-details/OrderDetailsDrawer.tsx<br/><i>Patient profile, order items, Rx badge, internal notes</i>"]:::clientTier
+
+        O01 --> O02
+        O02 --> O03
+        O03 -->|"Row Click"| O04
+    end
+
+    %% -------------------------------------------------------------------------
+    %% 2. NETWORK & PARAM BUILDER TIER
+    %% -------------------------------------------------------------------------
+    subgraph NetworkTier [" 2. Network Tier (buildOrderParams & apiClient) "]
+        direction TB
+        O05["<b>#05. buildOrderParams()</b><br/>src/api/services/orders/buildParams.ts<br/><i>normalizeSortOrder(), sortMapping, search parsing</i>"]:::networkTier
+        O06["<b>#06. getOrders() Service Fetcher</b><br/>src/api/services/orders/fetchers/core.ts<br/><i>apiClient.get('/orders', { params })</i>"]:::networkTier
+        O07["<b>#07. Axios Request Interceptor</b><br/>src/lib/api/interceptors.ts<br/><i>Injects Bearer token & X-SITE-* multi-tenant headers</i>"]:::networkTier
+
+        O02 -->|"Filters Changed"| O05
+        O05 -->|"Normalized Params"| O06
+        O06 --> O07
+    end
+
+    %% -------------------------------------------------------------------------
+    %% 3. API ROUTE HANDLER TIER
+    %% -------------------------------------------------------------------------
+    subgraph ApiTier [" 3. API Handlers Tier (Next.js App Router) "]
+        direction TB
+        O08["<b>#08. GET /api/orders</b><br/>src/app/api/orders/route.ts<br/><i>verifyApiAuth(requiredRoles: clinical & admin)</i>"]:::apiTier
+        O09_Auth{"<b>#09. Authorization Guard</b><br/>Token Valid & Role in Allowed Matrix?"}:::apiTier
+        Err_Auth["<b>Error 401/403</b><br/>Missing token or unauthorized role"]:::errorBranch
+        O10["<b>#10. buildOrderQuery() Helper</b><br/>src/app/api/orders/orderQueryHelper.ts<br/><i>Constructs Mongoose filters: status, dates, customer</i>"]:::apiTier
+        O11["<b>#11. Query Execution & Count</b><br/>Order.find(query).skip().limit().lean()<br/><i>Order.countDocuments(query)</i>"]:::apiTier
+        O12["<b>#12. JSON Response Envelope</b><br/>NextResponse.json({ status: 'SUCCESS', data })<br/><i>Returns { orders, total, page, limit }</i>"]:::successBranch
+
+        O07 -->|"GET /api/orders"| O08
+        O08 --> O09_Auth
+        O09_Auth -- "Rejected" --> Err_Auth
+        O09_Auth -- "Authorized" --> O10
+        O10 --> O11
+        O11 --> O12
+    end
+
+    %% -------------------------------------------------------------------------
+    %% 4. PERSISTENCE TIER
+    %% -------------------------------------------------------------------------
+    subgraph PersistenceTier [" 4. Persistence Tier (MongoDB Atlas & Mongoose) "]
+        direction TB
+        DB_Pool["<b>MongoDB Connection Pool</b><br/>src/lib/db/mongodb.ts (connectToDatabase)"]:::dbTier
+        DB_Order["<b>Order Model</b><br/>src/lib/db/models/Order.ts<br/><i>status, fulfillment_status, isUrgent, isParked</i>"]:::dbTier
+        DB_Rx["<b>Prescription Model</b><br/>src/lib/db/models/Prescription.ts<br/><i>status: verified, pending_doctor_review</i>"]:::dbTier
+
+        O08 -.->|"Cached Pool"| DB_Pool
+        O11 <-->|"Read Query"| DB_Order
+    end
+
+    %% -------------------------------------------------------------------------
+    %% 5. CLINICAL WORKFLOW & ACTIONS
+    %% -------------------------------------------------------------------------
+    subgraph ClinicalTier [" 5. Clinical Workflow & Status Transitions "]
+        direction TB
+        C01["<b>#13. Status Transition Trigger</b><br/>Prescriber Review / Pharmacist Dispense<br/><i>UI Action buttons in OrderDetailsDrawer</i>"]:::clinicalTier
+        C02["<b>#14. POST /api/orders/update-status</b><br/>src/app/api/orders/update-status/route.ts<br/><i>Updates order status & logs ActivityLog</i>"]:::clinicalTier
+        C03["<b>#15. Prescription Verification</b><br/>src/app/api/prescriptions/route.ts<br/><i>Links order to verified patient prescription</i>"]:::clinicalTier
+        C04["<b>#16. Status Progression</b><br/>pending ➔ doctor_approved ➔ pharmacist_dispensed ➔ shipped"]:::clinicalTier
+
+        O04 -->|"Doctor / Pharmacist Action"| C01
+        C01 --> C02
+        C02 --> C03
+        C03 --> C04
+        C04 -.->|"Mutates Document"| DB_Order
+    end
+
+    %% Response cycle back to presentation
+    O12 -->|"Hydrates State"| O02
+    C04 -->|"TanStack Query Invalidation"| O02

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediPulse — Docman Jobs & Asynchronous Document Processing Architecture</title>
+  <style>
+    :root {
+      --bg-canvas: #070a12;
+      --bg-panel: rgba(13, 20, 36, 0.92);
+      --bg-card: rgba(18, 28, 48, 0.85);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --color-trigger: #38bdf8;
+      --color-job: #818cf8;
+      --color-db: #34d399;
+      --color-api: #2dd4bf;
+      --color-ui: #c084fc;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background-color: var(--bg-canvas); color: var(--text-main); font-family: var(--font-sans); overflow: hidden; width: 100vw; height: 100vh; user-select: none; }
+    .topbar { position: absolute; top: 0; left: 0; right: 0; height: 60px; background: rgba(10, 15, 29, 0.88); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 100; }
+    .brand-logo { font-weight: 800; font-size: 1.05rem; color: #38bdf8; }
+    .badge-sub { font-size: 0.72rem; padding: 3px 8px; border-radius: 9999px; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.3); color: #7dd3fc; font-family: var(--font-mono); }
+    .btn { background: rgba(30, 41, 59, 0.6); border: 1px solid var(--border-subtle); color: var(--text-main); padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; }
+    #viewport { width: 100vw; height: 100vh; overflow: hidden; cursor: grab; position: relative; }
+    #viewport.panning { cursor: grabbing; }
+    #canvas { width: 100%; height: 100%; transform-origin: 0 0; position: absolute; top: 0; left: 0; }
+    .bg-grid { fill: none; stroke: rgba(255, 255, 255, 0.035); stroke-width: 1; }
+    .tier-boundary { fill: rgba(15, 23, 42, 0.45); stroke-dasharray: 6 6; stroke-width: 1.5; rx: 16; }
+    .tier-label { font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; fill: var(--text-muted); }
+    .flow-edge { fill: none; stroke: rgba(148, 163, 184, 0.35); stroke-width: 2; stroke-linecap: round; }
+    .node-card { cursor: pointer; }
+    .node-rect { fill: var(--bg-card); stroke: rgba(255, 255, 255, 0.1); stroke-width: 1.5; rx: 12; transition: all 0.2s; }
+    .node-card:hover .node-rect { stroke: #38bdf8; filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.5)); }
+    .node-card.selected .node-rect { stroke: #38bdf8; stroke-width: 2.5; fill: rgba(14, 30, 58, 0.95); }
+    .node-title { font-size: 13px; font-weight: 700; fill: #f8fafc; }
+    .node-file { font-family: var(--font-mono); font-size: 10px; fill: #94a3b8; }
+    .node-step-tag { font-family: var(--font-mono); font-size: 10px; font-weight: 700; fill: #38bdf8; }
+    .inspector-panel { position: absolute; top: 60px; right: 0; bottom: 0; width: 440px; background: rgba(10, 16, 30, 0.96); backdrop-filter: blur(20px); border-left: 1px solid var(--border-subtle); transform: translateX(100%); transition: transform 0.3s; z-index: 95; padding: 20px; overflow-y: auto; }
+    .inspector-panel.open { transform: translateX(0); }
+    .code-snippet { background: #050811; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 12px; font-family: var(--font-mono); font-size: 0.75rem; color: #93c5fd; overflow-x: auto; white-space: pre; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <div class="brand-logo">MediPulse</div>
+      <span class="badge-sub">DOCMAN JOBS & DOCUMENT PROCESSING</span>
+    </div>
+    <button class="btn" id="resetBtn">Reset View (0)</button>
+  </header>
+
+  <div id="viewport">
+    <svg id="canvas" viewBox="0 0 1900 1000">
+      <defs>
+        <pattern id="gridPattern" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" class="bg-grid"/></pattern>
+        <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#64748b"/></marker>
+      </defs>
+
+      <rect width="1900" height="1000" fill="url(#gridPattern)" />
+
+      <!-- Tiers -->
+      <g>
+        <rect x="40" y="80" width="340" height="750" class="tier-boundary" stroke="var(--color-trigger)" />
+        <text x="60" y="115" class="tier-label" fill="var(--color-trigger)">1. Document Generation Trigger</text>
+      </g>
+      <g>
+        <rect x="410" y="80" width="340" height="750" class="tier-boundary" stroke="var(--color-job)" />
+        <text x="430" y="115" class="tier-label" fill="var(--color-job)">2. Async Job Queue & Payload</text>
+      </g>
+      <g>
+        <rect x="780" y="80" width="340" height="750" class="tier-boundary" stroke="var(--color-db)" />
+        <text x="800" y="115" class="tier-label" fill="var(--color-db)">3. MongoDB Atlas Queue</text>
+      </g>
+      <g>
+        <rect x="1150" y="80" width="340" height="750" class="tier-boundary" stroke="var(--color-api)" />
+        <text x="1170" y="115" class="tier-label" fill="var(--color-api)">4. Docman API Handlers</text>
+      </g>
+      <g>
+        <rect x="1520" y="80" width="340" height="750" class="tier-boundary" stroke="var(--color-ui)" />
+        <text x="1540" y="115" class="tier-label" fill="var(--color-ui)">5. Queue Monitor Dashboard</text>
+      </g>
+
+      <!-- Edges -->
+      <path class="flow-edge" marker-end="url(#arrow)" d="M 210 210 L 210 270" />
+      <path class="flow-edge" marker-end="url(#arrow)" d="M 340 310 L 440 310" />
+      <path class="flow-edge" marker-end="url(#arrow)" d="M 580 350 L 580 430" />
+      <path class="flow-edge" marker-end="url(#arrow)" d="M 710 470 L 810 310" />
+      <path class="flow-edge" marker-end="url(#arrow)" d="M 1080 310 L 1180 310" />
+      <path class="flow-edge" marker-end="url(#arrow)" d="M 1450 310 L 1550 310" />
+
+      <!-- Nodes -->
+      <g class="node-card" id="dnode-1" transform="translate(65, 130)">
+        <rect width="290" height="80" class="node-rect" />
+        <text x="16" y="28" class="node-step-tag">TRIGGER 01 · CLINICAL</text>
+        <text x="16" y="48" class="node-title">Prescription Certificate PDF</text>
+        <text x="16" y="66" class="node-file">Doctor electronic signature</text>
+      </g>
+      <g class="node-card" id="dnode-2" transform="translate(65, 270)">
+        <rect width="290" height="80" class="node-rect" />
+        <text x="16" y="28" class="node-step-tag">TRIGGER 02 · NHS INTEGRATION</text>
+        <text x="16" y="48" class="node-title">GP Notification Letter</text>
+        <text x="16" y="66" class="node-file">Sent to General Practitioner</text>
+      </g>
+      <g class="node-card" id="dnode-3" transform="translate(435, 270)">
+        <rect width="290" height="80" class="node-rect" />
+        <text x="16" y="28" class="node-step-tag">JOB QUEUE</text>
+        <text x="16" y="48" class="node-title">command_type: SendDocument</text>
+        <text x="16" y="66" class="node-file">Idempotent queue execution</text>
+      </g>
+      <g class="node-card" id="dnode-4" transform="translate(435, 430)">
+        <rect width="290" height="80" class="node-rect" />
+        <text x="16" y="28" class="node-step-tag">SCHEMA PAYLOAD</text>
+        <text x="16" y="48" class="node-title">Patient, Doc, ODS & GP Data</text>
+        <text x="16" y="66" class="node-file">FileHash, FileUrl, NHS Identifier</text>
+      </g>
+      <g class="node-card" id="dnode-5" transform="translate(805, 270)">
+        <rect width="290" height="80" class="node-rect" />
+        <text x="16" y="28" class="node-step-tag">PERSISTENCE</text>
+        <text x="16" y="48" class="node-title">DocmanJob Mongoose Model</text>
+        <text x="16" y="66" class="node-file">src/lib/db/models/DocmanJob.ts</text>
+      </g>
+      <g class="node-card" id="dnode-6" transform="translate(1175, 270)">
+        <rect width="290" height="80" class="node-rect" />
+        <text x="16" y="28" class="node-step-tag">API ENDPOINT</text>
+        <text x="16" y="48" class="node-title">GET /api/docman-jobs</text>
+        <text x="16" y="66" class="node-file">src/app/api/docman-jobs/route.ts</text>
+      </g>
+      <g class="node-card" id="dnode-7" transform="translate(1545, 270)">
+        <rect width="290" height="80" class="node-rect" />
+        <text x="16" y="28" class="node-step-tag">MONITORING UI</text>
+        <text x="16" y="48" class="node-title">Docman Jobs Table & Status</text>
+        <text x="16" y="66" class="node-file">src/app/(dashboard)/docman-jobs/page.tsx</text>
+      </g>
+    </svg>
+  </div>
+
+  <aside class="inspector-panel" id="inspectorPanel">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+      <h3 id="panelTitle" style="color: #38bdf8; font-size: 1.1rem;">Title</h3>
+      <button id="closeBtn" style="background: none; border: none; color: #fff; font-size: 1.2rem; cursor: pointer;">&times;</button>
+    </div>
+    <p id="panelFile" style="font-family: var(--font-mono); font-size: 0.75rem; color: #94a3b8; margin-bottom: 12px;">File</p>
+    <p id="panelResp" style="font-size: 0.85rem; line-height: 1.5; color: #e2e8f0; margin-bottom: 16px;">Resp</p>
+    <pre class="code-snippet" id="panelCode"><code>// Code</code></pre>
+  </aside>
+
+  <script>
+    const DOCMAN_NODES = {
+      'dnode-1': { title: 'Prescription Certificate PDF', file: 'Prescriptions Service', resp: 'Doctor signature generates official prescription certificate PDF.', code: 'triggerDocmanJob({ command_type: "SendDocument", payload: { Document: { Description: "Prescription" } } })' },
+      'dnode-2': { title: 'GP Notification Letter', file: 'NHS Integration', resp: 'Sends clinical summary of prescribed medications to patient registered GP.', code: 'payload.GPData = { organisation_code: "Y12345", gp_name: "High Street Practice" };' },
+      'dnode-3': { title: 'command_type: SendDocument', file: 'Docman Queue Worker', resp: 'Asynchronous job queue maintaining idempotency keys to prevent duplicate document dispatch.', code: 'idempotencyKey: hash(patientId + documentDate)' },
+      'dnode-4': { title: 'Structured Payload Schema', file: 'DocmanJob Schema', resp: 'Strict schema holding Patient NHS identifier, Document FileUrl and FileHash, Recipient ODS code.', code: 'payload: { Patient: { Identifier, FamilyName, Email }, Document: { FileUrl, FileHash } }' },
+      'dnode-5': { title: 'DocmanJob Mongoose Model', file: 'src/lib/db/models/DocmanJob.ts', resp: 'MongoDB collection storing jobs, statuses (pending, completed, failed), and error logs.', code: 'export const DocmanJob = mongoose.models.DocmanJob || mongoose.model("DocmanJob", DocmanJobSchema);' },
+      'dnode-6': { title: 'GET /api/docman-jobs API', file: 'src/app/api/docman-jobs/route.ts', resp: 'Serverless query handler with status filters and patient regex searching.', code: 'DocmanJob.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).lean();' },
+      'dnode-7': { title: 'Docman Jobs Monitor', file: 'src/app/(dashboard)/docman-jobs/page.tsx', resp: 'Queue dashboard for pharmacists and administrators to monitor document delivery status.', code: '<DocmanJobsTable data={jobs} total={total} />' }
+    };
+
+    const canvas = document.getElementById('canvas');
+    let scale = 0.9, translateX = 30, translateY = 20, isPanning = false, startX = 0, startY = 0;
+    function update() { canvas.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`; }
+    const viewport = document.getElementById('viewport');
+    viewport.addEventListener('mousedown', (e) => { if (e.target.closest('.node-card') || e.target.closest('.inspector-panel') || e.target.closest('.topbar')) return; isPanning = true; startX = e.clientX - translateX; startY = e.clientY - translateY; });
+    window.addEventListener('mousemove', (e) => { if (!isPanning) return; translateX = e.clientX - startX; translateY = e.clientY - startY; update(); });
+    window.addEventListener('mouseup', () => { isPanning = false; });
+    viewport.addEventListener('wheel', (e) => { e.preventDefault(); scale = e.deltaY < 0 ? Math.min(scale * 1.1, 2.5) : Math.max(scale / 1.1, 0.4); update(); }, { passive: false });
+    document.getElementById('resetBtn').addEventListener('click', () => { scale = 0.85; translateX = 30; translateY = 20; update(); });
+
+    const inspector = document.getElementById('inspectorPanel');
+    function selectNode(id) {
+      const data = DOCMAN_NODES[id];
+      if (!data) return;
+      document.querySelectorAll('.node-card').forEach(c => c.classList.remove('selected'));
+      document.getElementById(id)?.classList.add('selected');
+      document.getElementById('panelTitle').textContent = data.title;
+      document.getElementById('panelFile').textContent = data.file;
+      document.getElementById('panelResp').textContent = data.resp;
+      document.getElementById('panelCode').textContent = data.code;
+      inspector.classList.add('open');
+    }
+    document.getElementById('closeBtn').addEventListener('click', () => inspector.classList.remove('open'));
+    document.querySelectorAll('.node-card').forEach(n => n.addEventListener('click', () => selectNode(n.id)));
+    update();
+  </script>
+</body>
+</html>

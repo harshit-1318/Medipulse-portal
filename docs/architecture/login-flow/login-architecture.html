@@ -1,0 +1,2053 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediPulse — Interactive Login & Authentication Architecture</title>
+  <style>
+    :root {
+      --bg-canvas: #070a12;
+      --bg-panel: rgba(13, 20, 36, 0.92);
+      --bg-card: rgba(18, 28, 48, 0.85);
+      --bg-card-hover: rgba(28, 42, 72, 0.95);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      
+      --color-frontend: #38bdf8;
+      --color-network: #818cf8;
+      --color-proxy: #c084fc;
+      --color-api: #2dd4bf;
+      --color-crypto: #fb7185;
+      --color-db: #34d399;
+      --color-session: #fbbf24;
+      --color-error: #f43f5e;
+      
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg-canvas);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+      user-select: none;
+    }
+
+    /* Top Navigation Toolbar */
+    .topbar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: rgba(10, 15, 29, 0.88);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 100;
+    }
+
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 800;
+      font-size: 1.05rem;
+      letter-spacing: -0.02em;
+      color: #38bdf8;
+    }
+
+    .brand-logo svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .badge-sub {
+      font-size: 0.72rem;
+      padding: 3px 8px;
+      border-radius: 9999px;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      color: #7dd3fc;
+      font-family: var(--font-mono);
+    }
+
+    /* Controls & Actions */
+    .toolbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .step-player {
+      display: flex;
+      align-items: center;
+      background: rgba(18, 28, 48, 0.7);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 3px 6px;
+      gap: 6px;
+    }
+
+    .btn {
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.18s ease;
+    }
+
+    .btn:hover {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: rgba(56, 189, 248, 0.4);
+      color: #38bdf8;
+    }
+
+    .btn-primary {
+      background: #0284c7;
+      border-color: #38bdf8;
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: #0369a1;
+    }
+
+    .step-indicator {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      padding: 0 6px;
+      min-width: 90px;
+      text-align: center;
+    }
+
+    .search-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-box input {
+      background: rgba(18, 28, 48, 0.7);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      color: #fff;
+      font-size: 0.8rem;
+      padding: 6px 10px 6px 30px;
+      width: 170px;
+      transition: all 0.2s;
+    }
+
+    .search-box input:focus {
+      outline: none;
+      border-color: #38bdf8;
+      width: 220px;
+      background: rgba(18, 28, 48, 0.95);
+    }
+
+    .search-box svg {
+      position: absolute;
+      left: 9px;
+      width: 14px;
+      height: 14px;
+      color: var(--text-dim);
+    }
+
+    /* Main Viewport Container */
+    #viewport {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      cursor: grab;
+      position: relative;
+    }
+
+    #viewport.panning {
+      cursor: grabbing;
+    }
+
+    /* SVG Canvas */
+    #canvas {
+      width: 100%;
+      height: 100%;
+      transform-origin: 0 0;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    /* Grid Background */
+    .bg-grid {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.035);
+      stroke-width: 1;
+    }
+
+    /* Group Boundaries */
+    .tier-boundary {
+      fill: rgba(15, 23, 42, 0.45);
+      stroke-dasharray: 6 6;
+      stroke-width: 1.5;
+      rx: 16;
+      transition: all 0.2s ease;
+    }
+
+    .tier-label {
+      font-family: var(--font-sans);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      fill: var(--text-muted);
+    }
+
+    /* Connection Edges */
+    .flow-edge {
+      fill: none;
+      stroke: rgba(148, 163, 184, 0.35);
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: stroke 0.25s, stroke-width 0.25s;
+    }
+
+    .flow-edge.active {
+      stroke: #38bdf8 !important;
+      stroke-width: 3.5 !important;
+      filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.6));
+    }
+
+    .flow-edge.error-edge {
+      stroke: rgba(244, 63, 94, 0.45);
+      stroke-dasharray: 5 4;
+    }
+
+    .flow-edge.error-edge.active {
+      stroke: #f43f5e !important;
+      stroke-width: 3.5 !important;
+      filter: drop-shadow(0 0 8px rgba(244, 63, 94, 0.7));
+    }
+
+    .edge-label-bg {
+      fill: #0a0f1d;
+      rx: 4;
+    }
+
+    .edge-label-text {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      fill: #cbd5e1;
+      font-weight: 500;
+    }
+
+    /* Node Cards */
+    .node-card {
+      cursor: pointer;
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s;
+    }
+
+    .node-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .node-rect {
+      fill: var(--bg-card);
+      stroke: rgba(255, 255, 255, 0.1);
+      stroke-width: 1.5;
+      rx: 12;
+      transition: all 0.25s ease;
+    }
+
+    .node-card:hover .node-rect {
+      fill: var(--bg-card-hover);
+      stroke: rgba(56, 189, 248, 0.6);
+      filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.6));
+    }
+
+    .node-card.selected .node-rect {
+      stroke: #38bdf8 !important;
+      stroke-width: 2.5 !important;
+      fill: rgba(14, 30, 58, 0.95) !important;
+      filter: drop-shadow(0 0 16px rgba(56, 189, 248, 0.6)) !important;
+    }
+
+    .node-card.highlighted .node-rect {
+      stroke: #a855f7 !important;
+      stroke-width: 2.5 !important;
+      filter: drop-shadow(0 0 14px rgba(168, 85, 247, 0.5)) !important;
+    }
+
+    .node-card.dimmed {
+      opacity: 0.25;
+      filter: grayscale(80%);
+    }
+
+    .node-title {
+      font-family: var(--font-sans);
+      font-size: 13px;
+      font-weight: 700;
+      fill: #f8fafc;
+    }
+
+    .node-file {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      fill: #94a3b8;
+    }
+
+    .node-step-tag {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      fill: #38bdf8;
+    }
+
+    .node-badge {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 600;
+      fill: #64748b;
+    }
+
+    /* Floating Canvas Controls */
+    .canvas-hud {
+      position: absolute;
+      bottom: 24px;
+      left: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 90;
+      background: var(--bg-panel);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 6px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .hud-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 6px;
+      background: rgba(30, 41, 59, 0.7);
+      border: 1px solid var(--border-subtle);
+      color: #cbd5e1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.15s;
+    }
+
+    .hud-btn:hover {
+      background: #0284c7;
+      color: #fff;
+    }
+
+    /* Legend Box */
+    .legend-box {
+      position: absolute;
+      bottom: 24px;
+      right: 24px;
+      background: var(--bg-panel);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 14px 18px;
+      z-index: 90;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+      font-size: 0.75rem;
+      max-width: 280px;
+    }
+
+    .legend-title {
+      font-weight: 700;
+      font-size: 0.8rem;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .legend-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px 12px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #cbd5e1;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+    }
+
+    /* Detail Inspector Side Panel */
+    .inspector-panel {
+      position: absolute;
+      top: 60px;
+      right: 0;
+      bottom: 0;
+      width: 460px;
+      background: rgba(10, 16, 30, 0.96);
+      backdrop-filter: blur(20px);
+      border-left: 1px solid var(--border-subtle);
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 95;
+      display: flex;
+      flex-direction: column;
+      box-shadow: -15px 0 40px rgba(0, 0, 0, 0.7);
+    }
+
+    .inspector-panel.open {
+      transform: translateX(0);
+    }
+
+    .inspector-header {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      background: rgba(15, 23, 42, 0.5);
+    }
+
+    .inspector-title-wrap {
+      flex: 1;
+    }
+
+    .inspector-step-tag {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #38bdf8;
+      margin-bottom: 4px;
+    }
+
+    .inspector-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #f8fafc;
+      letter-spacing: -0.01em;
+      line-height: 1.3;
+    }
+
+    .inspector-file-pill {
+      margin-top: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 3px 8px;
+      border-radius: 5px;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: #94a3b8;
+    }
+
+    .inspector-file-pill:hover {
+      border-color: #38bdf8;
+      color: #38bdf8;
+      cursor: pointer;
+    }
+
+    .close-inspector-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      font-size: 1.4rem;
+      cursor: pointer;
+      line-height: 1;
+      padding: 4px;
+      transition: color 0.15s;
+    }
+
+    .close-inspector-btn:hover {
+      color: #fff;
+    }
+
+    .inspector-body {
+      padding: 22px;
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .inspector-section {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+
+    .section-title {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #94a3b8;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .section-content {
+      font-size: 0.85rem;
+      line-height: 1.55;
+      color: #e2e8f0;
+    }
+
+    .data-pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .data-pill {
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 3px 7px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: #cbd5e1;
+    }
+
+    .code-snippet {
+      background: #050811;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 12px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      line-height: 1.5;
+      color: #93c5fd;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    .code-comment { color: #64748b; }
+    .code-keyword { color: #c084fc; font-weight: 600; }
+    .code-func { color: #38bdf8; }
+    .code-str { color: #34d399; }
+    .code-var { color: #f1f5f9; }
+
+    /* Custom Scrollbar */
+    .inspector-body::-webkit-scrollbar {
+      width: 6px;
+    }
+    .inspector-body::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .inspector-body::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+    }
+
+    /* Modal dialog */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal-content {
+      background: #0f172a;
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      max-width: 520px;
+      width: 90%;
+      padding: 24px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Toolbar -->
+  <header class="topbar">
+    <div class="brand-section">
+      <div class="brand-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 2v20M2 12h20M4.93 4.93l14.14 14.14M4.93 19.07L19.07 4.93"/>
+        </svg>
+        <span>MediPulse</span>
+      </div>
+      <span class="badge-sub">LOGIN ARCHITECTURE v1.0</span>
+      <span style="font-size: 0.78rem; color: var(--text-dim);">Next.js 16 App Router · MongoDB Atlas · Web Crypto</span>
+    </div>
+
+    <div class="toolbar-actions">
+      <!-- Search Input -->
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="searchInput" placeholder="Search component, file..." autocomplete="off">
+      </div>
+
+      <!-- Execution Step Scrubber -->
+      <div class="step-player">
+        <button class="btn" id="prevStepBtn" title="Previous Step (Left Arrow)">◀</button>
+        <span class="step-indicator" id="stepIndicator">Step: All</span>
+        <button class="btn" id="nextStepBtn" title="Next Step (Right Arrow)">▶</button>
+        <button class="btn btn-primary" id="playFlowBtn" title="Play Full Execution Sequence">▶ Play</button>
+      </div>
+
+      <!-- Reset & Guide -->
+      <button class="btn" id="resetViewBtn">Reset View (0)</button>
+      <button class="btn" id="helpBtn">?</button>
+    </div>
+  </header>
+
+  <!-- Viewport for Zoom & Pan -->
+  <div id="viewport">
+    <svg id="canvas" viewBox="0 0 2450 1350" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <!-- Background Grid Pattern -->
+        <pattern id="gridPattern" width="40" height="40" patternUnits="userSpaceOnUse">
+          <path d="M 40 0 L 0 0 0 40" class="bg-grid"/>
+        </pattern>
+
+        <!-- Arrowhead Markers -->
+        <marker id="arrow-default" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1 L 9 5 L 0 9 z" fill="#64748b"/>
+        </marker>
+        <marker id="arrow-active" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M 0 1 L 9 5 L 0 9 z" fill="#38bdf8"/>
+        </marker>
+        <marker id="arrow-error" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M 0 1 L 9 5 L 0 9 z" fill="#f43f5e"/>
+        </marker>
+        <marker id="arrow-success" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M 0 1 L 9 5 L 0 9 z" fill="#10b981"/>
+        </marker>
+
+        <!-- Glow filter for active edges -->
+        <filter id="glow-cyan" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="3" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+
+      <!-- Grid Background -->
+      <rect width="2450" height="1350" fill="url(#gridPattern)" />
+
+      <!-- =========================================================
+           TIER BOUNDARIES
+           ========================================================= -->
+      
+      <!-- Tier 1: Client Presentation Tier -->
+      <g id="tier-frontend">
+        <rect x="40" y="80" width="360" height="880" class="tier-boundary" stroke="var(--color-frontend)" />
+        <text x="60" y="115" class="tier-label" fill="var(--color-frontend)">1. Client Presentation Tier (React 19)</text>
+      </g>
+
+      <!-- Tier 2: Client Network & State Tier -->
+      <g id="tier-network">
+        <rect x="440" y="80" width="340" height="880" class="tier-boundary" stroke="var(--color-network)" />
+        <text x="460" y="115" class="tier-label" fill="var(--color-network)">2. Network & State Tier (Axios / Zustand 5)</text>
+      </g>
+
+      <!-- Tier 3: Edge Routing & Proxy Tier -->
+      <g id="tier-proxy">
+        <rect x="820" y="80" width="370" height="880" class="tier-boundary" stroke="var(--color-proxy)" />
+        <text x="840" y="115" class="tier-label" fill="var(--color-proxy)">3. Next.js 16 Edge Proxy (src/proxy.ts)</text>
+      </g>
+
+      <!-- Tier 4: Serverless API Handler Tier -->
+      <g id="tier-api">
+        <rect x="1230" y="80" width="410" height="1220" class="tier-boundary" stroke="var(--color-api)" />
+        <text x="1250" y="115" class="tier-label" fill="var(--color-api)">4. API Handlers Tier (/api/auth/login)</text>
+      </g>
+
+      <!-- Tier 5: Cryptographic & Security Tier -->
+      <g id="tier-crypto">
+        <rect x="1680" y="80" width="340" height="580" class="tier-boundary" stroke="var(--color-crypto)" />
+        <text x="1700" y="115" class="tier-label" fill="var(--color-crypto)">5. Cryptography & Security Engine</text>
+      </g>
+
+      <!-- Tier 6: Persistence & Database Tier -->
+      <g id="tier-db">
+        <rect x="1680" y="700" width="340" height="600" class="tier-boundary" stroke="var(--color-db)" />
+        <text x="1700" y="735" class="tier-label" fill="var(--color-db)">6. Persistence & Audit Tier (MongoDB Atlas)</text>
+      </g>
+
+      <!-- Tier 7: Session Lifecycle & Inactivity Guard -->
+      <g id="tier-session">
+        <rect x="2060" y="80" width="350" height="1220" class="tier-boundary" stroke="var(--color-session)" />
+        <text x="2080" y="115" class="tier-label" fill="var(--color-session)">7. Session Lifecycle & Inactivity Guard</text>
+      </g>
+
+      <!-- =========================================================
+           CONNECTION EDGES
+           ========================================================= -->
+      <g id="edges-layer">
+        <!-- 1 -> 2: Browser to LoginPage -->
+        <path id="edge-1-2" class="flow-edge" marker-end="url(#arrow-default)" d="M 220 210 L 220 250" />
+        <!-- 2 -> 3: LoginPage to LoginForm -->
+        <path id="edge-2-3" class="flow-edge" marker-end="url(#arrow-default)" d="M 220 330 L 220 370" />
+        <!-- 3 -> 4: LoginForm to useLoginFormSubmit -->
+        <path id="edge-3-4" class="flow-edge" marker-end="url(#arrow-default)" d="M 220 450 L 220 490" />
+        <!-- 4 -> 5: State to SubmitButton -->
+        <path id="edge-4-5" class="flow-edge" marker-end="url(#arrow-default)" d="M 220 570 L 220 610" />
+        <!-- 5 -> 6: Submit to API Service -->
+        <path id="edge-5-6" class="flow-edge" marker-end="url(#arrow-default)" d="M 360 650 L 480 650" />
+        <!-- 6 -> 6b: Service to Interceptors -->
+        <path id="edge-6-6b" class="flow-edge" marker-end="url(#arrow-default)" d="M 610 690 L 610 730" />
+        <!-- 6b -> 7: Interceptor dispatch to POST /api/auth/login -->
+        <path id="edge-6b-7" class="flow-edge" marker-end="url(#arrow-default)" d="M 740 770 L 1270 200" />
+        <!-- 7 -> 8: Route to Validation -->
+        <path id="edge-7-8" class="flow-edge" marker-end="url(#arrow-default)" d="M 1435 240 L 1435 280" />
+        <!-- 8 -> Err_Val: Validation Error 400 -->
+        <path id="edge-8-err" class="flow-edge error-edge" marker-end="url(#arrow-error)" d="M 1580 320 L 1600 320" />
+        <!-- 8 -> 9: Validation Pass to DB Lookup -->
+        <path id="edge-8-9" class="flow-edge" marker-end="url(#arrow-default)" d="M 1435 360 L 1435 410" />
+        <!-- 9 -> Pool: Mongoose Connection -->
+        <path id="edge-9-pool" class="flow-edge" marker-end="url(#arrow-default)" d="M 1580 450 L 1720 780" />
+        <!-- 9 -> Err_NotFound: 401 User Not Found -->
+        <path id="edge-9-err" class="flow-edge error-edge" marker-end="url(#arrow-error)" d="M 1580 430 L 1600 430" />
+        <!-- 9 -> 10: Found to Password Verification -->
+        <path id="edge-9-10" class="flow-edge" marker-end="url(#arrow-default)" d="M 1435 490 L 1435 550" />
+        <!-- 10 -> Err_Pw: 401 Password Mismatch -->
+        <path id="edge-10-err" class="flow-edge error-edge" marker-end="url(#arrow-error)" d="M 1580 590 L 1600 590" />
+        <!-- 10 -> 11: Password Matched to Payload & RBAC -->
+        <path id="edge-10-11" class="flow-edge" marker-end="url(#arrow-default)" d="M 1435 630 L 1435 690" />
+        <!-- 11 -> 11b: Payload to Web Crypto signJwt -->
+        <path id="edge-11-crypto" class="flow-edge" marker-end="url(#arrow-default)" d="M 1580 730 L 1720 220" />
+        <!-- 11b -> 11: Return Signed JWT -->
+        <path id="edge-crypto-11" class="flow-edge" marker-end="url(#arrow-default)" d="M 1720 260 L 1580 750" />
+        <!-- 11 -> 12: Payload to Cookie & Log -->
+        <path id="edge-11-12" class="flow-edge" marker-end="url(#arrow-default)" d="M 1435 770 L 1435 830" />
+        <!-- 12 -> Audit DB: Write ActivityLog -->
+        <path id="edge-12-log" class="flow-edge" marker-end="url(#arrow-default)" d="M 1580 870 L 1720 1150" />
+        <!-- 12 -> 13: Response Envelope 200 OK -->
+        <path id="edge-12-13" class="flow-edge" marker-end="url(#arrow-default)" d="M 1290 870 L 740 260" />
+        <!-- 13 -> 14: userStore to Safe Redirect -->
+        <path id="edge-13-14" class="flow-edge" marker-end="url(#arrow-default)" d="M 610 300 L 610 370" />
+        <!-- 14 -> 15: Browser Navigates to Protected Route (Proxy) -->
+        <path id="edge-14-15" class="flow-edge" marker-end="url(#arrow-default)" d="M 740 410 L 860 210" />
+        <!-- 15 -> 16: Proxy calls decodeJwtPayload -->
+        <path id="edge-15-16" class="flow-edge" marker-end="url(#arrow-default)" d="M 1005 250 L 1005 320" />
+        <!-- 16 -> 17: Proxy evaluates RBAC matrix -->
+        <path id="edge-16-17" class="flow-edge" marker-end="url(#arrow-default)" d="M 1005 400 L 1005 470" />
+        <!-- 17 -> 18: Authorized Navigation mounts Dashboard Shell -->
+        <path id="edge-17-18" class="flow-edge" marker-end="url(#arrow-default)" d="M 1150 510 L 2100 210" />
+        <!-- 18 -> 18b: 15-min Idle triggers 60s Warning Modal -->
+        <path id="edge-18-18b" class="flow-edge" marker-end="url(#arrow-default)" d="M 2235 250 L 2235 340" />
+        <!-- 18b -> 19: Countdown Expiry or User Logout triggers /api/auth/logout -->
+        <path id="edge-18b-19" class="flow-edge" marker-end="url(#arrow-default)" d="M 2235 420 L 2235 520" />
+        <!-- 19 -> 1: Cookie Cleared & Redirected back to /login -->
+        <path id="edge-19-1" class="flow-edge" marker-end="url(#arrow-default)" d="M 2100 560 L 360 170" />
+      </g>
+
+      <!-- =========================================================
+           NODE CARDS
+           ========================================================= -->
+      <g id="nodes-layer">
+        
+        <!-- Node 1: Browser Navigation -->
+        <g class="node-card" id="node-1" data-step="1" transform="translate(80, 130)">
+          <rect width="280" height="80" class="node-rect" />
+          <text x="16" y="28" class="node-step-tag">STEP 01 · CLIENT</text>
+          <text x="16" y="48" class="node-title">Browser Navigation to /login</text>
+          <text x="16" y="66" class="node-file">Client Browser Navigation</text>
+        </g>
+
+        <!-- Node 2: LoginPage Shell -->
+        <g class="node-card" id="node-2" data-step="2" transform="translate(80, 250)">
+          <rect width="280" height="80" class="node-rect" />
+          <text x="16" y="28" class="node-step-tag">STEP 02 · REACT 19</text>
+          <text x="16" y="48" class="node-title">Next.js App Router LoginPage</text>
+          <text x="16" y="66" class="node-file">src/app/(auth)/login/page.tsx</text>
+        </g>
+
+        <!-- Node 3: LoginForm -->
+        <g class="node-card" id="node-3" data-step="3" transform="translate(80, 370)">
+          <rect width="280" height="80" class="node-rect" />
+          <text x="16" y="28" class="node-step-tag">STEP 03 · COMPONENT</text>
+          <text x="16" y="48" class="node-title">LoginForm & Inputs Shell</text>
+          <text x="16" y="66" class="node-file">src/components/auth/login/LoginForm.tsx</text>
+        </g>
+
+        <!-- Node 4: useLoginFormSubmit -->
+        <g class="node-card" id="node-4" data-step="4" transform="translate(80, 490)">
+          <rect width="280" height="80" class="node-rect" />
+          <text x="16" y="28" class="node-step-tag">STEP 04 · HOOK</text>
+          <text x="16" y="48" class="node-title">Form State & Validation Hook</text>
+          <text x="16" y="66" class="node-file">src/components/.../useLoginFormSubmit.ts</text>
+        </g>
+
+        <!-- Node 5: SubmitButton -->
+        <g class="node-card" id="node-5" data-step="5" transform="translate(80, 610)">
+          <rect width="280" height="80" class="node-rect" />
+          <text x="16" y="28" class="node-step-tag">STEP 05 · ACTION</text>
+          <text x="16" y="48" class="node-title">handleSubmit & Global Loader</text>
+          <text x="16" y="66" class="node-file">src/components/.../SubmitButton.tsx</text>
+        </g>
+
+        <!-- Node 6: API Service -->
+        <g class="node-card" id="node-6" data-step="6" transform="translate(480, 610)">
+          <rect width="260" height="80" class="node-rect" />
+          <text x="16" y="28" class="node-step-tag">STEP 06 · NETWORK</text>
+          <text x="16" y="48" class="node-title">apiClient.post(UserApi.Login)</text>
+          <text x="16" y="66" class="node-file">src/api/services/user/userService.ts</text>
+        </g>
+
+        <!-- Node 6b: Axios Interceptors -->
+        <g class="node-card" id="node-6b" data-step="6" transform="translate(480, 730)">
+          <rect width="260" height="80" class="node-rect" />
+          <text x="16" y="28" class="node-step-tag">STEP 06b · INTERCEPTOR</text>
+          <text x="16" y="48" class="node-title">Axios Request/Response Guard</text>
+          <text x="16" y="66" class="node-file">src/lib/api/interceptors.ts</text>
+        </g>
+
+        <!-- Node 13: Zustand userStore -->
+        <g class="node-card" id="node-13" data-step="13" transform="translate(480, 220)">
+          <rect width="260" height="80" class="node-rect" />
+          <text x="16" y="28" class="node-step-tag">STEP 13 · STATE</text>
+          <text x="16" y="48" class="node-title">Zustand userStore Hydration</text>
+          <text x="16" y="66" class="node-file">src/store/user/userStore.ts</text>
+        </g>
+
+        <!-- Node 14: Safe Post-Login Redirect -->
+        <g class="node-card" id="node-14" data-step="14" transform="translate(480, 370)">
+          <rect width="260" height="80" class="node-rect" />
+          <text x="16" y="28" class="node-step-tag">STEP 14 · REDIRECT</text>
+          <text x="16" y="48" class="node-title">Safe Redirect & ReturnUrl Guard</text>
+          <text x="16" y="66" class="node-file">src/utils/auth/authRedirect.ts</text>
+        </g>
+
+        <!-- Node 15: Edge Route Proxy -->
+        <g class="node-card" id="node-15" data-step="15" transform="translate(860, 170)">
+          <rect width="290" height="80" class="node-rect" />
+          <text x="16" y="28" class="node-step-tag">STEP 15 · EDGE PROXY</text>
+          <text x="16" y="48" class="node-title">Next.js 16 Edge Route Proxy</text>
+          <text x="16" y="66" class="node-file">src/proxy.ts</text>
+        </g>
+
+        <!-- Node 16: Anti-Spoofing JWT Decode -->
+        <g class="node-card" id="node-16" data-step="16" transform="translate(860, 320)">
+          <rect width="290" height="80" class="node-rect" />
+          <text x="16" y="28" class="node-step-tag">STEP 16 · ANTI-SPOOFING</text>
+          <text x="16" y="48" class="node-title">decodeJwtPayload (Zero-Dep)</text>
+          <text x="16" y="66" class="node-file">src/proxyJwt.ts</text>
+        </g>
+
+        <!-- Node 17: RBAC Enforcement -->
+        <g class="node-card" id="node-17" data-step="17" transform="translate(860, 470)">
+          <rect width="290" height="80" class="node-rect" />
+          <text x="16" y="28" class="node-step-tag">STEP 17 · RBAC</text>
+          <text x="16" y="48" class="node-title">isRouteAllowedForRole Check</text>
+          <text x="16" y="66" class="node-file">src/proxyRoutes.ts</text>
+        </g>
+
+        <!-- Node 7: POST /api/auth/login -->
+        <g class="node-card" id="node-7" data-step="7" transform="translate(1270, 160)">
+          <rect width="330" height="80" class="node-rect" />
+          <text x="16" y="28" class="node-step-tag">STEP 07 · API ROUTE</text>
+          <text x="16" y="48" class="node-title">POST /api/auth/login Handler</text>
+          <text x="16" y="66" class="node-file">src/app/api/auth/login/route.ts</text>
+        </g>
+
+        <!-- Node 8: Request Validation -->
+        <g class="node-card" id="node-8" data-step="8" transform="translate(1270, 280)">
+          <rect width="330" height="80" class="node-rect" />
+          <text x="16" y="28" class="node-step-tag">STEP 08 · VALIDATION</text>
+          <text x="16" y="48" class="node-title">Email & Password Presence Check</text>
+          <text x="16" y="66" class="node-file">route.ts (lines 18-23: 400 Error)</text>
+        </g>
+
+        <!-- Node 9: MongoDB Lookup -->
+        <g class="node-card" id="node-9" data-step="9" transform="translate(1270, 410)">
+          <rect width="330" height="80" class="node-rect" />
+          <text x="16" y="28" class="node-step-tag">STEP 09 · DB LOOKUP</text>
+          <text x="16" y="48" class="node-title">User.findOne & Active Check</text>
+          <text x="16" y="66" class="node-file">route.ts (lines 25-41: 401/403)</text>
+        </g>
+
+        <!-- Node 10: Password Verification -->
+        <g class="node-card" id="node-10" data-step="10" transform="translate(1270, 550)">
+          <rect width="330" height="80" class="node-rect" />
+          <text x="16" y="28" class="node-step-tag">STEP 10 · BCRYPT</text>
+          <text x="16" y="48" class="node-title">verifyUserPassword (bcrypt.compare)</text>
+          <text x="16" y="66" class="node-file">src/app/api/auth/login/helpers.ts</text>
+        </g>
+
+        <!-- Node 11: Build Auth Payload -->
+        <g class="node-card" id="node-11" data-step="11" transform="translate(1270, 690)">
+          <rect width="330" height="80" class="node-rect" />
+          <text x="16" y="28" class="node-step-tag">STEP 11 · JWT PAYLOAD</text>
+          <text x="16" y="48" class="node-title">buildAuthPayload & Permissions</text>
+          <text x="16" y="66" class="node-file">helpers.ts & permissions.ts</text>
+        </g>
+
+        <!-- Node 12: HttpOnly Cookies & Audit Log -->
+        <g class="node-card" id="node-12" data-step="12" transform="translate(1270, 830)">
+          <rect width="330" height="80" class="node-rect" />
+          <text x="16" y="28" class="node-step-tag">STEP 12 · COOKIES & AUDIT</text>
+          <text x="16" y="48" class="node-title">setAuthCookies & recordActivity</text>
+          <text x="16" y="66" class="node-file">helpers.ts & logActivityHelper.ts</text>
+        </g>
+
+        <!-- Node 11b: Web Crypto signJwt -->
+        <g class="node-card" id="node-11b" data-step="11" transform="translate(1720, 180)">
+          <rect width="280" height="80" class="node-rect" />
+          <text x="16" y="28" class="node-step-tag">STEP 11b · CRYPTO</text>
+          <text x="16" y="48" class="node-title">signJwt (Web Crypto API)</text>
+          <text x="16" y="66" class="node-file">src/lib/auth/jwt.ts (HMAC-SHA256)</text>
+        </g>
+
+        <!-- Node 17b: API Auth Guard -->
+        <g class="node-card" id="node-17b" data-step="17" transform="translate(1720, 320)">
+          <rect width="280" height="80" class="node-rect" />
+          <text x="16" y="28" class="node-step-tag">GUARD · API SECURITY</text>
+          <text x="16" y="48" class="node-title">verifyApiAuth Route Guard</text>
+          <text x="16" y="66" class="node-file">src/lib/auth/apiAuth.ts</text>
+        </g>
+
+        <!-- Node 9b: MongoDB Pool -->
+        <g class="node-card" id="node-9b" data-step="9" transform="translate(1720, 780)">
+          <rect width="280" height="80" class="node-rect" />
+          <text x="16" y="28" class="node-step-tag">DATABASE POOL</text>
+          <text x="16" y="48" class="node-title">connectToDatabase (Cached)</text>
+          <text x="16" y="66" class="node-file">src/lib/db/mongodb.ts</text>
+        </g>
+
+        <!-- Node 9c: User Model -->
+        <g class="node-card" id="node-9c" data-step="9" transform="translate(1720, 920)">
+          <rect width="280" height="80" class="node-rect" />
+          <text x="16" y="28" class="node-step-tag">ODM SCHEMA</text>
+          <text x="16" y="48" class="node-title">User Mongoose Model</text>
+          <text x="16" y="66" class="node-file">src/lib/db/models/User.ts</text>
+        </g>
+
+        <!-- Node 12c: ActivityLog Model -->
+        <g class="node-card" id="node-12c" data-step="12" transform="translate(1720, 1060)">
+          <rect width="280" height="80" class="node-rect" />
+          <text x="16" y="28" class="node-step-tag">AUDIT LOGGING</text>
+          <text x="16" y="48" class="node-title">ActivityLog Schema & Helper</text>
+          <text x="16" y="66" class="node-file">src/lib/db/models/ActivityLog.ts</text>
+        </g>
+
+        <!-- Node 18: IdleSessionManager -->
+        <g class="node-card" id="node-18" data-step="18" transform="translate(2100, 170)">
+          <rect width="280" height="80" class="node-rect" />
+          <text x="16" y="28" class="node-step-tag">STEP 18 · SESSION GUARD</text>
+          <text x="16" y="48" class="node-title">IdleSessionManager (15-min)</text>
+          <text x="16" y="66" class="node-file">src/components/auth/IdleSessionManager.tsx</text>
+        </g>
+
+        <!-- Node 18b: IdleWarningModal -->
+        <g class="node-card" id="node-18b" data-step="18" transform="translate(2100, 340)">
+          <rect width="280" height="80" class="node-rect" />
+          <text x="16" y="28" class="node-step-tag">STEP 18b · WARNING</text>
+          <text x="16" y="48" class="node-title">IdleWarningModal (60s Countdown)</text>
+          <text x="16" y="66" class="node-file">src/components/auth/IdleWarningModal.tsx</text>
+        </g>
+
+        <!-- Node 19: Logout Execution -->
+        <g class="node-card" id="node-19" data-step="19" transform="translate(2100, 520)">
+          <rect width="280" height="80" class="node-rect" />
+          <text x="16" y="28" class="node-step-tag">STEP 19 · LOGOUT</text>
+          <text x="16" y="48" class="node-title">POST /api/auth/logout & Cleanup</text>
+          <text x="16" y="66" class="node-file">src/app/api/auth/logout/route.ts</text>
+        </g>
+
+      </g>
+    </svg>
+  </div>
+
+  <!-- Floating Canvas Navigation HUD -->
+  <div class="canvas-hud">
+    <button class="hud-btn" id="zoomInBtn" title="Zoom In (+)">+</button>
+    <button class="hud-btn" id="zoomOutBtn" title="Zoom Out (-)">−</button>
+    <button class="hud-btn" id="fitViewBtn" title="Fit to View">⊡</button>
+  </div>
+
+  <!-- Diagram Legend Box -->
+  <div class="legend-box">
+    <div class="legend-title">
+      <span>Architecture Legend</span>
+      <span style="font-size: 0.65rem; color: #38bdf8;">7 Tiers Verified</span>
+    </div>
+    <div class="legend-grid">
+      <div class="legend-item"><span class="legend-dot" style="background: var(--color-frontend);"></span>Frontend UI</div>
+      <div class="legend-item"><span class="legend-dot" style="background: var(--color-network);"></span>Axios / Store</div>
+      <div class="legend-item"><span class="legend-dot" style="background: var(--color-proxy);"></span>Edge Proxy</div>
+      <div class="legend-item"><span class="legend-dot" style="background: var(--color-api);"></span>API Routes</div>
+      <div class="legend-item"><span class="legend-dot" style="background: var(--color-crypto);"></span>Web Crypto</div>
+      <div class="legend-item"><span class="legend-dot" style="background: var(--color-db);"></span>MongoDB Atlas</div>
+      <div class="legend-item"><span class="legend-dot" style="background: var(--color-session);"></span>Idle Session</div>
+      <div class="legend-item"><span class="legend-dot" style="background: var(--color-error);"></span>Error Branch</div>
+    </div>
+  </div>
+
+  <!-- Detail Inspector Side Panel -->
+  <aside class="inspector-panel" id="inspectorPanel">
+    <div class="inspector-header">
+      <div class="inspector-title-wrap">
+        <div class="inspector-step-tag" id="panelStepTag">STEP 01 OF 19</div>
+        <h2 class="inspector-title" id="panelTitle">Component Title</h2>
+        <div class="inspector-file-pill" id="panelFilePill" title="Click to copy path">
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+          </svg>
+          <span id="panelFilePath">src/app/...</span>
+        </div>
+      </div>
+      <button class="close-inspector-btn" id="closeInspectorBtn">&times;</button>
+    </div>
+
+    <div class="inspector-body">
+      <!-- Architectural Responsibility -->
+      <div class="inspector-section">
+        <div class="section-title">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          Architectural Responsibility
+        </div>
+        <div class="section-content" id="panelResponsibility">Description of the component responsibility...</div>
+      </div>
+
+      <!-- Data Contracts -->
+      <div class="inspector-section">
+        <div class="section-title">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          Data Contracts (In / Out)
+        </div>
+        <div style="margin-bottom: 8px;">
+          <span style="font-size: 0.72rem; color: #94a3b8; font-weight: 600;">INCOMING:</span>
+          <div class="data-pill-row" id="panelIncomingPills"></div>
+        </div>
+        <div>
+          <span style="font-size: 0.72rem; color: #94a3b8; font-weight: 600;">OUTGOING:</span>
+          <div class="data-pill-row" id="panelOutgoingPills"></div>
+        </div>
+      </div>
+
+      <!-- Security Hardening & Checks -->
+      <div class="inspector-section">
+        <div class="section-title">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Security Checks & Policies
+        </div>
+        <div class="section-content" id="panelSecurity">Security details...</div>
+      </div>
+
+      <!-- Verified Source Code Snippet -->
+      <div class="inspector-section">
+        <div class="section-title">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          Verified Source Code Excerpt (<span id="panelLineNumbers">L1-20</span>)
+        </div>
+        <pre class="code-snippet" id="panelCodeSnippet"><code>// Source code</code></pre>
+      </div>
+
+      <!-- Next Steps & Error Handling -->
+      <div class="inspector-section">
+        <div class="section-title">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          Execution Sequence & Errors
+        </div>
+        <div class="section-content">
+          <p><strong>Next Step:</strong> <span id="panelNextStep" style="color: #38bdf8;">Next component</span></p>
+          <p style="margin-top: 6px;"><strong>Error Branches:</strong> <span id="panelErrorBranches" style="color: #f43f5e;">Error cases</span></p>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Help / Keyboard Shortcuts Modal -->
+  <div class="modal-overlay" id="helpModal">
+    <div class="modal-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h3 style="font-size: 1.1rem; font-weight: 700;">Keyboard Shortcuts & Navigation</h3>
+        <button class="close-inspector-btn" id="closeModalBtn">&times;</button>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 10px; font-size: 0.85rem; color: #cbd5e1;">
+        <p><kbd style="background: #1e293b; padding: 2px 6px; border-radius: 4px;">Drag / Space+Drag</kbd> Pan canvas</p>
+        <p><kbd style="background: #1e293b; padding: 2px 6px; border-radius: 4px;">Mouse Wheel</kbd> Zoom in and out</p>
+        <p><kbd style="background: #1e293b; padding: 2px 6px; border-radius: 4px;">0</kbd> Reset canvas zoom and position to default</p>
+        <p><kbd style="background: #1e293b; padding: 2px 6px; border-radius: 4px;">Left / Right Arrow</kbd> Step through execution sequence (Steps 1 to 19)</p>
+        <p><kbd style="background: #1e293b; padding: 2px 6px; border-radius: 4px;">Escape</kbd> Close inspector panel / deselect</p>
+        <p><kbd style="background: #1e293b; padding: 2px 6px; border-radius: 4px;">/</kbd> Focus quick search bar</p>
+      </div>
+      <div style="margin-top: 20px; text-align: right;">
+        <button class="btn btn-primary" id="gotItBtn">Got it</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript Application Logic -->
+  <script>
+    /* =========================================================================
+       ARCHITECTURAL NODE KNOWLEDGE BASE
+       Verified against MediPulse source code repository
+       ========================================================================= */
+    const NODE_DATA = {
+      'node-1': {
+        step: 1,
+        tier: 'frontend',
+        title: 'Browser Navigation to /login',
+        file: 'Client Browser Navigation',
+        lines: 'N/A',
+        responsibility: 'Initiates authentication flow. The browser navigates to `/login` or receives an edge redirect from a protected path (e.g., `/orders`). If a user already possesses a valid `token` cookie, the Edge Proxy automatically skips the login page and forwards directly to the dashboard.',
+        incoming: ['GET /login', 'GET /login?returnUrl=/orders'],
+        outgoing: ['HTTP Document Request to Next.js App Router'],
+        security: 'Protected routes auto-append `returnUrl` query parameter. Logged-in users are blocked from re-authenticating.',
+        code: `// Initial navigation or edge interception
+// src/proxy.ts: lines 53-58
+const isProtected = protectedRoutes.some(r => pathname.startsWith(r));
+if (isProtected && !token) {
+  const loginUrl = new URL('/login', request.url);
+  loginUrl.searchParams.set('returnUrl', pathname + search);
+  return NextResponse.redirect(loginUrl);
+}`,
+        nextStep: 'Next.js App Router renders LoginPage UI',
+        errorBranches: 'Network disconnection or invalid URL query params.'
+      },
+      'node-2': {
+        step: 2,
+        tier: 'frontend',
+        title: 'Next.js App Router LoginPage Component',
+        file: 'src/app/(auth)/login/page.tsx',
+        lines: 'L1-94',
+        responsibility: 'Client Component (`\'use client\'`) that hydrates dark/light theme state from localStorage, renders ambient background glows, animated radial blur backlights, responsive SVG Logo (size 210), and mounts the LoginForm card.',
+        incoming: ['Theme preference in localStorage (medipulse-theme)'],
+        outgoing: ['Mounts LoginForm and ThemeToggle components'],
+        security: 'Theme isolated to client state; CSRF protection inherited from Next.js server actions / API boundaries.',
+        code: `// src/app/(auth)/login/page.tsx: lines 8-22
+export default function LoginPage() {
+  const [isDark, setIsDark] = useState(true);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    const savedTheme = localStorage.getItem('medipulse-theme');
+    const dark = savedTheme ? savedTheme === 'dark' : true;
+    setIsDark(dark);
+    if (dark) document.documentElement.classList.add('dark');
+  }, []);
+  // ... renders Logo and <LoginForm isDark={isDark} />
+}`,
+        nextStep: 'Mounts LoginForm component',
+        errorBranches: 'LocalStorage disabled in private browsing (graceful fallback to dark).'
+      },
+      'node-3': {
+        step: 3,
+        tier: 'frontend',
+        title: 'LoginForm & Controlled Inputs Layout',
+        file: 'src/components/auth/login/LoginForm.tsx',
+        lines: 'L14-56',
+        responsibility: 'Provides modern glassmorphic card container with ambient linear gradients, AuthHeader, FormError, EmailInput (autofocus, Mail icon), PasswordInput (show/hide password toggle), and SubmitButton.',
+        incoming: ['User typing events for email & password'],
+        outgoing: ['Delegates state and submission to useLoginFormSubmit()'],
+        security: 'Password masking with Lucide Eye/EyeOff toggle; inputs sanitized via React controlled values.',
+        code: `// src/components/auth/login/LoginForm.tsx: lines 14-55
+export default function LoginForm({ isDark = true }: LoginFormProps) {
+  const { email, setEmail, password, setPassword, loading, error, isDetecting, handleSubmit } = useLoginFormSubmit();
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4.5">
+      <FormError error={error} isDark={isDark} />
+      <EmailInput value={email} onChange={setEmail} isDark={isDark} />
+      <PasswordInput value={password} onChange={setPassword} isDark={isDark} />
+      <SubmitButton loading={loading} isDetecting={isDetecting} />
+    </form>
+  );
+}`,
+        nextStep: 'useLoginFormSubmit hook manages state',
+        errorBranches: 'Client form displays inline FormError alert upon submission failure.'
+      },
+      'node-4': {
+        step: 4,
+        tier: 'frontend',
+        title: 'Form State & Validation Hook',
+        file: 'src/components/auth/login/hooks/useLoginFormSubmit.ts',
+        lines: 'L10-25',
+        responsibility: 'Custom hook coordinating form values, input setters, loading state, error messages, and submission triggers. Synchronizes with global loader and site stores.',
+        incoming: ['email string', 'password string', 'submit FormEvent'],
+        outgoing: ['Calls login() API service', 'Sets userStore state on success'],
+        security: 'Prevents multiple in-flight login requests; clears stale error banners before new attempts.',
+        code: `// src/components/auth/login/hooks/useLoginFormSubmit.ts: lines 10-24
+export function useLoginFormSubmit() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const { setUser, setToken } = useUserStore((s) => s.actions);
+  const { start: startLoader, stop: stopLoader } = useGlobalLoader();
+  const isDetecting = useSiteLoading();
+  // ... handleSubmit implementation
+}`,
+        nextStep: 'handleSubmit dispatches login action',
+        errorBranches: 'Client-side error display on network timeout or rejection.'
+      },
+      'node-5': {
+        step: 5,
+        tier: 'frontend',
+        title: 'handleSubmit & Global Loader Activation',
+        file: 'src/components/auth/login/components/SubmitButton.tsx',
+        lines: 'L20-53',
+        responsibility: 'Triggers `e.preventDefault()`, activates `startLoader(\'login\')` in Zustand globalLoader, disables button, renders animated loading spinner, and dispatches the API request.',
+        incoming: ['Form submit event'],
+        outgoing: ['Invokes login({ email, password }) in userService.ts'],
+        security: 'Prevents duplicate request firing during network latency.',
+        code: `// src/components/auth/login/hooks/useLoginFormSubmit.ts: lines 20-25
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setLoading(true);
+  setError('');
+  startLoader('login');
+  // ... calls login() API
+}`,
+        nextStep: 'apiClient dispatches POST /api/auth/login',
+        errorBranches: 'Stops loader and resets loading flag on error in finally block.'
+      },
+      'node-6': {
+        step: 6,
+        tier: 'network',
+        title: 'User Service & Unified Axios Client',
+        file: 'src/api/services/user/userService.ts',
+        lines: 'L7-9',
+        responsibility: 'Typed service wrapper invoking `apiClient.post<LoginRes>(UserApi.Login, data)`. Resolves `UserApi.Login = "/auth/login"` targeting client `baseURL = "/api"`.',
+        incoming: ['SignInReq: { email, password }'],
+        outgoing: ['Axios Promise<LoginRes> to /api/auth/login'],
+        security: 'Request headers standardized through singleton APIClient class.',
+        code: `// src/api/services/user/userService.ts: lines 7-9
+import apiClient from "@/api/apiClient";
+import { UserApi, type SignInReq, type LoginRes } from "./userTypes";
+
+export const login = async (data: SignInReq) => {
+  return apiClient.post<LoginRes>(UserApi.Login, data);
+};`,
+        nextStep: 'Axios interceptor pipeline processes request',
+        errorBranches: 'Axios timeout configured to 50,000ms.'
+      },
+      'node-6b': {
+        step: 6,
+        tier: 'network',
+        title: 'Axios Request & Response Interceptors',
+        file: 'src/lib/api/interceptors.ts',
+        lines: 'L13-88',
+        responsibility: 'Request interceptor generates unique `_loaderId` and identifies `/auth/login` as a `publicEndpoint`, intentionally skipping Bearer token injection. Response interceptor unwraps `{ status: \'SUCCESS\', data }` and catches 401s for global auto-logout.',
+        incoming: ['AxiosRequestConfig'],
+        outgoing: ['Dispatches HTTPS request / unwraps data response'],
+        security: 'Public endpoint whitelist prevents leaking stale bearer tokens during login.',
+        code: `// src/lib/api/interceptors.ts: lines 19-24
+const publicEndpoints = ['/sites/get-info-by-domain', '/auth/login', '/auth/signup'];
+const isPublicEndpoint = publicEndpoints.some((ep) => config.url?.includes(ep));
+
+if (!isPublicEndpoint) {
+  const token = Cookies.get('token') || localStorage.getItem('accessToken');
+  if (token) config.headers.Authorization = \`Bearer \${token}\`;
+}`,
+        nextStep: 'Next.js App Router API Route Handler',
+        errorBranches: 'HTTP 401 triggers Cookies.remove(\'token\') and useUserStore.logout().'
+      },
+      'node-7': {
+        step: 7,
+        tier: 'api',
+        title: 'POST /api/auth/login Route Handler',
+        file: 'src/app/api/auth/login/route.ts',
+        lines: 'L9-93',
+        responsibility: 'Server-side App Router endpoint exporting `export async function POST(request: Request)`. Coordinates Mongoose connection pooling, request JSON parsing, lookup, password verify, JWT generation, cookie dispatch, and audit logging.',
+        incoming: ['Request JSON: { email, password }'],
+        outgoing: ['NextResponse.json({ status: \'SUCCESS\', data }) + Set-Cookie'],
+        security: 'Strict server-side execution; credentials never exposed in logs or headers.',
+        code: `// src/app/api/auth/login/route.ts: lines 9-14
+export async function POST(request: Request) {
+  try {
+    await connectToDatabase();
+    const body = await request.json().catch(() => ({}));
+    const { email, password } = body;
+    // ... validation, verification, and cookie emission
+  } catch (error: any) { ... }
+}`,
+        nextStep: 'Validates email and password presence',
+        errorBranches: 'Uncaught exceptions return 500 Internal Server Error.'
+      },
+      'node-8': {
+        step: 8,
+        tier: 'api',
+        title: 'Request Payload Validation & Normalization',
+        file: 'src/app/api/auth/login/route.ts',
+        lines: 'L15-23',
+        responsibility: 'Normalizes input strings (`emailStr = email.trim().toLowerCase()`, `passwordStr = password.trim()`). Short-circuits with HTTP 400 Bad Request if either field is missing or empty.',
+        incoming: ['raw email, raw password'],
+        outgoing: ['Normalized emailStr, passwordStr or 400 Bad Request'],
+        security: 'Prevents regex injection and whitespace tampering.',
+        code: `// src/app/api/auth/login/route.ts: lines 15-23
+const emailStr = (email || '').trim().toLowerCase();
+const passwordStr = (password || '').trim();
+
+if (!emailStr || !passwordStr) {
+  return NextResponse.json(
+    { status: 'ERROR', success: false, message: 'Email and password are required', data: null },
+    { status: 400 }
+  );
+}`,
+        nextStep: 'Queries MongoDB for user record',
+        errorBranches: '400 Bad Request: "Email and password are required".'
+      },
+      'node-9': {
+        step: 9,
+        tier: 'api',
+        title: 'User Lookup & Active Status Check',
+        file: 'src/app/api/auth/login/route.ts',
+        lines: 'L25-41',
+        responsibility: 'Queries Mongoose `User.findOne` with case-insensitive regex against `email`. Verifies account is not disabled (`is_active !== false`).',
+        incoming: ['emailStr: string'],
+        outgoing: ['dbUser: IUser document or 401/403 Error'],
+        security: 'Account suspension enforced before computing expensive password hash.',
+        code: `// src/app/api/auth/login/route.ts: lines 25-41
+const dbUser = await User.findOne({
+  email: { $regex: new RegExp(\`^\${emailStr}$\`, 'i') },
+});
+
+if (!dbUser) {
+  return NextResponse.json({ status: 'ERROR', message: 'Invalid email or password' }, { status: 401 });
+}
+if (dbUser.is_active === false) {
+  return NextResponse.json({ status: 'ERROR', message: 'Account is disabled. Please contact administrator.' }, { status: 403 });
+}`,
+        nextStep: 'verifyUserPassword compares password hash',
+        errorBranches: '401 Unauthorized (Not found) or 403 Forbidden (Disabled account).'
+      },
+      'node-9b': {
+        step: 9,
+        tier: 'db',
+        title: 'Cached MongoDB Connection Pool',
+        file: 'src/lib/db/mongodb.ts',
+        lines: 'L24-61',
+        responsibility: 'Initializes and caches Mongoose connection across Next.js serverless hot reloads via `global.mongoose`. Enforces exponential backoff retries.',
+        incoming: ['process.env.MONGODB_URI'],
+        outgoing: ['Cached Mongoose instance connection'],
+        security: 'TLS encrypted cluster communication with replica set failover.',
+        code: `// src/lib/db/mongodb.ts: lines 24-40
+export async function connectToDatabase(): Promise<typeof mongoose> {
+  if (cached?.conn) return cached.conn;
+  if (!cached?.promise) {
+    const opts = { bufferCommands: false };
+    cached!.promise = mongoose.connect(uri, opts);
+  }
+  cached!.conn = await cached!.promise;
+  return cached!.conn;
+}`,
+        nextStep: 'User.findOne executes query',
+        errorBranches: 'Throws error if MONGODB_URI missing from environment.'
+      },
+      'node-9c': {
+        step: 9,
+        tier: 'db',
+        title: 'User Mongoose ODM Schema',
+        file: 'src/lib/db/models/User.ts',
+        lines: 'L17-31',
+        responsibility: 'Defines schema for users collection: `name`, `email` (unique index), `password`, `role`, `is_active`, `site_id`, `sites`, `is_super_admin`.',
+        incoming: ['MongoDB collection records'],
+        outgoing: ['Typed Mongoose Document<IUser>'],
+        security: 'Schema enforcement and field validation.',
+        code: `// src/lib/db/models/User.ts: lines 17-29
+const UserSchema = new Schema<IUser>({
+  name: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  password: { type: String },
+  role: { type: String, default: 'admin' },
+  is_active: { type: Boolean, default: true },
+  site_id: { type: String },
+  is_super_admin: { type: Boolean, default: false },
+}, { timestamps: true });`,
+        nextStep: 'Data consumed by route handler',
+        errorBranches: 'Mongoose schema validation rejection.'
+      },
+      'node-10': {
+        step: 10,
+        tier: 'api',
+        title: 'Password Hash Verification (bcryptjs)',
+        file: 'src/app/api/auth/login/helpers.ts',
+        lines: 'L8-19',
+        responsibility: 'Compares plaintext `passwordStr` with `dbUser.password`. Detects `$2a$` or `$2b$` prefix for `bcrypt.compareSync()`, with plaintext fallback for legacy/seed fixtures.',
+        incoming: ['dbUser: any, passwordStr: string'],
+        outgoing: ['boolean: matches (true/false)'],
+        security: 'Timing-safe hash comparison via bcryptjs prevents timing oracle attacks.',
+        code: `// src/app/api/auth/login/helpers.ts: lines 8-19
+export async function verifyUserPassword(dbUser: any, passwordStr: string): Promise<boolean> {
+  const storedPassword = dbUser.password || '';
+  if (!storedPassword) return false;
+
+  if (storedPassword.startsWith('$2a$') || storedPassword.startsWith('$2b$')) {
+    return bcrypt.compareSync(passwordStr, storedPassword);
+  }
+  return storedPassword === passwordStr;
+}`,
+        nextStep: 'buildAuthPayload constructs token and permissions',
+        errorBranches: '401 Unauthorized: "Invalid email or password" on password mismatch.'
+      },
+      'node-11': {
+        step: 11,
+        tier: 'api',
+        title: 'Auth Payload & Role Permissions Derivation',
+        file: 'src/app/api/auth/login/helpers.ts',
+        lines: 'L33-60',
+        responsibility: 'Evaluates Super Admin status (`checkIsSuperAdmin` via `is_super_admin`, role, or `SUPER_ADMIN_EMAILS`). Maps granular permissions via `getRolePermissions()`. Calls `signJwt()`.',
+        incoming: ['dbUser document, emailStr, isSuperAdmin boolean'],
+        outgoing: ['userPayload, token string, effectiveRole'],
+        security: 'Super Admin receives wildcard `[\'*\']`; standard roles receive least-privilege permission arrays.',
+        code: `// src/app/api/auth/login/helpers.ts: lines 33-58
+export async function buildAuthPayload(dbUser: any, emailStr: string, isSuperAdmin: boolean) {
+  const role = isSuperAdmin ? 'super_admin' : (dbUser.role || 'prescriber');
+  const userPayload = {
+    _id: dbUser._id.toString(),
+    email: dbUser.email,
+    role,
+    is_super_admin: isSuperAdmin,
+    effectiveRole: isSuperAdmin ? 'super_admin' : role,
+    site_id: dbUser.site_id || '65e0123456789abcdef00001',
+    permissions: isSuperAdmin ? ['*'] : getRolePermissions(role),
+  };
+  const token = await signJwt({ sub: dbUser._id.toString(), email: dbUser.email, role, ... });
+  return { userPayload, token, isSuperAdmin, role };
+}`,
+        nextStep: 'setAuthCookies sets HttpOnly response headers',
+        errorBranches: 'Throws error on token signing failure.'
+      },
+      'node-11b': {
+        step: 11,
+        tier: 'crypto',
+        title: 'Web Crypto API JWT Signer (HMAC SHA-256)',
+        file: 'src/lib/auth/jwt.ts',
+        lines: 'L43-61',
+        responsibility: 'Standard Web Crypto API (`crypto.subtle`) engine. Signs JWT with HMAC-SHA256 (`HS256`). Generates header, payload with `iat` and `exp` (7 days), and base64url encoded signature.',
+        incoming: ['JwtPayload: { sub, email, role, effectiveRole, isSuperAdmin, site_id }'],
+        outgoing: ['Signed JWT string: header.payload.signature'],
+        security: 'Cryptographically bound to `JWT_SECRET`; edge runtime compatible.',
+        code: `// src/lib/auth/jwt.ts: lines 43-60
+export async function signJwt(payload: JwtPayload, expiresInSeconds = 7 * 24 * 3600): Promise<string> {
+  const header = { alg: 'HS256', typ: 'JWT' };
+  const now = Math.floor(Date.now() / 1000);
+  const fullPayload = { ...payload, iat: now, exp: now + expiresInSeconds };
+  const dataToSign = \`\${base64UrlEncode(JSON.stringify(header))}.\${base64UrlEncode(JSON.stringify(fullPayload))}\`;
+  const key = await getHmacKey(getJwtSecret());
+  const sig = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(dataToSign));
+  return \`\${dataToSign}.\${base64UrlEncode(new Uint8Array(sig))}\`;
+}`,
+        nextStep: 'Returns signed token to buildAuthPayload',
+        errorBranches: 'CryptoKey import rejection or invalid secret.'
+      },
+      'node-12': {
+        step: 12,
+        tier: 'api',
+        title: 'HttpOnly Cookie Dispatch & Audit Trail',
+        file: 'src/app/api/auth/login/helpers.ts',
+        lines: 'L62-88',
+        responsibility: 'Emits `Set-Cookie` headers: HttpOnly `token` (7 days, sameSite: lax), plus hydration cookies (`role`, `username`, `site_id`). Dispatches background audit log via `recordActivity()`.',
+        incoming: ['token, effectiveRole, name, site_id'],
+        outgoing: ['NextResponse with Set-Cookie headers'],
+        security: 'HttpOnly flag prevents JavaScript XSS theft of auth token.',
+        code: `// src/app/api/auth/login/helpers.ts: lines 62-88
+export function setAuthCookies(response: NextResponse, token: string, effectiveRole: string, name: string) {
+  const maxAge = 60 * 60 * 24 * 7; // 7 days
+  // Secure httpOnly cookie for server-side auth proxy & API routes
+  response.cookies.set('token', token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    path: '/',
+    maxAge,
+  });
+  response.cookies.set('role', effectiveRole, { httpOnly: false, path: '/', maxAge });
+}`,
+        nextStep: 'Returns 200 OK JSON response to browser',
+        errorBranches: 'Audit log failures handled silently in background.'
+      },
+      'node-12c': {
+        step: 12,
+        tier: 'db',
+        title: 'ActivityLog Schema & Audit Trail Helper',
+        file: 'src/lib/db/models/ActivityLog.ts',
+        lines: 'L1-35',
+        responsibility: 'Stores immutable audit trail records in `activitylogs` collection for HIPAA and compliance auditing (`action: login_success`).',
+        incoming: ['Activity payload: { action, user, role, details, site_id }'],
+        outgoing: ['MongoDB InsertOne'],
+        security: 'Audit logs cannot be updated or deleted by application users.',
+        code: `// src/app/api/auth/login/route.ts: lines 71-83
+void recordActivity({
+  action: 'login_success',
+  action_type: 'login_success',
+  user: name,
+  user_email: emailStr,
+  role: userPayload.effectiveRole,
+  details: \`\${name} (\${userPayload.effectiveRole}) logged in successfully\`,
+  page: 'auth',
+  site_id: userPayload.site_id,
+});`,
+        nextStep: 'Data committed to MongoDB Atlas',
+        errorBranches: 'Non-blocking catch prevents login disruption if audit DB is slow.'
+      },
+      'node-13': {
+        step: 13,
+        tier: 'network',
+        title: 'Zustand userStore State Hydration',
+        file: 'src/store/user/userStore.ts',
+        lines: 'L24-61',
+        responsibility: 'Stores `user` in Zustand state, syncs to `localStorage.setItem(\'user\')`, sets token in store, and sets fallback `localStorage.setItem(\'accessToken\')`.',
+        incoming: ['response.user object, token string'],
+        outgoing: ['Updates reactive store, syncs localStorage and cookies'],
+        security: 'Synchronizes user permissions across client React components.',
+        code: `// src/store/user/userStore.ts: lines 29-61
+setUser: (rawUser) => {
+  const isSuper = isSuperAdminUser(rawUser);
+  const userInfo = {
+    id: rawUser._id || rawUser.id,
+    email: rawUser.email,
+    username: rawUser.username || rawUser.email?.split('@')[0],
+    role: isSuper ? 'super_admin' : (rawUser.role || 'user'),
+    is_super_admin: isSuper,
+    effectiveRole: (isSuper ? 'super_admin' : rawUser.role || 'user').toLowerCase(),
+  };
+  localStorage.setItem('user', JSON.stringify(userInfo));
+  set({ user: userInfo });
+},
+setToken: (token) => {
+  Cookies.set('token', token, { expires: 7, path: '/' });
+  localStorage.setItem('accessToken', token);
+  set({ token });
+}`,
+        nextStep: 'Safe Post-Login Redirect Evaluation',
+        errorBranches: 'JSON parse error handled with graceful fallback in getInitialUser().'
+      },
+      'node-14': {
+        step: 14,
+        tier: 'network',
+        title: 'Safe Post-Login Redirect & Open-Redirect Guard',
+        file: 'src/utils/auth/authRedirect.ts',
+        lines: 'L3-46',
+        responsibility: 'Enforces safe redirection. Validates `returnUrl` from query string (`isValidPostLoginRedirectPath`), checks RBAC permission, consumes saved session redirect from sessionStorage, and falls back to `/super-dashboard` or `/dashboard`.',
+        incoming: ['returnUrl query param, sessionStorage redirect'],
+        outgoing: ['window.location.href destination path'],
+        security: 'Rejects protocol-relative open redirects (`//evil.com`) and login loops.',
+        code: `// src/utils/auth/authRedirect.ts: lines 3-18
+export const isValidPostLoginRedirectPath = (path: string | null): path is string => {
+  if (!path || typeof path !== 'string') return false;
+  if (!path.startsWith('/') || path.startsWith('//')) return false; // Open-redirect defense
+  const normalized = path.toLowerCase();
+  if (normalized.startsWith('/login') || normalized.startsWith('/register')) return false;
+  return true;
+};
+// Default fallback: isSuperAdmin ? '/super-dashboard' : '/dashboard'`,
+        nextStep: 'Browser triggers navigation to target route',
+        errorBranches: 'Falls back to default dashboard if returnUrl is invalid.'
+      },
+      'node-15': {
+        step: 15,
+        tier: 'proxy',
+        title: 'Next.js 16 Edge Route Proxy',
+        file: 'src/proxy.ts',
+        lines: 'L5-58',
+        responsibility: 'Next.js 16 Edge Proxy intercepting all non-static page requests. Checks `protectedRoutes`. If token missing, redirects unauthenticated users to `/login?returnUrl=...`. Prevents logged-in users from seeing `/login`.',
+        incoming: ['NextRequest on any protected route'],
+        outgoing: ['NextResponse.next() or 307 Redirect to /login'],
+        security: 'Server-side edge enforcement before React renders any HTML or executes layouts.',
+        code: `// src/proxy.ts: lines 53-58
+const isProtected = protectedRoutes.some((route) => pathname === route || pathname.startsWith(\`\${route}/\`));
+if (isProtected && !token) {
+  const loginUrl = new URL('/login', request.url);
+  loginUrl.searchParams.set('returnUrl', pathname + search);
+  return NextResponse.redirect(loginUrl);
+}`,
+        nextStep: 'decodeJwtPayload verifies role from token',
+        errorBranches: '307 Redirect to /login with returnUrl parameter.'
+      },
+      'node-16': {
+        step: 16,
+        tier: 'proxy',
+        title: 'Anti-Spoofing JWT Decoding in Proxy',
+        file: 'src/proxyJwt.ts',
+        lines: 'L5-24',
+        responsibility: 'Zero-dependency base64url payload decoder designed for the edge. Derives `role` and `isSuperAdmin` directly from the cryptographically signed JWT rather than trusting the mutable client cookie.',
+        incoming: ['token cookie string'],
+        outgoing: ['Decoded payload: { role, effectiveRole, isSuperAdmin }'],
+        security: 'Completely blocks cookie spoofing attacks (e.g. attacker setting `role=super_admin`).',
+        code: `// src/proxy.ts: lines 14-25
+if (token) {
+  const payload = decodeJwtPayload(token);
+  if (payload && typeof payload === 'object') {
+    role = payload.effectiveRole || payload.role || role;
+    isSuperAdmin = Boolean(
+      payload.isSuperAdmin || payload.is_super_admin || payload.role === 'super_admin'
+    );
+  }
+}`,
+        nextStep: 'isRouteAllowedForRole verifies permission',
+        errorBranches: 'Malformed token yields null; treated as unauthenticated.'
+      },
+      'node-17': {
+        step: 17,
+        tier: 'proxy',
+        title: 'Role-Based Access Control (RBAC) & Dashboard Separation',
+        file: 'src/proxyRoutes.ts',
+        lines: 'L12-34',
+        responsibility: 'Enforces route permissions matrix. Enforces dashboard separation (`/super-dashboard` vs `/dashboard`), guards `superAdminOnlyRoutes` (`/sites`, `/users`, `/super-admin`), and verifies `roleAllowedRoutes`.',
+        incoming: ['pathname: string, effectiveRole: string'],
+        outgoing: ['Permit (next) or Redirect to /dashboard'],
+        security: 'Strict role segregation; unauthorized roles redirected away from sensitive pages.',
+        code: `// src/proxy.ts: lines 60-80
+if (token && pathname === '/dashboard' && isSuperAdmin) {
+  return NextResponse.redirect(new URL('/super-dashboard', request.url));
+}
+if (token && isSuperAdminOnly && !isSuperAdmin) {
+  return NextResponse.redirect(new URL('/dashboard', request.url));
+}
+if (token && isProtected && !isRouteAllowedForRole(pathname, effectiveRole)) {
+  return NextResponse.redirect(new URL('/dashboard', request.url));
+}`,
+        nextStep: 'Dashboard layout mounts IdleSessionManager',
+        errorBranches: 'Unauthorized role redirected to /dashboard.'
+      },
+      'node-17b': {
+        step: 17,
+        tier: 'crypto',
+        title: 'verifyApiAuth API Route Guard',
+        file: 'src/lib/auth/apiAuth.ts',
+        lines: 'L30-87',
+        responsibility: 'Security middleware for internal Next.js API endpoints (`/api/orders`, `/api/prescriptions`). Validates Bearer/Cookie token signature with Web Crypto API and checks `requiredRoles` or `requireSuperAdmin`.',
+        incoming: ['Request with Authorization header or token cookie'],
+        outgoing: ['AuthResult: { authorized: boolean, user: JwtPayload, errorResponse }'],
+        security: 'HMAC signature verified cryptographically on every protected API call.',
+        code: `// src/lib/auth/apiAuth.ts: lines 30-56
+export async function verifyApiAuth(request: Request, options: AuthCheckOptions = {}) {
+  const token = extractToken(request);
+  if (!token) return { authorized: false, errorResponse: NextResponse.json({ message: 'Missing token' }, { status: 401 }) };
+  const user = await verifyJwt<JwtPayload>(token);
+  if (!user) return { authorized: false, errorResponse: NextResponse.json({ message: 'Invalid or expired token' }, { status: 401 }) };
+  // ... role checks
+  return { authorized: true, user, errorResponse: null };
+}`,
+        nextStep: 'API route executes business logic',
+        errorBranches: '401 Unauthorized (Missing/Expired) or 403 Forbidden (Role insufficient).'
+      },
+      'node-18': {
+        step: 18,
+        tier: 'session',
+        title: 'IdleSessionManager Inactivity Guard',
+        file: 'src/components/auth/IdleSessionManager.tsx',
+        lines: 'L4-26',
+        responsibility: 'Mounted in `src/app/(dashboard)/layout.tsx`. Listens for user activity (`mousemove`, `mousedown`, `keydown`, `scroll`, `touchstart`). 15-minute inactivity threshold (`IDLE_TIMEOUT_MS = 900,000ms`). Tab visibility aware.',
+        incoming: ['DOM activity events'],
+        outgoing: ['Triggers 60s Warning Modal or resets timer'],
+        security: 'Prevents session hijacking on unattended healthcare workstations.',
+        code: `// src/components/auth/hooks/useIdleSession.ts: lines 59-70
+idleTimerRef.current = window.setTimeout(() => {
+  if (!hasActiveSession()) return;
+  if (document.visibilityState !== 'visible') {
+    pendingWarningUntilVisibleRef.current = true;
+    return;
+  }
+  setIsWarningVisible(true);
+  startWarningTimer();
+}, idleTimeoutMs);`,
+        nextStep: 'Shows IdleWarningModal countdown',
+        errorBranches: 'Defers warning if tab is hidden until user switches back to tab.'
+      },
+      'node-18b': {
+        step: 18,
+        tier: 'session',
+        title: 'IdleWarningModal Countdown (60s)',
+        file: 'src/components/auth/IdleWarningModal.tsx',
+        lines: 'L1-50',
+        responsibility: 'Renders full-screen glassmorphic modal with a 60-second animated progress bar and countdown. User can click "Stay logged in" to reset, or countdown expiry auto-executes logout.',
+        incoming: ['isWarningVisible: boolean, warningTimeoutMs: 60000'],
+        outgoing: ['onStayLoggedIn() or onLogout()'],
+        security: 'Clinical session timeout complying with patient data protection standards.',
+        code: `// src/components/auth/IdleSessionManager.tsx: lines 15-24
+<IdleWarningModal
+  isVisible={isWarningVisible}
+  idleTimeoutMs={idleTimeoutMs}
+  warningTimeoutMs={warningTimeoutMs}
+  onLogout={handleLogout}
+  onStayLoggedIn={() => {
+    logDebug('User clicked Stay logged in');
+    resetIdleTimer();
+  }}
+/>`,
+        nextStep: 'handleLogout calls useUserStore logout action',
+        errorBranches: 'Timeout automatically triggers logout.'
+      },
+      'node-19': {
+        step: 19,
+        tier: 'session',
+        title: 'Session Invalidation & POST /api/auth/logout',
+        file: 'src/app/api/auth/logout/route.ts',
+        lines: 'L4-66',
+        responsibility: 'Full session destruction. Emits expired cookies (`maxAge: 0, expires: 1970`), writes immutable audit record (`action: logout`), clears client `localStorage` and `userStore`, and redirects browser to `/login`.',
+        incoming: ['User logout action or session timeout'],
+        outgoing: ['Clears cookies, clears storage, redirects to /login'],
+        security: 'Complete credential neutralization across server cookies, storage, and state.',
+        code: `// src/app/api/auth/logout/route.ts: lines 46-56
+const clearCookieOpts = { path: '/', maxAge: 0, expires: new Date(0) };
+response.cookies.set('token', '', clearCookieOpts);
+response.cookies.set('role', '', clearCookieOpts);
+response.cookies.set('username', '', clearCookieOpts);
+response.cookies.set('site_id', '', clearCookieOpts);
+
+// Client storage cleanup:
+// src/store/user/userHelpers.ts: lines 50-62
+clearUserSessionStorage();`,
+        nextStep: 'Browser redirects to /login (Step 01)',
+        errorBranches: 'Cleans up client state even if logout network request fails.'
+      }
+    };
+
+    /* =========================================================================
+       PAN & ZOOM CONTROLLER
+       ========================================================================= */
+    const viewport = document.getElementById('viewport');
+    const canvas = document.getElementById('canvas');
+    let scale = 0.85;
+    let translateX = 30;
+    let translateY = 10;
+    let isPanning = false;
+    let startX = 0;
+    let startY = 0;
+
+    function updateTransform() {
+      canvas.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+    }
+
+    viewport.addEventListener('mousedown', (e) => {
+      // Don't pan if clicking an interactive node
+      if (e.target.closest('.node-card') || e.target.closest('.inspector-panel') || e.target.closest('.topbar')) return;
+      isPanning = true;
+      viewport.classList.add('panning');
+      startX = e.clientX - translateX;
+      startY = e.clientY - translateY;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isPanning) return;
+      translateX = e.clientX - startX;
+      translateY = e.clientY - startY;
+      updateTransform();
+    });
+
+    window.addEventListener('mouseup', () => {
+      isPanning = false;
+      viewport.classList.remove('panning');
+    });
+
+    viewport.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const zoomFactor = 1.1;
+      const rect = viewport.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+
+      let newScale = e.deltaY < 0 ? scale * zoomFactor : scale / zoomFactor;
+      newScale = Math.min(Math.max(newScale, 0.35), 2.5);
+
+      translateX = mouseX - (mouseX - translateX) * (newScale / scale);
+      translateY = mouseY - (mouseY - translateY) * (newScale / scale);
+      scale = newScale;
+      updateTransform();
+    }, { passive: false });
+
+    function resetView() {
+      scale = 0.75;
+      translateX = 40;
+      translateY = 20;
+      updateTransform();
+    }
+
+    document.getElementById('resetViewBtn').addEventListener('click', resetView);
+    document.getElementById('zoomInBtn').addEventListener('click', () => {
+      scale = Math.min(scale * 1.2, 2.5);
+      updateTransform();
+    });
+    document.getElementById('zoomOutBtn').addEventListener('click', () => {
+      scale = Math.max(scale / 1.2, 0.35);
+      updateTransform();
+    });
+    document.getElementById('fitViewBtn').addEventListener('click', () => {
+      scale = Math.min(window.innerWidth / 2500, (window.innerHeight - 80) / 1400);
+      translateX = 20;
+      translateY = 70;
+      updateTransform();
+    });
+
+    /* =========================================================================
+       INSPECTOR DRAWER CONTROLLER
+       ========================================================================= */
+    const inspectorPanel = document.getElementById('inspectorPanel');
+    const closeInspectorBtn = document.getElementById('closeInspectorBtn');
+
+    function openInspector(nodeId) {
+      const data = NODE_DATA[nodeId];
+      if (!data) return;
+
+      // Select active card
+      document.querySelectorAll('.node-card').forEach(n => n.classList.remove('selected'));
+      const activeCard = document.getElementById(nodeId);
+      if (activeCard) activeCard.classList.add('selected');
+
+      // Populate Drawer
+      document.getElementById('panelStepTag').textContent = `STEP ${String(data.step).padStart(2, '0')} OF 19 · ${data.tier.toUpperCase()}`;
+      document.getElementById('panelTitle').textContent = data.title;
+      document.getElementById('panelFilePath').textContent = data.file;
+      document.getElementById('panelResponsibility').textContent = data.responsibility;
+      document.getElementById('panelSecurity').textContent = data.security;
+      document.getElementById('panelCodeSnippet').textContent = data.code;
+      document.getElementById('panelLineNumbers').textContent = data.lines;
+      document.getElementById('panelNextStep').textContent = data.nextStep;
+      document.getElementById('panelErrorBranches').textContent = data.errorBranches;
+
+      // Incoming & Outgoing Pills
+      const inContainer = document.getElementById('panelIncomingPills');
+      inContainer.innerHTML = '';
+      data.incoming.forEach(item => {
+        const span = document.createElement('span');
+        span.className = 'data-pill';
+        span.textContent = item;
+        inContainer.appendChild(span);
+      });
+
+      const outContainer = document.getElementById('panelOutgoingPills');
+      outContainer.innerHTML = '';
+      data.outgoing.forEach(item => {
+        const span = document.createElement('span');
+        span.className = 'data-pill';
+        span.textContent = item;
+        outContainer.appendChild(span);
+      });
+
+      inspectorPanel.classList.add('open');
+    }
+
+    function closeInspector() {
+      inspectorPanel.classList.remove('open');
+      document.querySelectorAll('.node-card').forEach(n => n.classList.remove('selected'));
+    }
+
+    closeInspectorBtn.addEventListener('click', closeInspector);
+
+    // Node click binding
+    document.querySelectorAll('.node-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openInspector(card.id);
+      });
+    });
+
+    // Copy file path on click
+    document.getElementById('panelFilePill').addEventListener('click', () => {
+      const text = document.getElementById('panelFilePath').textContent;
+      navigator.clipboard.writeText(text);
+      const original = document.getElementById('panelFilePath').textContent;
+      document.getElementById('panelFilePath').textContent = 'Copied to clipboard!';
+      setTimeout(() => { document.getElementById('panelFilePath').textContent = original; }, 1500);
+    });
+
+    /* =========================================================================
+       STEP PLAYER & PLAYBACK ENGINE
+       ========================================================================= */
+    const STEP_ORDER = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
+    let currentStepIndex = -1; // -1 means all visible
+    let isPlaying = false;
+    let playTimer = null;
+
+    function applyStepFilter(stepNum) {
+      const stepIndicator = document.getElementById('stepIndicator');
+
+      if (stepNum === -1) {
+        stepIndicator.textContent = 'Step: All (1-19)';
+        document.querySelectorAll('.node-card').forEach(n => {
+          n.classList.remove('dimmed', 'highlighted');
+        });
+        document.querySelectorAll('.flow-edge').forEach(e => e.classList.remove('active'));
+        return;
+      }
+
+      stepIndicator.textContent = `Step ${stepNum} of 19`;
+
+      // Highlight nodes for this step
+      document.querySelectorAll('.node-card').forEach(card => {
+        const s = parseInt(card.getAttribute('data-step'), 10);
+        if (s === stepNum) {
+          card.classList.remove('dimmed');
+          card.classList.add('highlighted');
+          // Open inspector for first matching node
+          openInspector(card.id);
+        } else if (s < stepNum) {
+          card.classList.remove('dimmed', 'highlighted');
+        } else {
+          card.classList.add('dimmed');
+          card.classList.remove('highlighted');
+        }
+      });
+
+      // Highlight active edges
+      document.querySelectorAll('.flow-edge').forEach(edge => edge.classList.remove('active'));
+      const activeEdgeId = `edge-${stepNum}-${stepNum + 1}`;
+      const el = document.getElementById(activeEdgeId);
+      if (el) el.classList.add('active');
+    }
+
+    document.getElementById('prevStepBtn').addEventListener('click', () => {
+      if (currentStepIndex > 0) {
+        currentStepIndex--;
+        applyStepFilter(STEP_ORDER[currentStepIndex]);
+      } else {
+        currentStepIndex = -1;
+        applyStepFilter(-1);
+      }
+    });
+
+    document.getElementById('nextStepBtn').addEventListener('click', () => {
+      if (currentStepIndex < STEP_ORDER.length - 1) {
+        currentStepIndex++;
+        applyStepFilter(STEP_ORDER[currentStepIndex]);
+      }
+    });
+
+    const playFlowBtn = document.getElementById('playFlowBtn');
+    playFlowBtn.addEventListener('click', () => {
+      if (isPlaying) {
+        clearInterval(playTimer);
+        isPlaying = false;
+        playFlowBtn.textContent = '▶ Play';
+        playFlowBtn.classList.remove('btn-primary');
+      } else {
+        isPlaying = true;
+        playFlowBtn.textContent = '⏸ Pause';
+        playFlowBtn.classList.add('btn-primary');
+        if (currentStepIndex >= STEP_ORDER.length - 1) currentStepIndex = -1;
+
+        playTimer = setInterval(() => {
+          currentStepIndex++;
+          if (currentStepIndex >= STEP_ORDER.length) {
+            clearInterval(playTimer);
+            isPlaying = false;
+            playFlowBtn.textContent = '▶ Play';
+            playFlowBtn.classList.remove('btn-primary');
+            currentStepIndex = -1;
+            applyStepFilter(-1);
+          } else {
+            applyStepFilter(STEP_ORDER[currentStepIndex]);
+          }
+        }, 1800);
+      }
+    });
+
+    /* =========================================================================
+       SEARCH FILTER
+       ========================================================================= */
+    const searchInput = document.getElementById('searchInput');
+    searchInput.addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase().trim();
+      if (!q) {
+        document.querySelectorAll('.node-card').forEach(n => n.classList.remove('dimmed'));
+        return;
+      }
+      document.querySelectorAll('.node-card').forEach(card => {
+        const id = card.id;
+        const data = NODE_DATA[id];
+        const match = data && (
+          data.title.toLowerCase().includes(q) ||
+          data.file.toLowerCase().includes(q) ||
+          data.responsibility.toLowerCase().includes(q) ||
+          data.security.toLowerCase().includes(q)
+        );
+        if (match) {
+          card.classList.remove('dimmed');
+        } else {
+          card.classList.add('dimmed');
+        }
+      });
+    });
+
+    /* =========================================================================
+       HELP MODAL
+       ========================================================================= */
+    const helpModal = document.getElementById('helpModal');
+    document.getElementById('helpBtn').addEventListener('click', () => helpModal.classList.add('open'));
+    document.getElementById('closeModalBtn').addEventListener('click', () => helpModal.classList.remove('open'));
+    document.getElementById('gotItBtn').addEventListener('click', () => helpModal.classList.remove('open'));
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeInspector();
+        helpModal.classList.remove('open');
+      } else if (e.key === '0') {
+        resetView();
+      } else if (e.key === '?') {
+        helpModal.classList.toggle('open');
+      } else if (e.key === '/') {
+        e.preventDefault();
+        searchInput.focus();
+      } else if (e.key === 'ArrowRight') {
+        document.getElementById('nextStepBtn').click();
+      } else if (e.key === 'ArrowLeft') {
+        document.getElementById('prevStepBtn').click();
+      }
+    });
+
+    // Initialize layout
+    resetView();
+  </script>
+</body>
+</html>

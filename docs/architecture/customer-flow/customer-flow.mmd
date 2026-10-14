@@ -1,0 +1,65 @@
+%% =========================================================================
+%% MediPulse Healthcare Portal — Dual-Endpoint Customers & Sorting/Filtering Architecture
+%% Standard: Mermaid Flowchart TD
+%% Verified against Next.js 16 App Router & customer/index.ts
+%% =========================================================================
+
+flowchart TD
+    %% Styling Classes
+    classDef clientTier fill:#0e1726,stroke:#38bdf8,stroke-width:2px,color:#f8fafc;
+    classDef paramTier fill:#0b192c,stroke:#818cf8,stroke-width:2px,color:#f8fafc;
+    classDef routerTier fill:#1a102f,stroke:#c084fc,stroke-width:2px,color:#f8fafc;
+    classDef apiTier fill:#09212b,stroke:#2dd4bf,stroke-width:2px,color:#f8fafc;
+    classDef mapperTier fill:#052e16,stroke:#34d399,stroke-width:2px,color:#f8fafc;
+
+    %% -------------------------------------------------------------------------
+    %% 1. PRESENTATION & URL HOOKS TIER
+    %% -------------------------------------------------------------------------
+    subgraph PresentationTier [" 1. Presentation & State Hooks Tier "]
+        direction TB
+        K01["<b>#01. Customers Page Mount</b><br/>src/app/(dashboard)/customers/page.tsx<br/><i>useCustomersPage() custom hook</i>"]:::clientTier
+        K02["<b>#02. Initial State & URL Sync</b><br/>useRef(true) for isInitialLoad<br/><i>useUrlSync() syncs query parameters without reload</i>"]:::clientTier
+        K03["<b>#03. Customer Table Filters</b><br/>Search, Total Pens, Start Date, Sort Column<br/><i>Sort direction normalized via normalizeSortOrder()</i>"]:::clientTier
+
+        K01 --> K02
+        K02 --> K03
+    end
+
+    %% -------------------------------------------------------------------------
+    %% 2. PARAM BUILDER & NORMALIZATION TIER
+    %% -------------------------------------------------------------------------
+    subgraph ParamTier [" 2. Parameter Builder & Sort Normalizer Tier "]
+        direction TB
+        K04["<b>#04. buildCustomerParams()</b><br/>src/api/services/customer/params.ts<br/><i>Normalizes sort: normalizeSortOrder(filters.sort)</i>"]:::paramTier
+        K05{"<b>#05. Dual-Endpoint Routing Condition</b><br/>!hasActiveFilters && !params.sortBy?"}:::routerTier
+
+        K03 --> K04
+        K04 --> K05
+    end
+
+    %% -------------------------------------------------------------------------
+    %% 3. DUAL-ENDPOINT ROUTING TIER
+    %% -------------------------------------------------------------------------
+    subgraph DualEndpointTier [" 3. Dual-Endpoint Dispatch Tier "]
+        direction TB
+        K06_Fast["<b>#06a. Fast Direct List Endpoint</b><br/>GET /orders/customers/list<br/><i>Optimized for initial unfiltered load</i>"]:::apiTier
+        K06_Search["<b>#06b. Advanced Search Endpoint</b><br/>GET /orders/search?type=customers<br/><i>Optimized for multi-field filtering & custom sorting</i>"]:::apiTier
+
+        K05 -- "Yes (Clean State)" --> K06_Fast
+        K05 -- "No (Filters/Sort Active)" --> K06_Search
+    end
+
+    %% -------------------------------------------------------------------------
+    %% 4. MAPPER & BIGINT NORMALIZATION TIER
+    %% -------------------------------------------------------------------------
+    subgraph MapperTier [" 4. Data Mapper & Normalization Tier "]
+        direction TB
+        K07["<b>#07. normalizeCustomer() Mapper</b><br/>src/api/services/customer/mappers.ts<br/><i>Safely normalizes raw API payloads:</i><br/>• BIGINT safe: String(rawId.low ?? rawId)<br/>• Trimmed strings: name, email<br/>• Number casting: totalOrders, totalPens"]:::mapperTier
+        K08["<b>#08. Typed Customer Model</b><br/>src/api/services/customer/types.ts<br/><i>Returns CustomersResponse { customers, total, page, limit }</i>"]:::mapperTier
+        K09["<b>#09. TanStack Table Re-render</b><br/>src/components/customers/CustomersTable.tsx<br/><i>Hydrates table with normalized patient records</i>"]:::clientTier
+
+        K06_Fast --> K07
+        K06_Search --> K07
+        K07 --> K08
+        K08 --> K09
+    end

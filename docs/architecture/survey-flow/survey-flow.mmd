@@ -1,0 +1,66 @@
+%% =========================================================================
+%% MediPulse Healthcare Portal — SurveyJS & Clinical Lead Intake Architecture
+%% Standard: Mermaid Flowchart TD
+%% Verified against Next.js 16 App Router & MongoDB codebase
+%% =========================================================================
+
+flowchart TD
+    %% Styling Classes
+    classDef clientTier fill:#0e1726,stroke:#38bdf8,stroke-width:2px,color:#f8fafc;
+    classDef creatorTier fill:#0b192c,stroke:#818cf8,stroke-width:2px,color:#f8fafc;
+    classDef publicTier fill:#1a102f,stroke:#c084fc,stroke-width:2px,color:#f8fafc;
+    classDef apiTier fill:#09212b,stroke:#2dd4bf,stroke-width:2px,color:#f8fafc;
+    classDef dbTier fill:#052e16,stroke:#34d399,stroke-width:2px,color:#f8fafc;
+
+    %% -------------------------------------------------------------------------
+    %% 1. SURVEY AUTHORING (ADMIN DASHBOARD)
+    %% -------------------------------------------------------------------------
+    subgraph AdminAuthoringTier [" 1. Clinical Survey Designer Tier "]
+        direction TB
+        V01["<b>#01. Survey Creator Mount</b><br/>src/app/(dashboard)/surveys/page.tsx<br/><i>SurveyJS Creator UI (survey-creator-react)</i>"]:::creatorTier
+        V02["<b>#02. JSON Schema Construction</b><br/>Questions: BMI, medical conditions, medication history<br/><i>survey-core model definition</i>"]:::creatorTier
+        V03["<b>#03. POST /api/surveys</b><br/>src/app/api/surveys/route.ts<br/><i>Persists survey schema to MongoDB</i>"]:::apiTier
+
+        V01 --> V02
+        V02 --> V03
+    end
+
+    %% -------------------------------------------------------------------------
+    %% 2. PUBLIC INTAKE & PATIENT RESPONSE
+    %% -------------------------------------------------------------------------
+    subgraph PublicIntakeTier [" 2. Public Patient Intake Tier "]
+        direction TB
+        V04["<b>#04. Patient Accesses Survey Link</b><br/>src/app/(public)/s/[slug]/page.tsx<br/><i>Public questionnaire execution (survey-react-ui)</i>"]:::publicTier
+        V05["<b>#05. Patient Submission</b><br/>Answers medical questionnaire & supplies contact info<br/><i>onComplete() callback triggers submission</i>"]:::publicTier
+        V06["<b>#06. POST /api/surveys/[id]/responses</b><br/>Stores raw patient response data<br/><i>Triggers Lead / Order conversion</i>"]:::apiTier
+
+        V03 -.->|"Generates Public Link /s/:slug"| V04
+        V04 --> V05
+        V05 --> V06
+    end
+
+    %% -------------------------------------------------------------------------
+    %% 3. PERSISTENCE & CONVERSION PIPELINE
+    %% -------------------------------------------------------------------------
+    subgraph ConversionTier [" 3. Lead Conversion & Database Tier "]
+        direction TB
+        DB_Survey["<b>Survey Model</b><br/>src/lib/db/models/Survey.ts<br/><i>schema, slug, currentVersion, settings</i>"]:::dbTier
+        DB_Lead["<b>Lead Model</b><br/>src/lib/db/models/Lead.ts<br/><i>customerName, email, status: 'new'</i>"]:::dbTier
+        DB_Customer["<b>Customer Model</b><br/>src/lib/db/models/Customer.ts<br/><i>Upgrades lead to registered clinical patient</i>"]:::dbTier
+
+        V03 --> DB_Survey
+        V06 --> DB_Lead
+        DB_Lead -->|"Qualified Patient"| DB_Customer
+    end
+
+    %% -------------------------------------------------------------------------
+    %% 4. CLINICAL LEAD MANAGEMENT DASHBOARD
+    %% -------------------------------------------------------------------------
+    subgraph LeadsManagementTier [" 4. Clinical Leads Management Dashboard "]
+        direction TB
+        V07["<b>#07. Leads Dashboard Table</b><br/>src/app/(dashboard)/leads/page.tsx<br/><i>Filters by status ('new', 'contacted', 'qualified')</i>"]:::clientTier
+        V08["<b>#08. GET /api/leads</b><br/>src/app/api/leads/route.ts<br/><i>Fetches populated leads with notes & customer details</i>"]:::apiTier
+
+        DB_Lead -.-> V08
+        V08 --> V07
+    end

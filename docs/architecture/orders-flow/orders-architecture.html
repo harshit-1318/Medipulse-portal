@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediPulse — Orders Lifecycle & Clinical Workflow Architecture</title>
+  <style>
+    :root {
+      --bg-canvas: #070a12;
+      --bg-panel: rgba(13, 20, 36, 0.92);
+      --bg-card: rgba(18, 28, 48, 0.85);
+      --bg-card-hover: rgba(28, 42, 72, 0.95);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-focus: #38bdf8;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      
+      --color-frontend: #38bdf8;
+      --color-network: #818cf8;
+      --color-api: #2dd4bf;
+      --color-db: #34d399;
+      --color-clinical: #fbbf24;
+      --color-error: #f43f5e;
+      
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg-canvas);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+      user-select: none;
+    }
+
+    .topbar {
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 60px;
+      background: rgba(10, 15, 29, 0.88);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 20px; z-index: 100;
+    }
+
+    .brand-section { display: flex; align-items: center; gap: 12px; }
+    .brand-logo { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 1.05rem; color: #38bdf8; }
+    .brand-logo svg { width: 24px; height: 24px; }
+    .badge-sub {
+      font-size: 0.72rem; padding: 3px 8px; border-radius: 9999px;
+      background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.3);
+      color: #7dd3fc; font-family: var(--font-mono);
+    }
+
+    .toolbar-actions { display: flex; align-items: center; gap: 10px; }
+    .step-player {
+      display: flex; align-items: center; background: rgba(18, 28, 48, 0.7);
+      border: 1px solid var(--border-subtle); border-radius: 8px; padding: 3px 6px; gap: 6px;
+    }
+
+    .btn {
+      background: rgba(30, 41, 59, 0.6); border: 1px solid var(--border-subtle);
+      color: var(--text-main); padding: 6px 12px; border-radius: 6px; font-size: 0.8rem;
+      cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.18s ease;
+    }
+    .btn:hover { background: rgba(56, 189, 248, 0.15); border-color: rgba(56, 189, 248, 0.4); color: #38bdf8; }
+    .btn-primary { background: #0284c7; border-color: #38bdf8; color: #fff; }
+
+    .step-indicator { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted); padding: 0 6px; min-width: 90px; text-align: center; }
+
+    .search-box { position: relative; display: flex; align-items: center; }
+    .search-box input {
+      background: rgba(18, 28, 48, 0.7); border: 1px solid var(--border-subtle);
+      border-radius: 6px; color: #fff; font-size: 0.8rem; padding: 6px 10px 6px 30px; width: 180px; transition: all 0.2s;
+    }
+    .search-box input:focus { outline: none; border-color: #38bdf8; width: 230px; background: rgba(18, 28, 48, 0.95); }
+    .search-box svg { position: absolute; left: 9px; width: 14px; height: 14px; color: var(--text-dim); }
+
+    #viewport { width: 100vw; height: 100vh; overflow: hidden; cursor: grab; position: relative; }
+    #viewport.panning { cursor: grabbing; }
+    #canvas { width: 100%; height: 100%; transform-origin: 0 0; position: absolute; top: 0; left: 0; }
+    .bg-grid { fill: none; stroke: rgba(255, 255, 255, 0.035); stroke-width: 1; }
+
+    .tier-boundary { fill: rgba(15, 23, 42, 0.45); stroke-dasharray: 6 6; stroke-width: 1.5; rx: 16; }
+    .tier-label { font-family: var(--font-sans); font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; fill: var(--text-muted); }
+
+    .flow-edge { fill: none; stroke: rgba(148, 163, 184, 0.35); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transition: stroke 0.25s, stroke-width 0.25s; }
+    .flow-edge.active { stroke: #38bdf8 !important; stroke-width: 3.5 !important; filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.6)); }
+
+    .node-card { cursor: pointer; transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
+    .node-card:hover { transform: translateY(-2px); }
+    .node-rect { fill: var(--bg-card); stroke: rgba(255, 255, 255, 0.1); stroke-width: 1.5; rx: 12; transition: all 0.25s ease; }
+    .node-card:hover .node-rect { fill: var(--bg-card-hover); stroke: rgba(56, 189, 248, 0.6); filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.6)); }
+    .node-card.selected .node-rect { stroke: #38bdf8 !important; stroke-width: 2.5 !important; fill: rgba(14, 30, 58, 0.95) !important; filter: drop-shadow(0 0 16px rgba(56, 189, 248, 0.6)) !important; }
+    .node-card.highlighted .node-rect { stroke: #a855f7 !important; stroke-width: 2.5 !important; }
+    .node-card.dimmed { opacity: 0.25; filter: grayscale(80%); }
+
+    .node-title { font-size: 13px; font-weight: 700; fill: #f8fafc; }
+    .node-file { font-family: var(--font-mono); font-size: 10px; fill: #94a3b8; }
+    .node-step-tag { font-family: var(--font-mono); font-size: 10px; font-weight: 700; fill: #38bdf8; }
+
+    .canvas-hud {
+      position: absolute; bottom: 24px; left: 24px; display: flex; flex-direction: column; gap: 8px; z-index: 90;
+      background: var(--bg-panel); backdrop-filter: blur(12px); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 6px;
+    }
+    .hud-btn {
+      width: 34px; height: 34px; border-radius: 6px; background: rgba(30, 41, 59, 0.7);
+      border: 1px solid var(--border-subtle); color: #cbd5e1; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold;
+    }
+    .hud-btn:hover { background: #0284c7; color: #fff; }
+
+    .inspector-panel {
+      position: absolute; top: 60px; right: 0; bottom: 0; width: 460px;
+      background: rgba(10, 16, 30, 0.96); backdrop-filter: blur(20px); border-left: 1px solid var(--border-subtle);
+      transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); z-index: 95;
+      display: flex; flex-direction: column; box-shadow: -15px 0 40px rgba(0, 0, 0, 0.7);
+    }
+    .inspector-panel.open { transform: translateX(0); }
+    .inspector-header { padding: 18px 22px; border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: flex-start; }
+    .close-inspector-btn { background: transparent; border: none; color: var(--text-dim); font-size: 1.4rem; cursor: pointer; }
+    .inspector-body { padding: 22px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 18px; }
+    .inspector-section { background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 14px 16px; }
+    .section-title { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #94a3b8; margin-bottom: 8px; }
+    .section-content { font-size: 0.85rem; line-height: 1.55; color: #e2e8f0; }
+    .code-snippet { background: #050811; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 12px; font-family: var(--font-mono); font-size: 0.75rem; line-height: 1.5; color: #93c5fd; overflow-x: auto; white-space: pre; }
+    .data-pill { background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(255, 255, 255, 0.06); padding: 3px 7px; border-radius: 4px; font-family: var(--font-mono); font-size: 0.72rem; color: #cbd5e1; display: inline-block; margin: 2px; }
+  </style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="brand-section">
+      <div class="brand-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M2 12h20"/></svg>
+        <span>MediPulse</span>
+      </div>
+      <span class="badge-sub">ORDERS & CLINICAL LIFECYCLE</span>
+      <span style="font-size: 0.78rem; color: var(--text-dim);">Next.js 16 App Router · TanStack Table · Mongoose 9</span>
+    </div>
+
+    <div class="toolbar-actions">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="searchInput" placeholder="Search order components...">
+      </div>
+      <div class="step-player">
+        <button class="btn" id="prevStepBtn">◀</button>
+        <span class="step-indicator" id="stepIndicator">Step: All</span>
+        <button class="btn" id="nextStepBtn">▶</button>
+        <button class="btn btn-primary" id="playFlowBtn">▶ Play</button>
+      </div>
+      <button class="btn" id="resetViewBtn">Reset View (0)</button>
+    </div>
+  </header>
+
+  <div id="viewport">
+    <svg id="canvas" viewBox="0 0 2200 1250" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <pattern id="gridPattern" width="40" height="40" patternUnits="userSpaceOnUse">
+          <path d="M 40 0 L 0 0 0 40" class="bg-grid"/>
+        </pattern>
+        <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1 L 9 5 L 0 9 z" fill="#64748b"/>
+        </marker>
+      </defs>
+
+      <rect width="2200" height="1250" fill="url(#gridPattern)" />
+
+      <!-- Tier 1: Presentation Tier -->
+      <g>
+        <rect x="40" y="80" width="370" height="800" class="tier-boundary" stroke="var(--color-frontend)" />
+        <text x="60" y="115" class="tier-label" fill="var(--color-frontend)">1. Presentation Tier (Orders Table & Details)</text>
+      </g>
+
+      <!-- Tier 2: Network & Parameter Normalization -->
+      <g>
+        <rect x="450" y="80" width="360" height="800" class="tier-boundary" stroke="var(--color-network)" />
+        <text x="470" y="115" class="tier-label" fill="var(--color-network)">2. Network & Param Normalization Tier</text>
+      </g>
+
+      <!-- Tier 3: Serverless API Tier -->
+      <g>
+        <rect x="850" y="80" width="380" height="800" class="tier-boundary" stroke="var(--color-api)" />
+        <text x="870" y="115" class="tier-label" fill="var(--color-api)">3. App Router API Handlers Tier</text>
+      </g>
+
+      <!-- Tier 4: Database Persistence Tier -->
+      <g>
+        <rect x="1270" y="80" width="360" height="800" class="tier-boundary" stroke="var(--color-db)" />
+        <text x="1290" y="115" class="tier-label" fill="var(--color-db)">4. Persistence Tier (MongoDB Atlas)</text>
+      </g>
+
+      <!-- Tier 5: Clinical Approval & Dispensing Tier -->
+      <g>
+        <rect x="1670" y="80" width="480" height="800" class="tier-boundary" stroke="var(--color-clinical)" />
+        <text x="1690" y="115" class="tier-label" fill="var(--color-clinical)">5. Clinical Workflow & Status Transitions</text>
+      </g>
+
+      <!-- Connection Edges -->
+      <g id="edges-layer">
+        <path id="edge-1-2" class="flow-edge" marker-end="url(#arrow)" d="M 225 210 L 225 270" />
+        <path id="edge-2-3" class="flow-edge" marker-end="url(#arrow)" d="M 225 350 L 225 410" />
+        <path id="edge-3-4" class="flow-edge" marker-end="url(#arrow)" d="M 225 490 L 225 550" />
+        <path id="edge-4-5" class="flow-edge" marker-end="url(#arrow)" d="M 370 310 L 490 310" />
+        <path id="edge-5-6" class="flow-edge" marker-end="url(#arrow)" d="M 630 350 L 630 430" />
+        <path id="edge-6-7" class="flow-edge" marker-end="url(#arrow)" d="M 770 470 L 890 230" />
+        <path id="edge-7-8" class="flow-edge" marker-end="url(#arrow)" d="M 1040 270 L 1040 370" />
+        <path id="edge-8-9" class="flow-edge" marker-end="url(#arrow)" d="M 1190 410 L 1310 230" />
+        <path id="edge-9-10" class="flow-edge" marker-end="url(#arrow)" d="M 1450 270 L 1450 390" />
+        <path id="edge-10-11" class="flow-edge" marker-end="url(#arrow)" d="M 1630 430 L 1710 230" />
+        <path id="edge-11-12" class="flow-edge" marker-end="url(#arrow)" d="M 1890 270 L 1890 390" />
+      </g>
+
+      <!-- Nodes Layer -->
+      <g id="nodes-layer">
+        <!-- Node 1: Orders Shell -->
+        <g class="node-card" id="onode-1" data-step="1" transform="translate(80, 130)">
+          <rect width="290" height="80" class="node-rect" />
+          <text x="16" y="28" class="node-step-tag">STEP 01 · ROUTE</text>
+          <text x="16" y="48" class="node-title">Orders Dashboard Page Shell</text>
+          <text x="16" y="66" class="node-file">src/app/(dashboard)/orders/all/page.tsx</text>
+        </g>
+
+        <!-- Node 2: useAllOrdersData Hook -->
+        <g class="node-card" id="onode-2" data-step="2" transform="translate(80, 270)">
+          <rect width="290" height="80" class="node-rect" />
+          <text x="16" y="28" class="node-step-tag">STEP 02 · STATE HOOK</text>
+          <text x="16" y="48" class="node-title">useAllOrdersData Hook & URL Sync</text>
+          <text x="16" y="66" class="node-file">src/components/orders-table/.../useAllOrdersData.ts</text>
+        </g>
+
+        <!-- Node 3: Orders Table View -->
+        <g class="node-card" id="onode-3" data-step="3" transform="translate(80, 410)">
+          <rect width="290" height="80" class="node-rect" />
+          <text x="16" y="28" class="node-step-tag">STEP 03 · TABLE UI</text>
+          <text x="16" y="48" class="node-title">TanStack Table & Dynamic Filters</text>
+          <text x="16" y="66" class="node-file">src/components/orders-table/views/...</text>
+        </g>
+
+        <!-- Node 4: Order Details Drawer -->
+        <g class="node-card" id="onode-4" data-step="4" transform="translate(80, 550)">
+          <rect width="290" height="80" class="node-rect" />
+          <text x="16" y="28" class="node-step-tag">STEP 04 · DRAWER</text>
+          <text x="16" y="48" class="node-title">OrderDetailsDrawer & Clinical Info</text>
+          <text x="16" y="66" class="node-file">src/components/order-details/...Drawer.tsx</text>
+        </g>
+
+        <!-- Node 5: buildOrderParams -->
+        <g class="node-card" id="onode-5" data-step="5" transform="translate(490, 270)">
+          <rect width="280" height="80" class="node-rect" />
+          <text x="16" y="28" class="node-step-tag">STEP 05 · NORMALIZER</text>
+          <text x="16" y="48" class="node-title">buildOrderParams (Sort & Filters)</text>
+          <text x="16" y="66" class="node-file">src/api/services/orders/buildParams.ts</text>
+        </g>
+
+        <!-- Node 6: apiClient Fetcher -->
+        <g class="node-card" id="onode-6" data-step="6" transform="translate(490, 430)">
+          <rect width="280" height="80" class="node-rect" />
+          <text x="16" y="28" class="node-step-tag">STEP 06 · AXIOS CLIENT</text>
+          <text x="16" y="48" class="node-title">apiClient.get('/orders')</text>
+          <text x="16" y="66" class="node-file">src/lib/api/client.ts & interceptors</text>
+        </g>
+
+        <!-- Node 7: GET /api/orders -->
+        <g class="node-card" id="onode-7" data-step="7" transform="translate(890, 190)">
+          <rect width="300" height="80" class="node-rect" />
+          <text x="16" y="28" class="node-step-tag">STEP 07 · API ROUTE</text>
+          <text x="16" y="48" class="node-title">GET /api/orders & verifyApiAuth</text>
+          <text x="16" y="66" class="node-file">src/app/api/orders/route.ts</text>
+        </g>
+
+        <!-- Node 8: orderQueryHelper -->
+        <g class="node-card" id="onode-8" data-step="8" transform="translate(890, 370)">
+          <rect width="300" height="80" class="node-rect" />
+          <text x="16" y="28" class="node-step-tag">STEP 08 · QUERY HELPER</text>
+          <text x="16" y="48" class="node-title">buildOrderQuery (Mongoose Query)</text>
+          <text x="16" y="66" class="node-file">src/app/api/orders/orderQueryHelper.ts</text>
+        </g>
+
+        <!-- Node 9: MongoDB Connection -->
+        <g class="node-card" id="onode-9" data-step="9" transform="translate(1310, 190)">
+          <rect width="280" height="80" class="node-rect" />
+          <text x="16" y="28" class="node-step-tag">STEP 09 · CONNECTION</text>
+          <text x="16" y="48" class="node-title">Cached Mongoose Pool</text>
+          <text x="16" y="66" class="node-file">src/lib/db/mongodb.ts</text>
+        </g>
+
+        <!-- Node 10: Order Model & Schema -->
+        <g class="node-card" id="onode-10" data-step="10" transform="translate(1310, 390)">
+          <rect width="280" height="80" class="node-rect" />
+          <text x="16" y="28" class="node-step-tag">STEP 10 · ODM MODEL</text>
+          <text x="16" y="48" class="node-title">Order.find() & countDocuments</text>
+          <text x="16" y="66" class="node-file">src/lib/db/models/Order.ts</text>
+        </g>
+
+        <!-- Node 11: Clinical Actions -->
+        <g class="node-card" id="onode-11" data-step="11" transform="translate(1710, 190)">
+          <rect width="380" height="80" class="node-rect" />
+          <text x="16" y="28" class="node-step-tag">STEP 11 · CLINICAL ACTION</text>
+          <text x="16" y="48" class="node-title">POST /api/orders/update-status</text>
+          <text x="16" y="66" class="node-file">src/app/api/orders/update-status/route.ts</text>
+        </g>
+
+        <!-- Node 12: Prescription Verification -->
+        <g class="node-card" id="onode-12" data-step="12" transform="translate(1710, 390)">
+          <rect width="380" height="80" class="node-rect" />
+          <text x="16" y="28" class="node-step-tag">STEP 12 · DISPENSING</text>
+          <text x="16" y="48" class="node-title">Prescription Approval & Dispense</text>
+          <text x="16" y="66" class="node-file">src/app/api/prescriptions/route.ts</text>
+        </g>
+      </g>
+    </svg>
+  </div>
+
+  <aside class="inspector-panel" id="inspectorPanel">
+    <div class="inspector-header">
+      <div>
+        <div style="font-family: var(--font-mono); font-size: 0.75rem; color: #38bdf8;" id="panelStepTag">STEP</div>
+        <h2 style="font-size: 1.15rem; font-weight: 700; color: #f8fafc;" id="panelTitle">Title</h2>
+        <div style="font-family: var(--font-mono); font-size: 0.72rem; color: #94a3b8; margin-top: 4px;" id="panelFilePath">Path</div>
+      </div>
+      <button class="close-inspector-btn" id="closeInspectorBtn">&times;</button>
+    </div>
+    <div class="inspector-body">
+      <div class="inspector-section">
+        <div class="section-title">Architectural Responsibility</div>
+        <div class="section-content" id="panelResponsibility">Description...</div>
+      </div>
+      <div class="inspector-section">
+        <div class="section-title">Verified Source Code</div>
+        <pre class="code-snippet" id="panelCodeSnippet"><code>// Code</code></pre>
+      </div>
+    </div>
+  </aside>
+
+  <script>
+    const ORDERS_DATA = {
+      'onode-1': { step: 1, title: 'Orders Dashboard Route Mount', file: 'src/app/(dashboard)/orders/all/page.tsx', resp: 'Entry point for all orders table. Mounts within Next.js DashboardLayout with active route tracking.', code: 'export default function AllOrdersPage() { return <AllOrdersView />; }' },
+      'onode-2': { step: 2, title: 'useAllOrdersData Hook & URL Sync', file: 'src/components/orders-table/hooks/useAllOrdersData.ts', resp: 'Coordinates table state, filters, pagination, and two-way sync between URL search parameters and localStorage.', code: 'useUrlSync(filters, setFilters, page, setPage, storageKey, DEFAULT_FILTERS);\ngetOrders(page, filters).then(res => setOrders(res.orders));' },
+      'onode-3': { step: 3, title: 'TanStack Table & Dynamic Filter Bar', file: 'src/components/orders-table/views/OrdersTableView.tsx', resp: 'Renders virtualized/paginated orders table with urgent tags, status chips, customer badges, and sort headers.', code: '<TableFilters filters={filters} onFilterChange={setFilters} />' },
+      'onode-4': { step: 4, title: 'Order Details Slide-Out Drawer', file: 'src/components/order-details/OrderDetailsDrawer.tsx', resp: 'Opens on row click to show patient demographics, medical history, Rx verification, and internal staff notes.', code: '<OrderDetailsDrawer isOpen={isOpen} orderId={selectedOrderId} />' },
+      'onode-5': { step: 5, title: 'buildOrderParams Parameter Builder', file: 'src/api/services/orders/buildParams.ts', resp: 'Normalizes sort directions (normalizeSortOrder) and maps column keys (date -> createdAt, repeatedOrders -> repeatCount).', code: 'export const buildOrderParams = (page, filters) => ({\n  page, limit: 20, sortBy: sortMapping[filters.sortBy],\n  sort: normalizeSortOrder(filters.sort)\n});' },
+      'onode-6': { step: 6, title: 'apiClient & Interceptors', file: 'src/lib/api/client.ts', resp: 'Axios singleton automatically injects Bearer token and X-SITE-* multi-tenant identifiers.', code: 'apiClient.get("/orders", { params })' },
+      'onode-7': { step: 7, title: 'GET /api/orders API Handler', file: 'src/app/api/orders/route.ts', resp: 'Guarded by verifyApiAuth with role restrictions (super_admin, prescriber, pharmacist, pharmacy_staff).', code: 'const auth = await verifyApiAuth(request, { requiredRoles: [...] });' },
+      'onode-8': { step: 8, title: 'orderQueryHelper Query Builder', file: 'src/app/api/orders/orderQueryHelper.ts', resp: 'Parses URL search params into Mongoose regex filters, date bounds, and category queries.', code: 'const { query, sortOptions, page, limit } = buildOrderQuery(searchParams);' },
+      'onode-9': { step: 9, title: 'MongoDB Connection Pool', file: 'src/lib/db/mongodb.ts', resp: 'Cached global connection prevents database socket leaks during serverless hot-reloads.', code: 'await connectToDatabase();' },
+      'onode-10': { step: 10, title: 'Order Model & Schema', file: 'src/lib/db/models/Order.ts', resp: 'Mongoose schema storing orderNumber, items, total, status, isUrgent, isParked, and repeatCount.', code: 'Order.find(query).sort(sortOptions).skip(skip).limit(limit).lean();' },
+      'onode-11': { step: 11, title: 'POST /api/orders/update-status', file: 'src/app/api/orders/update-status/route.ts', resp: 'Executes clinical status transitions (pending -> approved -> dispensed -> packed -> shipped).', code: 'await Order.updateOne({ _id: orderId }, { $set: { status: newStatus } });' },
+      'onode-12': { step: 12, title: 'Prescription Verification & Dispensing', file: 'src/app/api/prescriptions/route.ts', resp: 'Verifies doctor signature and checks medication dosage before pharmacist dispensing.', code: 'Prescription.find({ patientEmail }).lean();' }
+    };
+
+    const viewport = document.getElementById('viewport');
+    const canvas = document.getElementById('canvas');
+    let scale = 0.85, translateX = 30, translateY = 10, isPanning = false, startX = 0, startY = 0;
+
+    function updateTransform() { canvas.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`; }
+
+    viewport.addEventListener('mousedown', (e) => {
+      if (e.target.closest('.node-card') || e.target.closest('.inspector-panel') || e.target.closest('.topbar')) return;
+      isPanning = true; startX = e.clientX - translateX; startY = e.clientY - translateY;
+    });
+    window.addEventListener('mousemove', (e) => { if (!isPanning) return; translateX = e.clientX - startX; translateY = e.clientY - startY; updateTransform(); });
+    window.addEventListener('mouseup', () => { isPanning = false; });
+    viewport.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const zoomFactor = 1.1;
+      scale = e.deltaY < 0 ? Math.min(scale * zoomFactor, 2.5) : Math.max(scale / zoomFactor, 0.35);
+      updateTransform();
+    }, { passive: false });
+
+    function resetView() { scale = 0.75; translateX = 30; translateY = 15; updateTransform(); }
+    document.getElementById('resetViewBtn').addEventListener('click', resetView);
+
+    const inspectorPanel = document.getElementById('inspectorPanel');
+    function openInspector(id) {
+      const data = ORDERS_DATA[id];
+      if (!data) return;
+      document.querySelectorAll('.node-card').forEach(n => n.classList.remove('selected'));
+      document.getElementById(id)?.classList.add('selected');
+      document.getElementById('panelStepTag').textContent = `STEP ${String(data.step).padStart(2, '0')}`;
+      document.getElementById('panelTitle').textContent = data.title;
+      document.getElementById('panelFilePath').textContent = data.file;
+      document.getElementById('panelResponsibility').textContent = data.resp;
+      document.getElementById('panelCodeSnippet').textContent = data.code;
+      inspectorPanel.classList.add('open');
+    }
+    document.getElementById('closeInspectorBtn').addEventListener('click', () => inspectorPanel.classList.remove('open'));
+    document.querySelectorAll('.node-card').forEach(c => c.addEventListener('click', () => openInspector(c.id)));
+
+    resetView();
+  </script>
+</body>
+</html>

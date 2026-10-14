@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediPulse — Dual-Endpoint Customers & Sorting Architecture</title>
+  <style>
+    :root {
+      --bg-canvas: #070a12;
+      --bg-panel: rgba(13, 20, 36, 0.92);
+      --bg-card: rgba(18, 28, 48, 0.85);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --color-client: #38bdf8;
+      --color-param: #818cf8;
+      --color-router: #c084fc;
+      --color-api: #2dd4bf;
+      --color-mapper: #34d399;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background-color: var(--bg-canvas); color: var(--text-main); font-family: var(--font-sans); overflow: hidden; width: 100vw; height: 100vh; user-select: none; }
+    .topbar { position: absolute; top: 0; left: 0; right: 0; height: 60px; background: rgba(10, 15, 29, 0.88); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 100; }
+    .brand-logo { font-weight: 800; font-size: 1.05rem; color: #38bdf8; }
+    .badge-sub { font-size: 0.72rem; padding: 3px 8px; border-radius: 9999px; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.3); color: #7dd3fc; font-family: var(--font-mono); }
+    .btn { background: rgba(30, 41, 59, 0.6); border: 1px solid var(--border-subtle); color: var(--text-main); padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; }
+    #viewport { width: 100vw; height: 100vh; overflow: hidden; cursor: grab; position: relative; }
+    #viewport.panning { cursor: grabbing; }
+    #canvas { width: 100%; height: 100%; transform-origin: 0 0; position: absolute; top: 0; left: 0; }
+    .bg-grid { fill: none; stroke: rgba(255, 255, 255, 0.035); stroke-width: 1; }
+    .tier-boundary { fill: rgba(15, 23, 42, 0.45); stroke-dasharray: 6 6; stroke-width: 1.5; rx: 16; }
+    .tier-label { font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; fill: var(--text-muted); }
+    .flow-edge { fill: none; stroke: rgba(148, 163, 184, 0.35); stroke-width: 2; stroke-linecap: round; }
+    .node-card { cursor: pointer; }
+    .node-rect { fill: var(--bg-card); stroke: rgba(255, 255, 255, 0.1); stroke-width: 1.5; rx: 12; transition: all 0.2s; }
+    .node-card:hover .node-rect { stroke: #38bdf8; filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.5)); }
+    .node-card.selected .node-rect { stroke: #38bdf8; stroke-width: 2.5; fill: rgba(14, 30, 58, 0.95); }
+    .node-title { font-size: 13px; font-weight: 700; fill: #f8fafc; }
+    .node-file { font-family: var(--font-mono); font-size: 10px; fill: #94a3b8; }
+    .node-step-tag { font-family: var(--font-mono); font-size: 10px; font-weight: 700; fill: #38bdf8; }
+    .inspector-panel { position: absolute; top: 60px; right: 0; bottom: 0; width: 440px; background: rgba(10, 16, 30, 0.96); backdrop-filter: blur(20px); border-left: 1px solid var(--border-subtle); transform: translateX(100%); transition: transform 0.3s; z-index: 95; padding: 20px; overflow-y: auto; }
+    .inspector-panel.open { transform: translateX(0); }
+    .code-snippet { background: #050811; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 12px; font-family: var(--font-mono); font-size: 0.75rem; color: #93c5fd; overflow-x: auto; white-space: pre; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <div class="brand-logo">MediPulse</div>
+      <span class="badge-sub">DUAL-ENDPOINT CUSTOMERS FLOW</span>
+    </div>
+    <button class="btn" id="resetBtn">Reset View (0)</button>
+  </header>
+
+  <div id="viewport">
+    <svg id="canvas" viewBox="0 0 1900 1000">
+      <defs>
+        <pattern id="gridPattern" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" class="bg-grid"/></pattern>
+        <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#64748b"/></marker>
+      </defs>
+
+      <rect width="1900" height="1000" fill="url(#gridPattern)" />
+
+      <!-- Tiers -->
+      <g>
+        <rect x="40" y="80" width="340" height="750" class="tier-boundary" stroke="var(--color-client)" />
+        <text x="60" y="115" class="tier-label" fill="var(--color-client)">1. Table Mount & Hooks</text>
+      </g>
+      <g>
+        <rect x="410" y="80" width="340" height="750" class="tier-boundary" stroke="var(--color-param)" />
+        <text x="430" y="115" class="tier-label" fill="var(--color-param)">2. Param Normalization</text>
+      </g>
+      <g>
+        <rect x="780" y="80" width="340" height="750" class="tier-boundary" stroke="var(--color-router)" />
+        <text x="800" y="115" class="tier-label" fill="var(--color-router)">3. Dual-Endpoint Dispatch</text>
+      </g>
+      <g>
+        <rect x="1150" y="80" width="340" height="750" class="tier-boundary" stroke="var(--color-api)" />
+        <text x="1170" y="115" class="tier-label" fill="var(--color-api)">4. API Endpoints</text>
+      </g>
+      <g>
+        <rect x="1520" y="80" width="340" height="750" class="tier-boundary" stroke="var(--color-mapper)" />
+        <text x="1540" y="115" class="tier-label" fill="var(--color-mapper)">5. BIGINT Mapper & Table</text>
+      </g>
+
+      <!-- Edges -->
+      <path class="flow-edge" marker-end="url(#arrow)" d="M 210 210 L 210 270" />
+      <path class="flow-edge" marker-end="url(#arrow)" d="M 340 310 L 440 310" />
+      <path class="flow-edge" marker-end="url(#arrow)" d="M 580 350 L 580 430" />
+      <path class="flow-edge" marker-end="url(#arrow)" d="M 710 470 L 810 210" />
+      <path class="flow-edge" marker-end="url(#arrow)" d="M 950 250 L 1175 210" />
+      <path class="flow-edge" marker-end="url(#arrow)" d="M 950 490 L 1175 490" />
+      <path class="flow-edge" marker-end="url(#arrow)" d="M 1450 210 L 1550 310" />
+      <path class="flow-edge" marker-end="url(#arrow)" d="M 1450 490 L 1550 350" />
+
+      <!-- Nodes -->
+      <g class="node-card" id="cnode-1" transform="translate(65, 130)">
+        <rect width="290" height="80" class="node-rect" />
+        <text x="16" y="28" class="node-step-tag">STEP 01 · PAGE</text>
+        <text x="16" y="48" class="node-title">Customers Page Mount</text>
+        <text x="16" y="66" class="node-file">src/app/(dashboard)/customers/page.tsx</text>
+      </g>
+      <g class="node-card" id="cnode-2" transform="translate(65, 270)">
+        <rect width="290" height="80" class="node-rect" />
+        <text x="16" y="28" class="node-step-tag">STEP 02 · STATE & URL SYNC</text>
+        <text x="16" y="48" class="node-title">useCustomersPage Hook</text>
+        <text x="16" y="66" class="node-file">useRef(true) for isInitialLoad</text>
+      </g>
+      <g class="node-card" id="cnode-3" transform="translate(435, 270)">
+        <rect width="290" height="80" class="node-rect" />
+        <text x="16" y="28" class="node-step-tag">STEP 03 · PARAM BUILDER</text>
+        <text x="16" y="48" class="node-title">buildCustomerParams()</text>
+        <text x="16" y="66" class="node-file">src/api/services/customer/params.ts</text>
+      </g>
+      <g class="node-card" id="cnode-4" transform="translate(435, 430)">
+        <rect width="290" height="80" class="node-rect" />
+        <text x="16" y="28" class="node-step-tag">STEP 04 · SORT NORMALIZER</text>
+        <text x="16" y="48" class="node-title">normalizeSortOrder(sort)</text>
+        <text x="16" y="66" class="node-file">Guarantees 'asc' | 'desc' parity</text>
+      </g>
+      <g class="node-card" id="cnode-5" transform="translate(805, 170)">
+        <rect width="290" height="80" class="node-rect" />
+        <text x="16" y="28" class="node-step-tag">ROUTE 01 · CLEAN STATE</text>
+        <text x="16" y="48" class="node-title">!hasActiveFilters && !sortBy</text>
+        <text x="16" y="66" class="node-file">Fast direct list condition</text>
+      </g>
+      <g class="node-card" id="cnode-6" transform="translate(805, 450)">
+        <rect width="290" height="80" class="node-rect" />
+        <text x="16" y="28" class="node-step-tag">ROUTE 02 · FILTERED STATE</text>
+        <text x="16" y="48" class="node-title">hasActiveFilters || customSort</text>
+        <text x="16" y="66" class="node-file">Multi-facet search condition</text>
+      </g>
+      <g class="node-card" id="cnode-7" transform="translate(1175, 170)">
+        <rect width="290" height="80" class="node-rect" />
+        <text x="16" y="28" class="node-step-tag">ENDPOINT A · DIRECT LIST</text>
+        <text x="16" y="48" class="node-title">GET /orders/customers/list</text>
+        <text x="16" y="66" class="node-file">Fast initial render index</text>
+      </g>
+      <g class="node-card" id="cnode-8" transform="translate(1175, 450)">
+        <rect width="290" height="80" class="node-rect" />
+        <text x="16" y="28" class="node-step-tag">ENDPOINT B · ADVANCED SEARCH</text>
+        <text x="16" y="48" class="node-title">GET /orders/search?type=customers</text>
+        <text x="16" y="66" class="node-file">Full search & filter pipeline</text>
+      </g>
+      <g class="node-card" id="cnode-9" transform="translate(1545, 290)">
+        <rect width="290" height="80" class="node-rect" />
+        <text x="16" y="28" class="node-step-tag">MAPPER · DATA SAFETY</text>
+        <text x="16" y="48" class="node-title">normalizeCustomer (BIGINT Safe)</text>
+        <text x="16" y="66" class="node-file">src/api/services/customer/mappers.ts</text>
+      </g>
+    </svg>
+  </div>
+
+  <aside class="inspector-panel" id="inspectorPanel">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+      <h3 id="panelTitle" style="color: #38bdf8; font-size: 1.1rem;">Title</h3>
+      <button id="closeBtn" style="background: none; border: none; color: #fff; font-size: 1.2rem; cursor: pointer;">&times;</button>
+    </div>
+    <p id="panelFile" style="font-family: var(--font-mono); font-size: 0.75rem; color: #94a3b8; margin-bottom: 12px;">File</p>
+    <p id="panelResp" style="font-size: 0.85rem; line-height: 1.5; color: #e2e8f0; margin-bottom: 16px;">Resp</p>
+    <pre class="code-snippet" id="panelCode"><code>// Code</code></pre>
+  </aside>
+
+  <script>
+    const CUSTOMER_NODES = {
+      'cnode-1': { title: 'Customers Page Mount', file: 'src/app/(dashboard)/customers/page.tsx', resp: 'Mounts customers view within dashboard shell.', code: 'export default function CustomersPage() { return <CustomersView />; }' },
+      'cnode-2': { title: 'useCustomersPage Hook', file: 'useCustomersPage.ts', resp: 'Maintains isInitialLoad ref and synchronizes page/filters to URL query params.', code: 'const isInitialLoad = useRef(true);\nuseUrlSync(filters, setFilters, page, setPage);' },
+      'cnode-3': { title: 'buildCustomerParams Builder', file: 'src/api/services/customer/params.ts', resp: 'Constructs query parameters and passes sort through normalizer.', code: 'const queryParams = buildCustomerParams(params);' },
+      'cnode-4': { title: 'normalizeSortOrder Normalizer', file: 'src/utils/url/urlBase.ts', resp: 'Prevents backend crashes by enforcing strict asc | desc strings.', code: 'sort: normalizeSortOrder(filters.sort) // Always "asc" or "desc"' },
+      'cnode-5': { title: 'Clean State Condition', file: 'service.ts:25-28', resp: 'When user has not filtered or sorted, calls lightweight fast endpoint.', code: 'const url = (!hasActiveFilters && isNoneState) ? "/orders/customers/list" : "/orders/search";' },
+      'cnode-6': { title: 'Filtered State Condition', file: 'service.ts:25-28', resp: 'Switches to Elasticsearch/database search pipeline for complex queries.', code: 'url = "/orders/search"; params = { ...queryParams, type: "customers" };' },
+      'cnode-7': { title: 'GET /orders/customers/list', file: 'Direct List Endpoint', resp: 'Optimized initial render endpoint.', code: 'apiClient.get({ url: "/orders/customers/list", params })' },
+      'cnode-8': { title: 'GET /orders/search?type=customers', file: 'Advanced Search Endpoint', resp: 'Multi-field searching with pagination and custom sorting.', code: 'apiClient.get({ url: "/orders/search", params })' },
+      'cnode-9': { title: 'normalizeCustomer (BIGINT Safe)', file: 'src/api/services/customer/mappers.ts:6-20', resp: 'Safely converts Long/BIGINT objects (rawId.low) to string and cleans fields.', code: 'const customerId = typeof rawId === "object" && rawId !== null ? String(rawId.low ?? rawId) : String(rawId ?? "");' }
+    };
+
+    const canvas = document.getElementById('canvas');
+    let scale = 0.9, translateX = 30, translateY = 20, isPanning = false, startX = 0, startY = 0;
+    function update() { canvas.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`; }
+    const viewport = document.getElementById('viewport');
+    viewport.addEventListener('mousedown', (e) => { if (e.target.closest('.node-card') || e.target.closest('.inspector-panel') || e.target.closest('.topbar')) return; isPanning = true; startX = e.clientX - translateX; startY = e.clientY - translateY; });
+    window.addEventListener('mousemove', (e) => { if (!isPanning) return; translateX = e.clientX - startX; translateY = e.clientY - startY; update(); });
+    window.addEventListener('mouseup', () => { isPanning = false; });
+    viewport.addEventListener('wheel', (e) => { e.preventDefault(); scale = e.deltaY < 0 ? Math.min(scale * 1.1, 2.5) : Math.max(scale / 1.1, 0.4); update(); }, { passive: false });
+    document.getElementById('resetBtn').addEventListener('click', () => { scale = 0.85; translateX = 30; translateY = 20; update(); });
+
+    const inspector = document.getElementById('inspectorPanel');
+    function selectNode(id) {
+      const data = CUSTOMER_NODES[id];
+      if (!data) return;
+      document.querySelectorAll('.node-card').forEach(c => c.classList.remove('selected'));
+      document.getElementById(id)?.classList.add('selected');
+      document.getElementById('panelTitle').textContent = data.title;
+      document.getElementById('panelFile').textContent = data.file;
+      document.getElementById('panelResp').textContent = data.resp;
+      document.getElementById('panelCode').textContent = data.code;
+      inspector.classList.add('open');
+    }
+    document.getElementById('closeBtn').addEventListener('click', () => inspector.classList.remove('open'));
+    document.querySelectorAll('.node-card').forEach(n => n.addEventListener('click', () => selectNode(n.id)));
+    update();
+  </script>
+</body>
+</html>

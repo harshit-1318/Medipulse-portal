@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediPulse — SurveyJS & Clinical Lead Intake Architecture</title>
+  <style>
+    :root {
+      --bg-canvas: #070a12;
+      --bg-card: rgba(18, 28, 48, 0.85);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --color-creator: #818cf8;
+      --color-public: #c084fc;
+      --color-api: #2dd4bf;
+      --color-db: #34d399;
+      --color-client: #38bdf8;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background-color: var(--bg-canvas); color: var(--text-main); font-family: var(--font-sans); overflow: hidden; width: 100vw; height: 100vh; user-select: none; }
+    .topbar { position: absolute; top: 0; left: 0; right: 0; height: 60px; background: rgba(10, 15, 29, 0.88); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 100; }
+    .brand-logo { font-weight: 800; font-size: 1.05rem; color: #38bdf8; }
+    .badge-sub { font-size: 0.72rem; padding: 3px 8px; border-radius: 9999px; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.3); color: #7dd3fc; font-family: var(--font-mono); }
+    .btn { background: rgba(30, 41, 59, 0.6); border: 1px solid var(--border-subtle); color: var(--text-main); padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; }
+    #viewport { width: 100vw; height: 100vh; overflow: hidden; cursor: grab; position: relative; }
+    #viewport.panning { cursor: grabbing; }
+    #canvas { width: 100%; height: 100%; transform-origin: 0 0; position: absolute; top: 0; left: 0; }
+    .bg-grid { fill: none; stroke: rgba(255, 255, 255, 0.035); stroke-width: 1; }
+    .tier-boundary { fill: rgba(15, 23, 42, 0.45); stroke-dasharray: 6 6; stroke-width: 1.5; rx: 16; }
+    .tier-label { font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; fill: var(--text-muted); }
+    .flow-edge { fill: none; stroke: rgba(148, 163, 184, 0.35); stroke-width: 2; stroke-linecap: round; }
+    .node-card { cursor: pointer; }
+    .node-rect { fill: var(--bg-card); stroke: rgba(255, 255, 255, 0.1); stroke-width: 1.5; rx: 12; transition: all 0.2s; }
+    .node-card:hover .node-rect { stroke: #38bdf8; filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.5)); }
+    .node-card.selected .node-rect { stroke: #38bdf8; stroke-width: 2.5; fill: rgba(14, 30, 58, 0.95); }
+    .node-title { font-size: 13px; font-weight: 700; fill: #f8fafc; }
+    .node-file { font-family: var(--font-mono); font-size: 10px; fill: #94a3b8; }
+    .node-step-tag { font-family: var(--font-mono); font-size: 10px; font-weight: 700; fill: #38bdf8; }
+    .inspector-panel { position: absolute; top: 60px; right: 0; bottom: 0; width: 440px; background: rgba(10, 16, 30, 0.96); backdrop-filter: blur(20px); border-left: 1px solid var(--border-subtle); transform: translateX(100%); transition: transform 0.3s; z-index: 95; padding: 20px; overflow-y: auto; }
+    .inspector-panel.open { transform: translateX(0); }
+    .code-snippet { background: #050811; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 12px; font-family: var(--font-mono); font-size: 0.75rem; color: #93c5fd; overflow-x: auto; white-space: pre; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <div class="brand-logo">MediPulse</div>
+      <span class="badge-sub">SURVEYJS & CLINICAL INTAKE</span>
+    </div>
+    <button class="btn" id="resetBtn">Reset View (0)</button>
+  </header>
+
+  <div id="viewport">
+    <svg id="canvas" viewBox="0 0 1900 1000">
+      <defs>
+        <pattern id="gridPattern" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" class="bg-grid"/></pattern>
+        <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#64748b"/></marker>
+      </defs>
+
+      <rect width="1900" height="1000" fill="url(#gridPattern)" />
+
+      <!-- Tiers -->
+      <g>
+        <rect x="40" y="80" width="340" height="750" class="tier-boundary" stroke="var(--color-creator)" />
+        <text x="60" y="115" class="tier-label" fill="var(--color-creator)">1. Survey Designer Tier</text>
+      </g>
+      <g>
+        <rect x="410" y="80" width="340" height="750" class="tier-boundary" stroke="var(--color-public)" />
+        <text x="430" y="115" class="tier-label" fill="var(--color-public)">2. Public Patient Intake</text>
+      </g>
+      <g>
+        <rect x="780" y="80" width="340" height="750" class="tier-boundary" stroke="var(--color-api)" />
+        <text x="800" y="115" class="tier-label" fill="var(--color-api)">3. Survey & Leads API</text>
+      </g>
+      <g>
+        <rect x="1150" y="80" width="340" height="750" class="tier-boundary" stroke="var(--color-db)" />
+        <text x="1170" y="115" class="tier-label" fill="var(--color-db)">4. MongoDB Persistence</text>
+      </g>
+      <g>
+        <rect x="1520" y="80" width="340" height="750" class="tier-boundary" stroke="var(--color-client)" />
+        <text x="1540" y="115" class="tier-label" fill="var(--color-client)">5. Clinical Leads Pipeline</text>
+      </g>
+
+      <!-- Edges -->
+      <path class="flow-edge" marker-end="url(#arrow)" d="M 210 210 L 210 270" />
+      <path class="flow-edge" marker-end="url(#arrow)" d="M 340 310 L 805 210" />
+      <path class="flow-edge" marker-end="url(#arrow)" d="M 950 250 L 1175 210" />
+      <path class="flow-edge" marker-end="url(#arrow)" d="M 340 350 L 435 210" />
+      <path class="flow-edge" marker-end="url(#arrow)" d="M 580 250 L 580 330" />
+      <path class="flow-edge" marker-end="url(#arrow)" d="M 710 370 L 805 370" />
+      <path class="flow-edge" marker-end="url(#arrow)" d="M 1080 370 L 1175 370" />
+      <path class="flow-edge" marker-end="url(#arrow)" d="M 1450 370 L 1545 370" />
+
+      <!-- Nodes -->
+      <g class="node-card" id="vnode-1" transform="translate(65, 130)">
+        <rect width="290" height="80" class="node-rect" />
+        <text x="16" y="28" class="node-step-tag">STEP 01 · DESIGNER</text>
+        <text x="16" y="48" class="node-title">SurveyJS Creator Mount</text>
+        <text x="16" y="66" class="node-file">src/app/(dashboard)/surveys/page.tsx</text>
+      </g>
+      <g class="node-card" id="vnode-2" transform="translate(65, 270)">
+        <rect width="290" height="80" class="node-rect" />
+        <text x="16" y="28" class="node-step-tag">STEP 02 · SCHEMA</text>
+        <text x="16" y="48" class="node-title">JSON Assessment Schema</text>
+        <text x="16" y="66" class="node-file">pages, elements, BMI questions</text>
+      </g>
+      <g class="node-card" id="vnode-3" transform="translate(435, 170)">
+        <rect width="290" height="80" class="node-rect" />
+        <text x="16" y="28" class="node-step-tag">STEP 03 · PATIENT INTAKE</text>
+        <text x="16" y="48" class="node-title">Public Survey Runner /s/:slug</text>
+        <text x="16" y="66" class="node-file">src/app/(public)/s/[slug]/page.tsx</text>
+      </g>
+      <g class="node-card" id="vnode-4" transform="translate(435, 330)">
+        <rect width="290" height="80" class="node-rect" />
+        <text x="16" y="28" class="node-step-tag">STEP 04 · ONCOMPLETE</text>
+        <text x="16" y="48" class="node-title">Patient Questionnaire Submit</text>
+        <text x="16" y="66" class="node-file">onComplete() callback handler</text>
+      </g>
+      <g class="node-card" id="vnode-5" transform="translate(805, 170)">
+        <rect width="290" height="80" class="node-rect" />
+        <text x="16" y="28" class="node-step-tag">STEP 05 · API CREATE</text>
+        <text x="16" y="48" class="node-title">POST /api/surveys Handler</text>
+        <text x="16" y="66" class="node-file">src/app/api/surveys/route.ts:67-98</text>
+      </g>
+      <g class="node-card" id="vnode-6" transform="translate(805, 330)">
+        <rect width="290" height="80" class="node-rect" />
+        <text x="16" y="28" class="node-step-tag">STEP 06 · INGESTION</text>
+        <text x="16" y="48" class="node-title">Lead Ingestion Engine</text>
+        <text x="16" y="66" class="node-file">Extracts patient info & answers</text>
+      </g>
+      <g class="node-card" id="vnode-7" transform="translate(1175, 170)">
+        <rect width="290" height="80" class="node-rect" />
+        <text x="16" y="28" class="node-step-tag">STEP 07 · PERSISTENCE</text>
+        <text x="16" y="48" class="node-title">Survey Model Schema</text>
+        <text x="16" y="66" class="node-file">src/lib/db/models/Survey.ts</text>
+      </g>
+      <g class="node-card" id="vnode-8" transform="translate(1175, 330)">
+        <rect width="290" height="80" class="node-rect" />
+        <text x="16" y="28" class="node-step-tag">STEP 08 · LEADS COLLECTION</text>
+        <text x="16" y="48" class="node-title">Lead Mongoose Model</text>
+        <text x="16" y="66" class="node-file">src/lib/db/models/Lead.ts</text>
+      </g>
+      <g class="node-card" id="vnode-9" transform="translate(1545, 330)">
+        <rect width="290" height="80" class="node-rect" />
+        <text x="16" y="28" class="node-step-tag">STEP 09 · LEADS DASHBOARD</text>
+        <text x="16" y="48" class="node-title">GET /api/leads & Triage Table</text>
+        <text x="16" y="66" class="node-file">src/app/api/leads/route.ts</text>
+      </g>
+    </svg>
+  </div>
+
+  <aside class="inspector-panel" id="inspectorPanel">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+      <h3 id="panelTitle" style="color: #38bdf8; font-size: 1.1rem;">Title</h3>
+      <button id="closeBtn" style="background: none; border: none; color: #fff; font-size: 1.2rem; cursor: pointer;">&times;</button>
+    </div>
+    <p id="panelFile" style="font-family: var(--font-mono); font-size: 0.75rem; color: #94a3b8; margin-bottom: 12px;">File</p>
+    <p id="panelResp" style="font-size: 0.85rem; line-height: 1.5; color: #e2e8f0; margin-bottom: 16px;">Resp</p>
+    <pre class="code-snippet" id="panelCode"><code>// Code</code></pre>
+  </aside>
+
+  <script>
+    const SURVEY_NODES = {
+      'vnode-1': { title: 'SurveyJS Creator Mount', file: 'src/app/(dashboard)/surveys/page.tsx', resp: 'Visual survey builder where clinicians configure questionnaires and logical branching.', code: 'import { SurveyCreatorComponent } from "survey-creator-react";' },
+      'vnode-2': { title: 'JSON Assessment Schema', file: 'Survey Schema', resp: 'Stores question definitions, BMI calculations, choices, and clinical rules.', code: 'schema: { pages: [{ elements: [{ type: "text", name: "bmi" }] }] }' },
+      'vnode-3': { title: 'Public Survey Runner', file: 'src/app/(public)/s/[slug]/page.tsx', resp: 'Patient-facing consultation page without dashboard layout navigation.', code: '<Survey model={surveyModel} onComplete={handleComplete} />' },
+      'vnode-4': { title: 'Patient Submission', file: 'onComplete() Callback', resp: 'Triggered when patient answers all questions and enters name, email, and phone.', code: 'const handleComplete = (sender) => postResponses(sender.data);' },
+      'vnode-5': { title: 'POST /api/surveys Handler', file: 'src/app/api/surveys/route.ts:67-98', resp: 'Saves drafted or published survey definition in MongoDB collection.', code: 'await Survey.create({ title, slug, schema, status });' },
+      'vnode-6': { title: 'Lead Ingestion Engine', file: 'src/app/api/leads/route.ts', resp: 'Parses patient responses, tags medical history, and provisions a new clinical lead.', code: 'await Lead.create({ customerName, customerEmail, status: "new" });' },
+      'vnode-7': { title: 'Survey Mongoose Schema', file: 'src/lib/db/models/Survey.ts', resp: 'Database schema for survey templates, versions, and validation settings.', code: 'export const Survey = mongoose.models.Survey || mongoose.model("Survey", SurveySchema);' },
+      'vnode-8': { title: 'Lead Mongoose Schema', file: 'src/lib/db/models/Lead.ts', resp: 'Database schema for tracking intake leads, status, and clinical notes.', code: 'export const Lead = mongoose.models.Lead || mongoose.model("Lead", LeadSchema);' },
+      'vnode-9': { title: 'GET /api/leads & Triage Table', file: 'src/app/api/leads/route.ts', resp: 'Clinical portal page where staff reviews incoming patient responses and converts them to customers.', code: 'const leads = await Lead.find({ status }).lean();' }
+    };
+
+    const canvas = document.getElementById('canvas');
+    let scale = 0.9, translateX = 30, translateY = 20, isPanning = false, startX = 0, startY = 0;
+    function update() { canvas.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`; }
+    const viewport = document.getElementById('viewport');
+    viewport.addEventListener('mousedown', (e) => { if (e.target.closest('.node-card') || e.target.closest('.inspector-panel') || e.target.closest('.topbar')) return; isPanning = true; startX = e.clientX - translateX; startY = e.clientY - translateY; });
+    window.addEventListener('mousemove', (e) => { if (!isPanning) return; translateX = e.clientX - startX; translateY = e.clientY - startY; update(); });
+    window.addEventListener('mouseup', () => { isPanning = false; });
+    viewport.addEventListener('wheel', (e) => { e.preventDefault(); scale = e.deltaY < 0 ? Math.min(scale * 1.1, 2.5) : Math.max(scale / 1.1, 0.4); update(); }, { passive: false });
+    document.getElementById('resetBtn').addEventListener('click', () => { scale = 0.85; translateX = 30; translateY = 20; update(); });
+
+    const inspector = document.getElementById('inspectorPanel');
+    function selectNode(id) {
+      const data = SURVEY_NODES[id];
+      if (!data) return;
+      document.querySelectorAll('.node-card').forEach(c => c.classList.remove('selected'));
+      document.getElementById(id)?.classList.add('selected');
+      document.getElementById('panelTitle').textContent = data.title;
+      document.getElementById('panelFile').textContent = data.file;
+      document.getElementById('panelResp').textContent = data.resp;
+      document.getElementById('panelCode').textContent = data.code;
+      inspector.classList.add('open');
+    }
+    document.getElementById('closeBtn').addEventListener('click', () => inspector.classList.remove('open'));
+    document.querySelectorAll('.node-card').forEach(n => n.addEventListener('click', () => selectNode(n.id)));
+    update();
+  </script>
+</body>
+</html>

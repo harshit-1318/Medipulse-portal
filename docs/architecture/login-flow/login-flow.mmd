@@ -1,0 +1,173 @@
+%% =========================================================================
+%% MediPulse Healthcare Portal — Complete Authentication & Login Architecture
+%% Standard: Mermaid Flowchart TD
+%% Verified against Next.js 16 App Router & MongoDB codebase
+%% =========================================================================
+
+flowchart TD
+    %% Styling Classes
+    classDef clientTier fill:#0e1726,stroke:#38bdf8,stroke-width:2px,color:#f8fafc;
+    classDef networkTier fill:#0b192c,stroke:#818cf8,stroke-width:2px,color:#f8fafc;
+    classDef proxyTier fill:#1a102f,stroke:#c084fc,stroke-width:2px,color:#f8fafc;
+    classDef apiTier fill:#09212b,stroke:#2dd4bf,stroke-width:2px,color:#f8fafc;
+    classDef cryptoTier fill:#2a1215,stroke:#fb7185,stroke-width:2px,color:#f8fafc;
+    classDef dbTier fill:#052e16,stroke:#34d399,stroke-width:2px,color:#f8fafc;
+    classDef sessionTier fill:#271c04,stroke:#fbbf24,stroke-width:2px,color:#f8fafc;
+    classDef errorBranch fill:#3b0710,stroke:#f43f5e,stroke-width:1.5px,stroke-dasharray: 4 4,color:#fecdd3;
+    classDef successBranch fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#a7f3d0;
+
+    %% -------------------------------------------------------------------------
+    %% 1. CLIENT PRESENTATION TIER
+    %% -------------------------------------------------------------------------
+    subgraph PresentationTier [" 1. Presentation Tier (Next.js 16 & React 19 Client) "]
+        direction TB
+        N01["<b>#01. Browser Navigation</b><br/>User requests /login or protected route<br/><i>Client Browser (Desktop/Mobile Web)</i>"]:::clientTier
+        N02["<b>#02. Login Page Mount</b><br/>src/app/(auth)/login/page.tsx<br/><i>Theme detection & ambient glassmorphic shell</i>"]:::clientTier
+        N03["<b>#03. Login Form & Inputs</b><br/>src/components/auth/login/LoginForm.tsx<br/><i>EmailInput & PasswordInput with show/hide</i>"]:::clientTier
+        N04["<b>#04. Form State & Client Validation</b><br/>src/components/auth/login/hooks/useLoginFormSubmit.ts<br/><i>useState(email, password), loading, error</i>"]:::clientTier
+        N05["<b>#05. Submit Handler & Global Loader</b><br/>handleSubmit() in useLoginFormSubmit.ts<br/><i>e.preventDefault(), startLoader('login')</i>"]:::clientTier
+
+        N01 -->|"GET /login"| N02
+        N02 -->|"Mounts"| N03
+        N03 -->|"Controlled Inputs"| N04
+        N04 -->|"Click Submit / Enter"| N05
+    end
+
+    %% -------------------------------------------------------------------------
+    %% 2. NETWORK & CLIENT STATE TIER
+    %% -------------------------------------------------------------------------
+    subgraph NetworkTier [" 2. Network & Client State Tier (Axios & Zustand 5) "]
+        direction TB
+        N06["<b>#06. API Service Call</b><br/>login() in src/api/services/user/userService.ts<br/><i>apiClient.post(UserApi.Login, data)</i>"]:::networkTier
+        N06_Client["<b>#06b. Axios Instance</b><br/>src/lib/api/client.ts<br/><i>baseURL: /api, timeout: 50000ms</i>"]:::networkTier
+        N06_Interceptor["<b>#06c. Request Interceptor</b><br/>src/lib/api/interceptors.ts<br/><i>Skip Bearer for /auth/login public endpoint</i>"]:::networkTier
+        N13_Store["<b>#13. Zustand User Store Hydration</b><br/>src/store/user/userStore.ts (setUser & setToken)<br/><i>Syncs to localStorage & js-cookie</i>"]:::networkTier
+        N14_Redirect["<b>#14. Safe Client Redirect</b><br/>useLoginFormSubmit.ts<br/><i>Validate returnUrl & RBAC, fallback /dashboard</i>"]:::successBranch
+
+        N05 -->|"login({ email, password })"| N06
+        N06 -->|"Delegates to"| N06_Client
+        N06_Client -->|"Intercepts Request"| N06_Interceptor
+    end
+
+    %% -------------------------------------------------------------------------
+    %% 3. SERVERLESS API ROUTE HANDLER TIER
+    %% -------------------------------------------------------------------------
+    subgraph ApiTier [" 3. Serverless API Handler Tier (Next.js App Router) "]
+        direction TB
+        N07["<b>#07. Route Handler POST</b><br/>src/app/api/auth/login/route.ts<br/><i>export async function POST(request: Request)</i>"]:::apiTier
+        N08_Val{"<b>#08. Payload Validation</b><br/>emailStr && passwordStr?<br/><i>Trims and lowercases email</i>"}:::apiTier
+        Err_Val["<b>Error 400 Bad Request</b><br/>'Email and password are required'"]:::errorBranch
+        N09_Lookup{"<b>#09. User Lookup in DB</b><br/>User.findOne({ email: regex })<br/><i>Case-insensitive regex search</i>"}:::apiTier
+        Err_NotFound["<b>Error 401 Unauthorized</b><br/>'Invalid email or password'"]:::errorBranch
+        N09_Active{"<b>#09b. Account Active Check</b><br/>dbUser.is_active !== false"}:::apiTier
+        Err_Disabled["<b>Error 403 Forbidden</b><br/>'Account is disabled'"]:::errorBranch
+        N10_Verify{"<b>#10. Password Hash Verification</b><br/>verifyUserPassword(dbUser, passwordStr)<br/><i>bcrypt.compareSync() or direct match</i>"}:::apiTier
+        Err_Password["<b>Error 401 Unauthorized</b><br/>'Invalid email or password'"]:::errorBranch
+        N11_Payload["<b>#11. Build Auth Payload & Permissions</b><br/>buildAuthPayload() & getRolePermissions()<br/><i>Derives effectiveRole & RBAC permissions</i>"]:::apiTier
+        N12_Cookies["<b>#12. Set HttpOnly Cookie & Audit Log</b><br/>setAuthCookies() in helpers.ts<br/><i>token (HttpOnly, maxAge 7d), role, username</i>"]:::apiTier
+        N12_Log["<b>#12b. Audit Activity Logger</b><br/>recordActivity() in logActivityHelper.ts<br/><i>Immutable login_success entry</i>"]:::apiTier
+        N13_Response["<b>#13. JSON Success Response</b><br/>NextResponse.json({ status: 'SUCCESS', data })<br/><i>Returns token & sanitized user object</i>"]:::successBranch
+
+        N06_Interceptor -->|"POST /api/auth/login"| N07
+        N07 --> N08_Val
+        N08_Val -- "No" --> Err_Val
+        N08_Val -- "Yes" --> N09_Lookup
+        N09_Lookup -- "Not Found" --> Err_NotFound
+        N09_Lookup -- "Found" --> N09_Active
+        N09_Active -- "Disabled" --> Err_Disabled
+        N09_Active -- "Active" --> N10_Verify
+        N10_Verify -- "Mismatch" --> Err_Password
+        N10_Verify -- "Matched" --> N11_Payload
+        N11_Payload --> N12_Cookies
+        N12_Cookies --> N12_Log
+        N12_Log --> N13_Response
+    end
+
+    %% -------------------------------------------------------------------------
+    %% 4. PERSISTENCE TIER (MONGODB & MONGOOSE)
+    %% -------------------------------------------------------------------------
+    subgraph PersistenceTier [" 4. Persistence Tier (MongoDB Atlas & Mongoose 9) "]
+        direction TB
+        DB_Conn["<b>MongoDB Connection Pool</b><br/>src/lib/db/mongodb.ts (connectToDatabase)<br/><i>Cached connection across hot-reloads</i>"]:::dbTier
+        DB_User["<b>User Mongoose Model</b><br/>src/lib/db/models/User.ts<br/><i>Collection: users</i>"]:::dbTier
+        DB_Log["<b>ActivityLog Model</b><br/>src/lib/db/models/ActivityLog.ts<br/><i>Collection: activitylogs</i>"]:::dbTier
+
+        N07 -.->|"Ensures Pool Connected"| DB_Conn
+        N09_Lookup <-->|"Query"| DB_User
+        N12_Log -->|"Insert One"| DB_Log
+    end
+
+    %% -------------------------------------------------------------------------
+    %% 5. CRYPTOGRAPHIC & SECURITY GUARD TIER
+    %% -------------------------------------------------------------------------
+    subgraph SecurityTier [" 5. Cryptographic Engine & Security Guard "]
+        direction TB
+        Crypto_Sign["<b>Web Crypto HMAC SHA-256</b><br/>signJwt() in src/lib/auth/jwt.ts<br/><i>crypto.subtle.sign('HMAC', key, data)</i>"]:::cryptoTier
+        Crypto_Verify["<b>JWT Signature Verifier</b><br/>verifyJwt() in src/lib/auth/jwt.ts<br/><i>crypto.subtle.verify() & exp check</i>"]:::cryptoTier
+        Api_Guard["<b>API Authentication Guard</b><br/>verifyApiAuth() in src/lib/auth/apiAuth.ts<br/><i>Bearer / Cookie check & RBAC matrix</i>"]:::cryptoTier
+
+        N11_Payload -->|"Sign Token Payload"| Crypto_Sign
+        Crypto_Sign -->|"Signed JWT String"| N11_Payload
+        Api_Guard -->|"Invokes"| Crypto_Verify
+    end
+
+    %% -------------------------------------------------------------------------
+    %% Response link back to Client
+    %% -------------------------------------------------------------------------
+    N13_Response -->|"200 OK + Set-Cookie"| N13_Store
+    N13_Store -->|"Store Tokens & User"| N14_Redirect
+
+    %% -------------------------------------------------------------------------
+    %% 6. NEXT.JS 16 EDGE ROUTE PROXY TIER
+    %% -------------------------------------------------------------------------
+    subgraph EdgeProxyTier [" 6. Edge Routing & Proxy Tier (Next.js 16 src/proxy.ts) "]
+        direction TB
+        P01["<b>#15. Edge Request Proxy</b><br/>proxy() in src/proxy.ts<br/><i>Matcher: all routes except static assets</i>"]:::proxyTier
+        P02["<b>#16. Anti-Spoofing JWT Decode</b><br/>decodeJwtPayload() in src/proxyJwt.ts<br/><i>Derives role & isSuperAdmin from token</i>"]:::proxyTier
+        P_CheckToken{"Has Valid Token Cookie?"}:::proxyTier
+        P_Unauth["<b>Redirect to /login</b><br/>Set returnUrl = pathname + search"]:::errorBranch
+        P_RoleRoute{"<b>#17. RBAC Route Guard</b><br/>isRouteAllowedForRole() in proxyRoutes.ts"}:::proxyTier
+        P_SuperCheck{"<b>Super Admin Route?</b><br/>superAdminOnlyRoutes.includes()"}:::proxyTier
+        P_DashRedirect["<b>Redirect to /dashboard</b><br/>Unauthorized role escalation blocked"]:::errorBranch
+        P_Pass["<b>NextResponse.next()</b><br/>Render Requested Dashboard / Page"]:::successBranch
+
+        N14_Redirect -->|"Browser Navigates"| P01
+        P01 --> P02
+        P02 --> P_CheckToken
+        P_CheckToken -- "No & Protected" --> P_Unauth
+        P_CheckToken -- "Yes" --> P_SuperCheck
+        P_SuperCheck -- "Super Only & Not Super" --> P_DashRedirect
+        P_SuperCheck -- "Permitted" --> P_RoleRoute
+        P_RoleRoute -- "Role Disallowed" --> P_DashRedirect
+        P_RoleRoute -- "Allowed" --> P_Pass
+    end
+
+    %% -------------------------------------------------------------------------
+    %% 7. SESSION LIFECYCLE & INACTIVITY GUARD TIER
+    %% -------------------------------------------------------------------------
+    subgraph SessionGuardTier [" 7. Session Lifecycle & Inactivity Guard Tier "]
+        direction TB
+        S01["<b>#18. Idle Session Manager</b><br/>src/components/auth/IdleSessionManager.tsx<br/><i>Mounted in src/app/(dashboard)/layout.tsx</i>"]:::sessionTier
+        S02["<b>15-Minute Inactivity Timer</b><br/>useIdleSession.ts (IDLE_TIMEOUT_MS: 900,000ms)<br/><i>Resets on mousemove, mousedown, keydown, scroll</i>"]:::sessionTier
+        S03{"Inactivity Reached?"}:::sessionTier
+        S04["<b>60-Second Warning Modal</b><br/>IdleWarningModal.tsx<br/><i>User can click 'Stay logged in'</i>"]:::sessionTier
+        S05["<b>#19. Logout Execution</b><br/>useUserStore.actions.logout()<br/><i>savePostLoginRedirectFromCurrentLocation()</i>"]:::sessionTier
+        S06["<b>POST /api/auth/logout</b><br/>src/app/api/auth/logout/route.ts<br/><i>Expires cookies (token, role, username, site_id)</i>"]:::sessionTier
+        S07["<b>Clear Client Storage & Redirect</b><br/>clearUserSessionStorage() in userHelpers.ts<br/><i>Clears localStorage & redirects to /login</i>"]:::successBranch
+
+        P_Pass -->|"Mounts Dashboard Shell"| S01
+        S01 --> S02
+        S02 --> S03
+        S03 -- "15 min idle" --> S04
+        S04 -- "Timeout or Click Logout" --> S05
+        S05 --> S06
+        S06 --> S07
+        S07 -->|"Redirects to"| N01
+    end
+
+    %% Subsequent Protected API Calls
+    P_Pass -.->|"Subsequent API calls"| Api_Guard
+    Err_Val -.->|"400 Response"| N04
+    Err_NotFound -.->|"401 Response"| N04
+    Err_Disabled -.->|"403 Response"| N04
+    Err_Password -.->|"401 Response"| N04

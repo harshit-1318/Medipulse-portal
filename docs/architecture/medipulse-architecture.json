@@ -1,0 +1,262 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "MediPulse Healthcare Admin Portal — System Architecture",
+    "subtitle": "Interactive End-to-End System Architecture (Next.js 16 + React 19 + MongoDB Atlas)",
+    "output": "medipulse-architecture.html",
+    "quality_profile": "standard",
+    "viewBox": [1650, 560]
+  },
+  "components": [
+    {
+      "id": "browser",
+      "type": "external",
+      "label": "Client Browser",
+      "sublabel": "Web & Mobile Client",
+      "icon": "person",
+      "pos": [40, 270],
+      "size": [130, 60]
+    },
+    {
+      "id": "proxy",
+      "type": "security",
+      "label": "Next.js Route Proxy",
+      "sublabel": "src/proxy.ts (Auth & RBAC)",
+      "tag": "Next.js 16",
+      "icon": "security",
+      "pos": [260, 270],
+      "size": [140, 60]
+    },
+    {
+      "id": "ui_shell",
+      "type": "frontend",
+      "label": "App Shell Layouts",
+      "sublabel": "Root & Dashboard Shell",
+      "tag": "React 19",
+      "icon": "frontend",
+      "pos": [490, 150],
+      "size": [150, 60]
+    },
+    {
+      "id": "feature_pages",
+      "type": "frontend",
+      "label": "Feature Components",
+      "sublabel": "Orders, Surveys, Leads, Rx",
+      "tag": "Tailwind v4",
+      "icon": "frontend",
+      "pos": [490, 270],
+      "size": [150, 60]
+    },
+    {
+      "id": "client_state",
+      "type": "frontend",
+      "label": "Client State Stores",
+      "sublabel": "TanStack Query + Zustand",
+      "tag": "Client State",
+      "icon": "active",
+      "pos": [490, 390],
+      "size": [150, 60]
+    },
+    {
+      "id": "api_client",
+      "type": "backend",
+      "label": "Centralized API Client",
+      "sublabel": "Axios & Interceptors",
+      "tag": "src/lib/api",
+      "icon": "backend",
+      "pos": [730, 270],
+      "size": [150, 60]
+    },
+    {
+      "id": "auth_guard",
+      "type": "security",
+      "label": "API Auth Guard",
+      "sublabel": "verifyApiAuth (HMAC SHA-256)",
+      "tag": "Web Crypto",
+      "icon": "security",
+      "pos": [980, 150],
+      "size": [150, 60]
+    },
+    {
+      "id": "route_handlers",
+      "type": "backend",
+      "label": "App Router API Routes",
+      "sublabel": "src/app/api/* Handlers",
+      "tag": "Next.js 16",
+      "icon": "backend",
+      "pos": [980, 270],
+      "size": [150, 60]
+    },
+    {
+      "id": "ext_backend",
+      "type": "backend",
+      "label": "External Backend API",
+      "sublabel": "NestJS API Services",
+      "tag": "Rewrite Fallback",
+      "icon": "cloud",
+      "pos": [980, 390],
+      "size": [150, 60]
+    },
+    {
+      "id": "mongoose_odm",
+      "type": "backend",
+      "label": "Mongoose ODM Layer",
+      "sublabel": "Models & Connection Pool",
+      "tag": "Mongoose v9",
+      "icon": "backend",
+      "pos": [1220, 270],
+      "size": [150, 60]
+    },
+    {
+      "id": "mongodb",
+      "type": "database",
+      "label": "MongoDB Atlas",
+      "sublabel": "Atlas Cloud Database",
+      "tag": "Replica Cluster",
+      "icon": "database",
+      "pos": [1460, 270],
+      "size": [140, 60]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Next.js 16 Presentation & Client Tier",
+      "wraps": ["proxy", "ui_shell", "feature_pages", "client_state", "api_client"]
+    },
+    {
+      "kind": "region",
+      "label": "API Handlers & Data Services Tier",
+      "wraps": ["auth_guard", "route_handlers", "mongoose_odm"]
+    },
+    {
+      "kind": "region",
+      "label": "Cloud Database Tier",
+      "wraps": ["mongodb"]
+    }
+  ],
+  "connections": [
+    {
+      "id": "browser-proxy",
+      "from": "browser",
+      "to": "proxy",
+      "label": "HTTPS Request",
+      "variant": "emphasis",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "proxy-ui",
+      "from": "proxy",
+      "to": "ui_shell",
+      "label": "RBAC Allowed",
+      "variant": "security",
+      "fromSide": "right",
+      "toSide": "left",
+      "via": [[445, 300], [445, 180]]
+    },
+    {
+      "id": "shell-features",
+      "from": "ui_shell",
+      "to": "feature_pages",
+      "label": "Mount Page",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelDy": 24
+    },
+    {
+      "id": "features-state",
+      "from": "feature_pages",
+      "to": "client_state",
+      "label": "Sync & Store",
+      "variant": "dashed",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelDy": 24
+    },
+    {
+      "id": "features-api",
+      "from": "feature_pages",
+      "to": "api_client",
+      "label": "Service Calls",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "api-routes",
+      "from": "api_client",
+      "to": "route_handlers",
+      "label": "/api/* Requests",
+      "variant": "emphasis",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "api-ext",
+      "from": "api_client",
+      "to": "ext_backend",
+      "label": "Rewrite Proxy",
+      "variant": "dashed",
+      "fromSide": "right",
+      "toSide": "left",
+      "via": [[930, 300], [930, 420]]
+    },
+    {
+      "id": "routes-guard",
+      "from": "route_handlers",
+      "to": "auth_guard",
+      "label": "Verify JWT",
+      "variant": "security",
+      "fromSide": "top",
+      "toSide": "bottom",
+      "labelDy": -24
+    },
+    {
+      "id": "routes-odm",
+      "from": "route_handlers",
+      "to": "mongoose_odm",
+      "label": "Model Queries",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "odm-db",
+      "from": "mongoose_odm",
+      "to": "mongodb",
+      "label": "Mongoose TLS",
+      "variant": "emphasis",
+      "fromSide": "right",
+      "toSide": "left"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Routing & Security Proxy",
+      "items": [
+        "Next.js 16 Edge Proxy (src/proxy.ts) guards all protected SSR navigations.",
+        "Derives roles from cryptographically signed JWT cookies to prevent spoofing.",
+        "Enforces strict RBAC for super admins (/super-dashboard, /sites, /users) and clinical roles."
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Unified Client & Network Layer",
+      "items": [
+        "Client state managed via TanStack Query v5 (server data) and Zustand (session/site/loader).",
+        "Axios singleton (apiClient) automatically attaches Bearer tokens and multi-tenant headers.",
+        "Dual-backend flexibility: executes local App Router API routes or rewrites to external NestJS."
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Data Persistence & Audit Trail",
+      "items": [
+        "Direct connection to MongoDB Atlas using reusable global connection pooling.",
+        "Mongoose schemas enforce strict typing for Orders, Customers, Leads, Surveys, and Users.",
+        "Every critical operation records an immutable audit log entry in the ActivityLog collection."
+      ]
+    }
+  ]
+}

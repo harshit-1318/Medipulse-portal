@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediPulse — Real-Time Audit Activity Logging Architecture</title>
+  <style>
+    :root {
+      --bg-canvas: #070a12;
+      --bg-panel: rgba(13, 20, 36, 0.92);
+      --bg-card: rgba(18, 28, 48, 0.85);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --color-trigger: #38bdf8;
+      --color-helper: #818cf8;
+      --color-db: #34d399;
+      --color-query: #c084fc;
+      --color-ui: #2dd4bf;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background-color: var(--bg-canvas); color: var(--text-main); font-family: var(--font-sans); overflow: hidden; width: 100vw; height: 100vh; user-select: none; }
+    .topbar { position: absolute; top: 0; left: 0; right: 0; height: 60px; background: rgba(10, 15, 29, 0.88); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 100; }
+    .brand-logo { font-weight: 800; font-size: 1.05rem; color: #38bdf8; }
+    .badge-sub { font-size: 0.72rem; padding: 3px 8px; border-radius: 9999px; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.3); color: #7dd3fc; font-family: var(--font-mono); }
+    .btn { background: rgba(30, 41, 59, 0.6); border: 1px solid var(--border-subtle); color: var(--text-main); padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; }
+    #viewport { width: 100vw; height: 100vh; overflow: hidden; cursor: grab; position: relative; }
+    #viewport.panning { cursor: grabbing; }
+    #canvas { width: 100%; height: 100%; transform-origin: 0 0; position: absolute; top: 0; left: 0; }
+    .bg-grid { fill: none; stroke: rgba(255, 255, 255, 0.035); stroke-width: 1; }
+    .tier-boundary { fill: rgba(15, 23, 42, 0.45); stroke-dasharray: 6 6; stroke-width: 1.5; rx: 16; }
+    .tier-label { font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; fill: var(--text-muted); }
+    .flow-edge { fill: none; stroke: rgba(148, 163, 184, 0.35); stroke-width: 2; stroke-linecap: round; }
+    .node-card { cursor: pointer; }
+    .node-rect { fill: var(--bg-card); stroke: rgba(255, 255, 255, 0.1); stroke-width: 1.5; rx: 12; transition: all 0.2s; }
+    .node-card:hover .node-rect { stroke: #38bdf8; filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.5)); }
+    .node-card.selected .node-rect { stroke: #38bdf8; stroke-width: 2.5; fill: rgba(14, 30, 58, 0.95); }
+    .node-title { font-size: 13px; font-weight: 700; fill: #f8fafc; }
+    .node-file { font-family: var(--font-mono); font-size: 10px; fill: #94a3b8; }
+    .node-step-tag { font-family: var(--font-mono); font-size: 10px; font-weight: 700; fill: #38bdf8; }
+    .inspector-panel { position: absolute; top: 60px; right: 0; bottom: 0; width: 440px; background: rgba(10, 16, 30, 0.96); backdrop-filter: blur(20px); border-left: 1px solid var(--border-subtle); transform: translateX(100%); transition: transform 0.3s; z-index: 95; padding: 20px; overflow-y: auto; }
+    .inspector-panel.open { transform: translateX(0); }
+    .code-snippet { background: #050811; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 12px; font-family: var(--font-mono); font-size: 0.75rem; color: #93c5fd; overflow-x: auto; white-space: pre; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <div class="brand-logo">MediPulse</div>
+      <span class="badge-sub">AUDIT ACTIVITY LOGGING FLOW</span>
+    </div>
+    <button class="btn" id="resetBtn">Reset View (0)</button>
+  </header>
+
+  <div id="viewport">
+    <svg id="canvas" viewBox="0 0 1900 1000">
+      <defs>
+        <pattern id="gridPattern" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" class="bg-grid"/></pattern>
+        <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="#64748b"/></marker>
+      </defs>
+
+      <rect width="1900" height="1000" fill="url(#gridPattern)" />
+
+      <!-- Tiers -->
+      <g>
+        <rect x="40" y="80" width="340" height="750" class="tier-boundary" stroke="var(--color-trigger)" />
+        <text x="60" y="115" class="tier-label" fill="var(--color-trigger)">1. Audit Action Triggers</text>
+      </g>
+      <g>
+        <rect x="410" y="80" width="340" height="750" class="tier-boundary" stroke="var(--color-helper)" />
+        <text x="430" y="115" class="tier-label" fill="var(--color-helper)">2. Async Helper & Deduplication</text>
+      </g>
+      <g>
+        <rect x="780" y="80" width="340" height="750" class="tier-boundary" stroke="var(--color-db)" />
+        <text x="800" y="115" class="tier-label" fill="var(--color-db)">3. Immutable MongoDB Log</text>
+      </g>
+      <g>
+        <rect x="1150" y="80" width="340" height="750" class="tier-boundary" stroke="var(--color-query)" />
+        <text x="1170" y="115" class="tier-label" fill="var(--color-query)">4. Real-Time Query Pipeline</text>
+      </g>
+      <g>
+        <rect x="1520" y="80" width="340" height="750" class="tier-boundary" stroke="var(--color-ui)" />
+        <text x="1540" y="115" class="tier-label" fill="var(--color-ui)">5. Audit Logs UI Presentation</text>
+      </g>
+
+      <!-- Edges -->
+      <path class="flow-edge" marker-end="url(#arrow)" d="M 210 210 L 210 270" />
+      <path class="flow-edge" marker-end="url(#arrow)" d="M 210 350 L 210 410" />
+      <path class="flow-edge" marker-end="url(#arrow)" d="M 340 310 L 440 310" />
+      <path class="flow-edge" marker-end="url(#arrow)" d="M 580 350 L 580 430" />
+      <path class="flow-edge" marker-end="url(#arrow)" d="M 710 470 L 810 310" />
+      <path class="flow-edge" marker-end="url(#arrow)" d="M 1080 310 L 1180 310" />
+      <path class="flow-edge" marker-end="url(#arrow)" d="M 1450 310 L 1550 310" />
+
+      <!-- Nodes -->
+      <g class="node-card" id="anode-1" transform="translate(65, 130)">
+        <rect width="290" height="80" class="node-rect" />
+        <text x="16" y="28" class="node-step-tag">TRIGGER 01 · AUTH</text>
+        <text x="16" y="48" class="node-title">Login & Logout Actions</text>
+        <text x="16" y="66" class="node-file">login_success, logout</text>
+      </g>
+      <g class="node-card" id="anode-2" transform="translate(65, 270)">
+        <rect width="290" height="80" class="node-rect" />
+        <text x="16" y="28" class="node-step-tag">TRIGGER 02 · CLINICAL</text>
+        <text x="16" y="48" class="node-title">Doctor & Pharmacy Approvals</text>
+        <text x="16" y="66" class="node-file">prescriptions:write, dispense</text>
+      </g>
+      <g class="node-card" id="anode-3" transform="translate(65, 410)">
+        <rect width="290" height="80" class="node-rect" />
+        <text x="16" y="28" class="node-step-tag">TRIGGER 03 · ORDERS</text>
+        <text x="16" y="48" class="node-title">Order Status & Urgent Flags</text>
+        <text x="16" y="66" class="node-file">order_update, make_urgent</text>
+      </g>
+      <g class="node-card" id="anode-4" transform="translate(435, 270)">
+        <rect width="290" height="80" class="node-rect" />
+        <text x="16" y="28" class="node-step-tag">ASYNC HELPER</text>
+        <text x="16" y="48" class="node-title">void recordActivity()</text>
+        <text x="16" y="66" class="node-file">src/lib/db/logActivityHelper.ts</text>
+      </g>
+      <g class="node-card" id="anode-5" transform="translate(435, 430)">
+        <rect width="290" height="80" class="node-rect" />
+        <text x="16" y="28" class="node-step-tag">DEDUPLICATION</text>
+        <text x="16" y="48" class="node-title">10-Second Duplicate Filter</text>
+        <text x="16" y="66" class="node-file">Suppresses double submissions</text>
+      </g>
+      <g class="node-card" id="anode-6" transform="translate(805, 270)">
+        <rect width="290" height="80" class="node-rect" />
+        <text x="16" y="28" class="node-step-tag">PERSISTENCE</text>
+        <text x="16" y="48" class="node-title">ActivityLog.create() in Mongo</text>
+        <text x="16" y="66" class="node-file">src/lib/db/models/ActivityLog.ts</text>
+      </g>
+      <g class="node-card" id="anode-7" transform="translate(1175, 270)">
+        <rect width="290" height="80" class="node-rect" />
+        <text x="16" y="28" class="node-step-tag">REAL-TIME QUERY</text>
+        <text x="16" y="48" class="node-title">GET /api/activity-log/list/filters</text>
+        <text x="16" y="66" class="node-file">activityLogQueryBuilder.ts</text>
+      </g>
+      <g class="node-card" id="anode-8" transform="translate(1545, 270)">
+        <rect width="290" height="80" class="node-rect" />
+        <text x="16" y="28" class="node-step-tag">PRESENTATION</text>
+        <text x="16" y="48" class="node-title">Activity Logs Table & Role Badges</text>
+        <text x="16" y="66" class="node-file">src/app/(dashboard)/activity-logs/page.tsx</text>
+      </g>
+    </svg>
+  </div>
+
+  <aside class="inspector-panel" id="inspectorPanel">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+      <h3 id="panelTitle" style="color: #38bdf8; font-size: 1.1rem;">Title</h3>
+      <button id="closeBtn" style="background: none; border: none; color: #fff; font-size: 1.2rem; cursor: pointer;">&times;</button>
+    </div>
+    <p id="panelFile" style="font-family: var(--font-mono); font-size: 0.75rem; color: #94a3b8; margin-bottom: 12px;">File</p>
+    <p id="panelResp" style="font-size: 0.85rem; line-height: 1.5; color: #e2e8f0; margin-bottom: 16px;">Resp</p>
+    <pre class="code-snippet" id="panelCode"><code>// Code</code></pre>
+  </aside>
+
+  <script>
+    const LOG_NODES = {
+      'anode-1': { title: 'Auth Event Triggers', file: 'Auth Route Handlers', resp: 'Logs successful logins and logouts with user role and email.', code: 'recordActivity({ action: "login_success", user, role })' },
+      'anode-2': { title: 'Clinical Approvals', file: 'Prescription Handlers', resp: 'Captures doctor electronic signatures and pharmacist dispense actions for HIPAA compliance.', code: 'recordActivity({ action: "rx_approve", orderId, user })' },
+      'anode-3': { title: 'Order Modifications', file: 'Order Action Handlers', resp: 'Logs status updates, urgent prioritizations, and customer edits.', code: 'recordActivity({ action: "order_update", details: "Status updated" })' },
+      'anode-4': { title: 'recordActivity Helper', file: 'src/lib/db/logActivityHelper.ts', resp: 'Non-blocking asynchronous background helper executing duplicate suppression.', code: 'export async function recordActivity(data) { ... }' },
+      'anode-5': { title: '10-Second Deduplication', file: 'logActivityHelper.ts:16-25', resp: 'Checks if identical action was already logged by same user in last 10 seconds.', code: 'const recentDuplicate = await ActivityLog.findOne({ user_email, action, createdAt: { $gte: tenSecondsAgo } });\nif (recentDuplicate) return;' },
+      'anode-6': { title: 'ActivityLog Mongoose Model', file: 'src/lib/db/models/ActivityLog.ts', resp: 'Immutable audit document stored in MongoDB Atlas.', code: 'ActivityLog.create({ ...data, createdAt: new Date() })' },
+      'anode-7': { title: 'GET /api/activity-log/list/filters', file: 'src/app/api/activity-log/list/filters/route.ts', resp: 'Parses date ranges, role filters, and search terms into paginated query.', code: 'const { query, sort } = buildActivityLogQuery(searchParams);\nconst logs = await ActivityLog.find(query).sort(sort).lean();' },
+      'anode-8': { title: 'Activity Logs Table Page', file: 'src/app/(dashboard)/activity-logs/page.tsx', resp: 'Real-time viewer with role chips, date pickers, and filter parity.', code: '<ActivityLogTable data={logs} total={total} />' }
+    };
+
+    const canvas = document.getElementById('canvas');
+    let scale = 0.9, translateX = 30, translateY = 20, isPanning = false, startX = 0, startY = 0;
+    function update() { canvas.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`; }
+    const viewport = document.getElementById('viewport');
+    viewport.addEventListener('mousedown', (e) => { if (e.target.closest('.node-card') || e.target.closest('.inspector-panel') || e.target.closest('.topbar')) return; isPanning = true; startX = e.clientX - translateX; startY = e.clientY - translateY; });
+    window.addEventListener('mousemove', (e) => { if (!isPanning) return; translateX = e.clientX - startX; translateY = e.clientY - startY; update(); });
+    window.addEventListener('mouseup', () => { isPanning = false; });
+    viewport.addEventListener('wheel', (e) => { e.preventDefault(); scale = e.deltaY < 0 ? Math.min(scale * 1.1, 2.5) : Math.max(scale / 1.1, 0.4); update(); }, { passive: false });
+    document.getElementById('resetBtn').addEventListener('click', () => { scale = 0.85; translateX = 30; translateY = 20; update(); });
+
+    const inspector = document.getElementById('inspectorPanel');
+    function selectNode(id) {
+      const data = LOG_NODES[id];
+      if (!data) return;
+      document.querySelectorAll('.node-card').forEach(c => c.classList.remove('selected'));
+      document.getElementById(id)?.classList.add('selected');
+      document.getElementById('panelTitle').textContent = data.title;
+      document.getElementById('panelFile').textContent = data.file;
+      document.getElementById('panelResp').textContent = data.resp;
+      document.getElementById('panelCode').textContent = data.code;
+      inspector.classList.add('open');
+    }
+    document.getElementById('closeBtn').addEventListener('click', () => inspector.classList.remove('open'));
+    document.querySelectorAll('.node-card').forEach(n => n.addEventListener('click', () => selectNode(n.id)));
+    update();
+  </script>
+</body>
+</html>

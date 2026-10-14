@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediPulse — Multi-Tenant Multi-Site Architecture</title>
+  <style>
+    :root {
+      --bg-canvas: #070a12;
+      --bg-panel: rgba(13, 20, 36, 0.92);
+      --bg-card: rgba(18, 28, 48, 0.85);
+      --bg-card-hover: rgba(28, 42, 72, 0.95);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --color-frontend: #38bdf8;
+      --color-store: #818cf8;
+      --color-api: #2dd4bf;
+      --color-interceptor: #c084fc;
+      --color-db: #34d399;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background-color: var(--bg-canvas); color: var(--text-main); font-family: var(--font-sans); overflow: hidden; width: 100vw; height: 100vh; user-select: none; }
+    .topbar { position: absolute; top: 0; left: 0; right: 0; height: 60px; background: rgba(10, 15, 29, 0.88); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; z-index: 100; }
+    .brand-logo { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 1.05rem; color: #38bdf8; }
+    .badge-sub { font-size: 0.72rem; padding: 3px 8px; border-radius: 9999px; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.3); color: #7dd3fc; font-family: var(--font-mono); }
+    .btn { background: rgba(30, 41, 59, 0.6); border: 1px solid var(--border-subtle); color: var(--text-main); padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; }
+    .btn:hover { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
+    #viewport { width: 100vw; height: 100vh; overflow: hidden; cursor: grab; position: relative; }
+    #viewport.panning { cursor: grabbing; }
+    #canvas { width: 100%; height: 100%; transform-origin: 0 0; position: absolute; top: 0; left: 0; }
+    .bg-grid { fill: none; stroke: rgba(255, 255, 255, 0.035); stroke-width: 1; }
+    .tier-boundary { fill: rgba(15, 23, 42, 0.45); stroke-dasharray: 6 6; stroke-width: 1.5; rx: 16; }
+    .tier-label { font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; fill: var(--text-muted); }
+    .flow-edge { fill: none; stroke: rgba(148, 163, 184, 0.35); stroke-width: 2; stroke-linecap: round; }
+    .node-card { cursor: pointer; }
+    .node-rect { fill: var(--bg-card); stroke: rgba(255, 255, 255, 0.1); stroke-width: 1.5; rx: 12; transition: all 0.2s; }
+    .node-card:hover .node-rect { fill: var(--bg-card-hover); stroke: #38bdf8; filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.5)); }
+    .node-card.selected .node-rect { stroke: #38bdf8; stroke-width: 2.5; fill: rgba(14, 30, 58, 0.95); }
+    .node-title { font-size: 13px; font-weight: 700; fill: #f8fafc; }
+    .node-file { font-family: var(--font-mono); font-size: 10px; fill: #94a3b8; }
+    .node-step-tag { font-family: var(--font-mono); font-size: 10px; font-weight: 700; fill: #38bdf8; }
+    .inspector-panel { position: absolute; top: 60px; right: 0; bottom: 0; width: 440px; background: rgba(10, 16, 30, 0.96); backdrop-filter: blur(20px); border-left: 1px solid var(--border-subtle); transform: translateX(100%); transition: transform 0.3s; z-index: 95; padding: 20px; overflow-y: auto; }
+    .inspector-panel.open { transform: translateX(0); }
+    .code-snippet { background: #050811; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 12px; font-family: var(--font-mono); font-size: 0.75rem; color: #93c5fd; overflow-x: auto; white-space: pre; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <div class="brand-logo">MediPulse</div>
+      <span class="badge-sub">MULTI-TENANT & MULTI-SITE FLOW</span>
+    </div>
+    <div>
+      <button class="btn" id="resetBtn">Reset View (0)</button>
+    </div>
+  </header>
+
+  <div id="viewport">
+    <svg id="canvas" viewBox="0 0 1900 1000">
+      <defs>
+        <pattern id="gridPattern" width="40" height="40" patternUnits="userSpaceOnUse">
+          <path d="M 40 0 L 0 0 0 40" class="bg-grid"/>
+        </pattern>
+        <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1 L 9 5 L 0 9 z" fill="#64748b"/>
+        </marker>
+      </defs>
+
+      <rect width="1900" height="1000" fill="url(#gridPattern)" />
+
+      <!-- Tiers -->
+      <g>
+        <rect x="40" y="80" width="340" height="750" class="tier-boundary" stroke="var(--color-frontend)" />
+        <text x="60" y="115" class="tier-label" fill="var(--color-frontend)">1. Domain Detection Tier</text>
+      </g>
+      <g>
+        <rect x="410" y="80" width="340" height="750" class="tier-boundary" stroke="var(--color-api)" />
+        <text x="430" y="115" class="tier-label" fill="var(--color-api)">2. Resolution API Tier</text>
+      </g>
+      <g>
+        <rect x="780" y="80" width="340" height="750" class="tier-boundary" stroke="var(--color-store)" />
+        <text x="800" y="115" class="tier-label" fill="var(--color-store)">3. Storage & Branding Tier</text>
+      </g>
+      <g>
+        <rect x="1150" y="80" width="340" height="750" class="tier-boundary" stroke="var(--color-interceptor)" />
+        <text x="1170" y="115" class="tier-label" fill="var(--color-interceptor)">4. Interceptor Injection</text>
+      </g>
+      <g>
+        <rect x="1520" y="80" width="340" height="750" class="tier-boundary" stroke="var(--color-db)" />
+        <text x="1540" y="115" class="tier-label" fill="var(--color-db)">5. Tenant Data Partitioning</text>
+      </g>
+
+      <!-- Edges -->
+      <path class="flow-edge" marker-end="url(#arrow)" d="M 210 210 L 210 270" />
+      <path class="flow-edge" marker-end="url(#arrow)" d="M 340 310 L 440 310" />
+      <path class="flow-edge" marker-end="url(#arrow)" d="M 580 350 L 580 430" />
+      <path class="flow-edge" marker-end="url(#arrow)" d="M 710 470 L 810 210" />
+      <path class="flow-edge" marker-end="url(#arrow)" d="M 950 250 L 950 330" />
+      <path class="flow-edge" marker-end="url(#arrow)" d="M 1080 370 L 1180 370" />
+      <path class="flow-edge" marker-end="url(#arrow)" d="M 1450 370 L 1550 370" />
+
+      <!-- Nodes -->
+      <g class="node-card" id="snode-1" transform="translate(65, 130)">
+        <rect width="290" height="80" class="node-rect" />
+        <text x="16" y="28" class="node-step-tag">STEP 01 · CLIENT MOUNT</text>
+        <text x="16" y="48" class="node-title">DashboardLayout initializeSite()</text>
+        <text x="16" y="66" class="node-file">src/app/(dashboard)/layout.tsx:18</text>
+      </g>
+      <g class="node-card" id="snode-2" transform="translate(65, 270)">
+        <rect width="290" height="80" class="node-rect" />
+        <text x="16" y="28" class="node-step-tag">STEP 02 · HOST RESOLVER</text>
+        <text x="16" y="48" class="node-title">window.location.host Inspector</text>
+        <text x="16" y="66" class="node-file">src/store/site/siteActions.ts</text>
+      </g>
+      <g class="node-card" id="snode-3" transform="translate(435, 270)">
+        <rect width="290" height="80" class="node-rect" />
+        <text x="16" y="28" class="node-step-tag">STEP 03 · DISCOVERY API</text>
+        <text x="16" y="48" class="node-title">getSiteInfoApi({ host })</text>
+        <text x="16" y="66" class="node-file">src/api/services/site/siteService.ts</text>
+      </g>
+      <g class="node-card" id="snode-4" transform="translate(435, 430)">
+        <rect width="290" height="80" class="node-rect" />
+        <text x="16" y="28" class="node-step-tag">STEP 04 · ENDPOINT</text>
+        <text x="16" y="48" class="node-title">GET /api/sites/get-info-by-domain</text>
+        <text x="16" y="66" class="node-file">src/app/api/sites/get-info-by-domain/route.ts</text>
+      </g>
+      <g class="node-card" id="snode-5" transform="translate(805, 170)">
+        <rect width="290" height="80" class="node-rect" />
+        <text x="16" y="28" class="node-step-tag">STEP 05 · STORE HYDRATION</text>
+        <text x="16" y="48" class="node-title">Zustand siteStore & LocalStorage</text>
+        <text x="16" y="66" class="node-file">src/store/site/siteStore.ts</text>
+      </g>
+      <g class="node-card" id="snode-6" transform="translate(805, 330)">
+        <rect width="290" height="80" class="node-rect" />
+        <text x="16" y="28" class="node-step-tag">STEP 06 · MULTI-TENANT HEADERS</text>
+        <text x="16" y="48" class="node-title">X-SITE-ID, X-SITE-KEY, X-SITE-HOST</text>
+        <text x="16" y="66" class="node-file">localStorage Persistence</text>
+      </g>
+      <g class="node-card" id="snode-7" transform="translate(1175, 330)">
+        <rect width="290" height="80" class="node-rect" />
+        <text x="16" y="28" class="node-step-tag">STEP 07 · INTERCEPTOR</text>
+        <text x="16" y="48" class="node-title">apiClient Automatic Injection</text>
+        <text x="16" y="66" class="node-file">src/lib/api/interceptors.ts:26-33</text>
+      </g>
+      <g class="node-card" id="snode-8" transform="translate(1545, 330)">
+        <rect width="290" height="80" class="node-rect" />
+        <text x="16" y="28" class="node-step-tag">STEP 08 · DATA SEGREGATION</text>
+        <text x="16" y="48" class="node-title">MongoDB Site Partition Queries</text>
+        <text x="16" y="66" class="node-file">Order.find({ siteId }), User.find({ site_id })</text>
+      </g>
+    </svg>
+  </div>
+
+  <aside class="inspector-panel" id="inspectorPanel">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+      <h3 id="panelTitle" style="color: #38bdf8; font-size: 1.1rem;">Title</h3>
+      <button id="closeBtn" style="background: none; border: none; color: #fff; font-size: 1.2rem; cursor: pointer;">&times;</button>
+    </div>
+    <p id="panelFile" style="font-family: var(--font-mono); font-size: 0.75rem; color: #94a3b8; margin-bottom: 12px;">File</p>
+    <p id="panelResp" style="font-size: 0.85rem; line-height: 1.5; color: #e2e8f0; margin-bottom: 16px;">Resp</p>
+    <pre class="code-snippet" id="panelCode"><code>// Code</code></pre>
+  </aside>
+
+  <script>
+    const SITE_NODES = {
+      'snode-1': { title: 'DashboardLayout Mount', file: 'src/app/(dashboard)/layout.tsx:18', resp: 'Triggers initializeSite() on application shell load to configure branding and multi-tenant keys.', code: 'useEffect(() => { initializeSite(); }, []);' },
+      'snode-2': { title: 'Host Domain Detection', file: 'src/store/site/siteActions.ts', resp: 'Extracts window.location.host with development fallback to process.env.NEXT_PUBLIC_DEFAULT_SITE_HOST.', code: 'let currentDomain = domain || window.location.host;\nif (currentDomain.includes("localhost")) currentDomain = process.env.NEXT_PUBLIC_DEFAULT_SITE_HOST;' },
+      'snode-3': { title: 'Site Service API Fetcher', file: 'src/api/services/site/siteService.ts', resp: 'Calls backend resolution endpoint passing detected host domain.', code: 'export const getSiteInfoApi = (params) => apiClient.post("/sites/get-info-by-domain", params);' },
+      'snode-4': { title: 'GET/POST get-info-by-domain', file: 'src/app/api/sites/get-info-by-domain/route.ts', resp: 'Serverless endpoint returning tenant id, key, logo, and active settings.', code: 'return NextResponse.json({ status: "SUCCESS", data: siteData });' },
+      'snode-5': { title: 'Zustand siteStore', file: 'src/store/site/siteStore.ts', resp: 'Persists tenant state to localStorage under site-storage key.', code: 'persist((set) => ({ siteInfo: {}, isLoading: false }), { name: "site-storage" })' },
+      'snode-6': { title: 'LocalStorage Header Persistence', file: 'src/store/site/siteActions.ts:23-26', resp: 'Stores X-SITE-ID, X-SITE-KEY, and X-SITE-HOST in client localStorage for interceptor access.', code: 'localStorage.setItem("X-SITE-ID", siteInfo.id);\nlocalStorage.setItem("X-SITE-KEY", siteInfo.key);\nlocalStorage.setItem("X-SITE-HOST", currentDomain);' },
+      'snode-7': { title: 'Axios Interceptor Injection', file: 'src/lib/api/interceptors.ts:26-33', resp: 'Guarantees that EVERY subsequent API request carries the tenant headers without manual configuration.', code: 'config.headers["X-SITE-ID"] = localStorage.getItem("X-SITE-ID");\nconfig.headers["X-SITE-KEY"] = localStorage.getItem("X-SITE-KEY");\nconfig.headers["X-SITE-HOST"] = localStorage.getItem("X-SITE-HOST");' },
+      'snode-8': { title: 'Backend Multi-Tenant Isolation', file: 'src/lib/db/models/Order.ts', resp: 'MongoDB queries automatically scope results by siteId, ensuring strict tenant partition.', code: 'Order.find({ siteId, ...query })' }
+    };
+
+    const viewport = document.getElementById('viewport');
+    const canvas = document.getElementById('canvas');
+    let scale = 0.9, translateX = 30, translateY = 20, isPanning = false, startX = 0, startY = 0;
+    function update() { canvas.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`; }
+    viewport.addEventListener('mousedown', (e) => { if (e.target.closest('.node-card') || e.target.closest('.inspector-panel') || e.target.closest('.topbar')) return; isPanning = true; startX = e.clientX - translateX; startY = e.clientY - translateY; });
+    window.addEventListener('mousemove', (e) => { if (!isPanning) return; translateX = e.clientX - startX; translateY = e.clientY - startY; update(); });
+    window.addEventListener('mouseup', () => { isPanning = false; });
+    viewport.addEventListener('wheel', (e) => { e.preventDefault(); scale = e.deltaY < 0 ? Math.min(scale * 1.1, 2.5) : Math.max(scale / 1.1, 0.4); update(); }, { passive: false });
+    document.getElementById('resetBtn').addEventListener('click', () => { scale = 0.85; translateX = 30; translateY = 20; update(); });
+
+    const inspector = document.getElementById('inspectorPanel');
+    function selectNode(id) {
+      const data = SITE_NODES[id];
+      if (!data) return;
+      document.querySelectorAll('.node-card').forEach(c => c.classList.remove('selected'));
+      document.getElementById(id)?.classList.add('selected');
+      document.getElementById('panelTitle').textContent = data.title;
+      document.getElementById('panelFile').textContent = data.file;
+      document.getElementById('panelResp').textContent = data.resp;
+      document.getElementById('panelCode').textContent = data.code;
+      inspector.classList.add('open');
+    }
+    document.getElementById('closeBtn').addEventListener('click', () => inspector.classList.remove('open'));
+    document.querySelectorAll('.node-card').forEach(n => n.addEventListener('click', () => selectNode(n.id)));
+    update();
+  </script>
+</body>
+</html>
