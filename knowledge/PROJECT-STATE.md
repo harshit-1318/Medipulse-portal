@@ -8,7 +8,7 @@
 		- Updated `src/types/survey/index.ts`: Made `customer`, `survey`, `submittedAt`, and `submittedResponse` optionally present on `SurveyResponse` while adding flat aliases (`customerName`, `customerEmail`, `surveyTitle`, `answers`, etc.).
 		- Updated API routes: Enriched `/api/surveys/responses`, `/api/surveys/[id]/responses`, and `/api/surveys/[id]/responses/[sessionId]` to return both nested objects and legacy flat fields for 100% backward/forward compatibility.
 	- Route-Level Error Boundaries Added:
-		- Added `src/app/(dashboard)/surveys/responses/error.tsx` and `src/app/(dashboard)/surveys/error.tsx` with user-friendly retry buttons to prevent any uncaught client exception from breaking out of the dashboard layout.
+		- Added `src/app/(dashboard)/surveys/responses/error.tsx` and `src/app/(dashboard)/surveys/error.tsx` with user-friendly retry buttons to prevent any uncaught client exception from breaking out of the dashboard layout. Standardized container sizing with Tailwind `min-h-125` to eliminate arbitrary value compilation warnings.
 	- Vitest Unit Test Coverage: Added `src/components/surveys/responses/table/__tests__/SurveyResponseRow.test.tsx` (4 tests) and `SurveyResponsesTable.test.tsx` (2 tests), covering nested, flat, and bare response payloads.
 
 - Comprehensive API Completeness & Defect Elimination Audit (Oct 14 2026):

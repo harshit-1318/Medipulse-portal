@@ -15,7 +15,7 @@ export default function SurveyResponsesErrorBoundary({ error, reset }: ErrorProp
   }, [error]);
 
   return (
-    <div className="min-h-[500px] flex items-center justify-center p-6">
+    <div className="min-h-125 flex items-center justify-center p-6">
       <div className="max-w-md w-full bg-white rounded-2xl border border-slate-200 shadow-sm p-8 text-center space-y-4">
         <div className="w-12 h-12 rounded-full bg-rose-50 text-rose-500 mx-auto flex items-center justify-center">
           <AlertCircle size={24} />
