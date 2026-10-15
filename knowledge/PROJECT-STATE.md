@@ -1,5 +1,14 @@
 # Frontend Project State
 
+- Shopify Store Audit & UI External Link Cleanup (Oct 15 2026):
+	- Comprehensive Audit Confirmed: Audited all `.env*` environment files, MongoDB collections (`sites`, `orders`, `configs`), and dependencies. Verified that 0 real Shopify credentials (no API keys, tokens, or live store connections) exist in the project. The 10-digit `shopify_order_id` values in MongoDB are dummy mock numbers generated via `seedGenerator.mjs` for testing and internal routing.
+	- Misleading External Links Removed from UI:
+		- `OrderHeaderActions.tsx`: Replaced clickable external links (`https://admin.shopify.com/orders/...` and `https://admin.shopify.com/customers/...`) with clean, elegant non-clickable informational badges (`Order Ref #...`, `Customer Ref #...`), preserving reference visibility without misleading external redirects.
+		- `ScrViewMode.tsx`: Removed the external `admin.shopify.com` CANCEL ORDER link. If order is cancelled, a clean non-clickable "Order Cancelled" badge is rendered.
+		- `ScrEditActions.tsx`: Replaced the external `admin.shopify.com` CANCEL ORDER link with the internal `onDecline` action button, routing order cancellation to the in-app decline modal.
+	- System Stability & Parity Preserved: All internal order routing (`/orders/view/[id]`), MongoDB records, order details, customer data, and prescription functionality remain 100% intact and functional.
+	- 100% Test & Typecheck Health: Vitest passed 100% (176 test files, 944/944 tests PASS), `tsc --noEmit` clean (0 errors), and all source files strictly adhere to Rule 04 (< 100 LOC).
+
 - Legacy Prototype YM Records Purge & Standardized Alignment (Oct 15 2026):
 	- Root Cause Identified: Prototype placeholder records prefixed with `YM-` ("Your Medicals" clinic initial prototype dated Aug 2026) were lingering in MongoDB `orders` (`YM-1001`, `YM-1002`) and `prescriptions` (`shopifyOrderId: 'YM-1001'`, `shopifyOrderId: 'YM-1002'`).
 	- Database Purge Executed: Safely deleted the 4 legacy documents from `orders` and `prescriptions` collections with zero impact on the active 52+ `#MP-` MediPulse orders. Verified that zero documents containing `YM-` exist across all 20+ MongoDB collections.

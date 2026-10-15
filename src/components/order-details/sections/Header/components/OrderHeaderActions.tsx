@@ -1,4 +1,4 @@
-import { ArrowLeft, ExternalLink } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 interface Props {
     statusStyle: { bg: string; border: string; text: string; dot: string; label: string };
@@ -31,26 +31,18 @@ export const OrderHeaderActions: React.FC<Props> = ({ statusStyle, isUnfulfilled
             {(shopifyOrderId || customerId) && (
                 <div className="flex items-center gap-2">
                     {shopifyOrderId && (
-                        <a
-                            href={`https://admin.shopify.com/orders/${shopifyOrderId}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="h-8 px-3.5 rounded-full text-[11px] font-semibold flex items-center gap-1.5 shrink-0 transition-all duration-200 bg-[#00a294]/10 text-[#008f82] border border-[#00a294]/30 hover:bg-[#00a294]/20 hover:border-[#00a294]/50 hover:-translate-y-0.5"
+                        <div
+                            className="h-8 px-3.5 rounded-full text-[11px] font-semibold flex items-center gap-1.5 shrink-0 bg-[#00a294]/10 text-[#008f82] border border-[#00a294]/30"
                         >
-                            <ExternalLink size={11} strokeWidth={2.5} />
                             <span className="font-montserrat leading-none mt-0.5">Order Ref #{shopifyOrderId}</span>
-                        </a>
+                        </div>
                     )}
                     {customerId && (
-                        <a
-                            href={`https://admin.shopify.com/customers/${customerId}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="h-8 px-3.5 rounded-full text-[11px] font-semibold flex items-center gap-1.5 shrink-0 transition-all duration-200 bg-[#00a294]/10 text-[#008f82] border border-[#00a294]/30 hover:bg-[#00a294]/20 hover:border-[#00a294]/50 hover:-translate-y-0.5"
+                        <div
+                            className="h-8 px-3.5 rounded-full text-[11px] font-semibold flex items-center gap-1.5 shrink-0 bg-[#00a294]/10 text-[#008f82] border border-[#00a294]/30"
                         >
-                            <ExternalLink size={11} strokeWidth={2.5} />
                             <span className="font-montserrat leading-none mt-0.5">Customer Ref #{customerId}</span>
-                        </a>
+                        </div>
                     )}
                 </div>
             )}

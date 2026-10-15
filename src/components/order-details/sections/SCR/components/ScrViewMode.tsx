@@ -1,4 +1,4 @@
-import { CheckCircle2, ShieldCheck, Fingerprint, MessageSquare, ExternalLink } from "lucide-react";
+import { CheckCircle2, ShieldCheck, Fingerprint, MessageSquare } from "lucide-react";
 import { ScrFlagRow } from "./ScrFlagRow";
 import { ScrReviewerMeta } from "./ScrReviewerMeta";
 
@@ -12,11 +12,11 @@ interface ScrViewModeProps {
     reviewedBy: string;
     reviewedAt: string;
     regNo?: string;
-    shopifyOrderId: string;
+    shopifyOrderId?: string;
     isCancelled?: boolean;
 }
 
-export function ScrViewMode({ scrFlags, scrComments, reviewedBy, reviewedAt, regNo, shopifyOrderId, isCancelled = false }: ScrViewModeProps) {
+export function ScrViewMode({ scrFlags, scrComments, reviewedBy, reviewedAt, regNo, isCancelled = false }: ScrViewModeProps) {
     const formatDate = (dateString: string) => {
         if (!dateString) return "—";
         const date = new Date(dateString);
@@ -74,24 +74,13 @@ export function ScrViewMode({ scrFlags, scrComments, reviewedBy, reviewedAt, reg
                 />
             </div>
 
-            <div className="mt-8 flex justify-end">
-                <a
-                    href={`https://admin.shopify.com/orders/${shopifyOrderId}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    title={isCancelled ? "Order already cancelled" : "Cancel order in Shopify Admin"}
-                    className={`h-10 px-6 rounded-full 
-                        text-white text-[12px] font-bold uppercase tracking-wider shadow-sm transition-all active:scale-95 
-                        flex items-center justify-center gap-2
-                        ${isCancelled
-                            ? "bg-slate-300 cursor-not-allowed opacity-60"
-                            : "bg-rose-600 hover:bg-rose-700 cursor-pointer shadow-rose-200 shadow-md"}`}
-                    onClick={(e) => isCancelled && e.preventDefault()}
-                >
-                    <ExternalLink size={14} strokeWidth={2.5} />
-                    CANCEL ORDER
-                </a>
-            </div>
+            {isCancelled && (
+                <div className="mt-8 flex justify-end">
+                    <span className="h-9 px-5 rounded-full bg-rose-50 text-rose-700 border border-rose-200 text-[12px] font-bold uppercase tracking-wider flex items-center justify-center">
+                        Order Cancelled
+                    </span>
+                </div>
+            )}
         </div>
     );
 }
