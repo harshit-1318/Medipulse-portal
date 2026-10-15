@@ -18,13 +18,13 @@ describe('Standardized Prescriptions UI Components', () => {
         const onRemove = vi.fn();
         render(
             <ActiveFilterChips
-                chips={[{ key: 'orderId', label: 'Order ID', value: 'YM-1002' }]}
+                chips={[{ key: 'orderId', label: 'Order ID', value: 'MP-1002' }]}
                 onRemove={onRemove}
             />
         );
 
         expect(screen.getByText('Order ID:')).toBeInTheDocument();
-        expect(screen.getByText('YM-1002')).toBeInTheDocument();
+        expect(screen.getByText('MP-1002')).toBeInTheDocument();
 
         const removeBtn = screen.getByTitle('Remove Order ID filter');
         fireEvent.click(removeBtn);

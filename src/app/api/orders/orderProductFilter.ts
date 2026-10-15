@@ -66,7 +66,7 @@ export function applyProductAndDocFilters(query: Record<string, any>, searchPara
           { tags: { $in: ['prescription_uploaded', 'documents_uploaded', 'uploaded'] } },
         ],
       });
-    } else if (docStatus === 'not_uploaded' || docStatus === 'not uploaded') {
+    } else if (docStatus === 'not_uploaded' || docStatus === 'not uploaded' || docStatus === 'not-uploaded') {
       targetAnd.push({
         hasIdCard: { $ne: true },
         hasFullPhoto: { $ne: true },

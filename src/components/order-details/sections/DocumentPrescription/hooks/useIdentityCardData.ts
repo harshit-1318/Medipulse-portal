@@ -1,4 +1,5 @@
 import type { ApiResponse } from "@/components/order-details/types";
+import { getDocumentItemsStatus, resolveDocumentUrl } from "@/api/services/orders/utils/docsStatus";
 
 interface UseIdentityCardDataParams {
     customerDocuments: ApiResponse["customerDocuments"];
@@ -15,17 +16,26 @@ export function useIdentityCardData({
     orderDocumentFilter,
     order,
 }: UseIdentityCardDataParams) {
-    const hasOrderDocFilterUploaded = Array.isArray(orderDocumentFilter) &&
-        orderDocumentFilter.some((f: any) => f.uploaded === true || f.status === "uploaded");
+    const rawOrder = {
+        customerDocuments,
+        consultationFlags,
+        customerMeta,
+        orderDocumentFilter,
+        ...order,
+    };
 
-    const idCard = customerDocuments?.id_card || consultationFlags?.has_id_card || customerMeta?.id_card || customerMeta?.has_id_card;
-    const fullPhoto = customerDocuments?.full_photo || consultationFlags?.has_full_photo || customerMeta?.full_photo || customerMeta?.has_full_photo || hasOrderDocFilterUploaded;
-    const hasVideo = consultationFlags?.has_video_recording ||
-        (customerDocuments?.video_recordings && customerDocuments.video_recordings.length > 0) ||
-        (customerDocuments?.recordings && customerDocuments.recordings.length > 0);
-    const videoRequestSent = !hasVideo && consultationFlags?.video_request_sent;
+    const docItemsStatus = getDocumentItemsStatus(rawOrder);
 
-    const orderTags = order?.orderInfo?.tags;
+    const idCardUrl = resolveDocumentUrl(customerDocuments?.id_card, customerMeta?.id_card, order?.id_card);
+    const fullPhotoUrl = resolveDocumentUrl(customerDocuments?.full_photo, customerMeta?.full_photo, order?.full_photo);
+
+    const idCard = docItemsStatus.id && idCardUrl ? idCardUrl : null;
+    const fullPhoto = docItemsStatus.fullPhoto && fullPhotoUrl ? fullPhotoUrl : null;
+    const hasVideo = docItemsStatus.video;
+
+    const videoRequestSent = !hasVideo && Boolean(consultationFlags?.video_request_sent || order?.video_request_sent);
+
+    const orderTags = order?.orderInfo?.tags ?? order?.tags;
     const parsedTags = Array.isArray(orderTags)
         ? orderTags
         : typeof orderTags === 'string'

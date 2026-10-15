@@ -68,4 +68,57 @@ describe('getDocumentItemsStatus', () => {
         });
         expect(status).toEqual({ id: false, fullPhoto: true, video: true });
     });
+
+    it('Scenario 1: No documents uploaded returns false for all three', () => {
+        const status = getDocumentItemsStatus({
+            orderNumber: 'MP-95478',
+            customerDocuments: { id_card: null, full_photo: null, video_recordings: [] },
+        });
+        expect(status).toEqual({ id: false, fullPhoto: false, video: false });
+    });
+
+    it('Scenario 2: Only ID document uploaded returns id: true, photo: false, video: false', () => {
+        const status = getDocumentItemsStatus({
+            customerDocuments: {
+                id_card: 'https://example.com/id.jpg',
+                full_photo: null,
+                video_recordings: [],
+            },
+        });
+        expect(status).toEqual({ id: true, fullPhoto: false, video: false });
+    });
+
+    it('Scenario 3: ID and photo uploaded, video missing', () => {
+        const status = getDocumentItemsStatus({
+            customerDocuments: {
+                id_card: 'https://example.com/id.jpg',
+                full_photo: 'https://example.com/photo.jpg',
+                video_recordings: [],
+            },
+        });
+        expect(status).toEqual({ id: true, fullPhoto: true, video: false });
+    });
+
+    it('Scenario 4: All three documents uploaded', () => {
+        const status = getDocumentItemsStatus({
+            customerDocuments: {
+                id_card: 'https://example.com/id.jpg',
+                full_photo: 'https://example.com/photo.jpg',
+                video_recordings: [{ url: 'https://example.com/video.mp4', duration: 120 }],
+            },
+        });
+        expect(status).toEqual({ id: true, fullPhoto: true, video: true });
+    });
+
+    it('Scenario 5: Record exists but file is missing or placeholder — not represented as available', () => {
+        const status = getDocumentItemsStatus({
+            hasIdCard: true,
+            customerDocuments: {
+                id_card: '',
+                full_photo: 'placeholder',
+                video_recordings: [],
+            },
+        });
+        expect(status).toEqual({ id: false, fullPhoto: false, video: false });
+    });
 });

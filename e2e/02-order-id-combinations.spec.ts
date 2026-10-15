@@ -295,7 +295,7 @@ test.describe('2. Order ID + Each Other Filter Combinations', () => {
     }
   });
 
-  test('TC-COMB-010: Order ID + Mark as Urgent Orders (Incompatible #MP-46287 & Compatible YM-1002)', async ({ ordersPage }) => {
+  test('TC-COMB-010: Order ID + Mark as Urgent Orders (Incompatible #MP-46287 & Compatible MP-95815)', async ({ ordersPage }) => {
     let passed = false;
     let actualResult = '';
     try {
@@ -307,19 +307,19 @@ test.describe('2. Order ID + Each Other Filter Combinations', () => {
       const emptyState = await ordersPage.hasEmptyState();
       expect(emptyState).toBe(true);
 
-      // 2. Compatible: YM-1002 is urgent -> should return YM-1002
+      // 2. Compatible: MP-95815 is urgent -> should return MP-95815
       await ordersPage.applyFilterAndSearch(async (modal) => {
         await modal.clickClearAll();
-        await modal.setOrderId('YM-1002');
+        await modal.setOrderId('MP-95815');
         await modal.setUrgent(true);
       });
       const results = await ordersPage.getResults();
       expect(results.length).toBe(1);
-      expect(results[0].orderId).toBe('#YM-1002');
+      expect(results[0].orderId).toBe('#MP-95815');
       expect(results[0].isUrgent).toBe(true);
 
       passed = true;
-      actualResult = 'Correctly returned empty state for non-urgent #MP-46287, and returned #YM-1002 for urgent order';
+      actualResult = 'Correctly returned empty state for non-urgent #MP-46287, and returned #MP-95815 for urgent order';
     } catch (e: any) {
       actualResult = `Failure: ${e.message}`;
       throw e;
@@ -327,8 +327,8 @@ test.describe('2. Order ID + Each Other Filter Combinations', () => {
       reportCollector.addResult({
         id: 'TC-COMB-010',
         combination: 'Order ID + Urgent',
-        input: '#MP-46287 (Urgent: ON) and #YM-1002 (Urgent: ON)',
-        expected: 'Empty state for #MP-46287; #YM-1002 returned for urgent anchor',
+        input: '#MP-46287 (Urgent: ON) and #MP-95815 (Urgent: ON)',
+        expected: 'Empty state for #MP-46287; #MP-95815 returned for urgent anchor',
         actual: actualResult,
         status: passed ? 'PASS' : 'FAIL',
         failureReason: passed ? undefined : actualResult,

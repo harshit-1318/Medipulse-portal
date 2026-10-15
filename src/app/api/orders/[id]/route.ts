@@ -21,6 +21,7 @@ export async function GET(request: Request, { params }: RouteContext) {
         { shopify_order_id: cleanId },
         { orderNumber: cleanId },
         { orderNumber: `#${cleanId}` },
+        { store_order_id: cleanId },
         ...(isMongoId ? [{ _id: cleanId }] : []),
       ],
     }).lean();

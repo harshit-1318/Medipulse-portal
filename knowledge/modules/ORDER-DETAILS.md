@@ -8,6 +8,15 @@
 - API service: src/api/services/orderService.ts
 
 ## Notes
+- **Customer Document Status Parity with Listing** (Oct 15 2026):
+	- `buildOrderDetailPayload` in `src/app/api/orders/[id]/helpers.ts` and `documentHelpers.ts` dynamically derives `customerDocuments` and `consultationFlags` from `orderDoc` in MongoDB instead of returning hardcoded placeholder Unsplash image URLs (`DEFAULT_CUSTOMER_DOCUMENTS`) and false positive upload flags (`DEFAULT_CONSULTATION_FLAGS`).
+	- `useIdentityCardData` in `src/components/order-details/sections/DocumentPrescription/hooks/useIdentityCardData.ts` uses the centralized `getDocumentItemsStatus()` and `resolveDocumentUrl()` from `src/api/services/orders/utils/docsStatus.ts`.
+	- `idCard` and `fullPhoto` are only supplied when an actual accessible document resource URL exists; if missing or invalid, they resolve to `null`, ensuring `DocumentRow` displays `NOT UPLOADED` (red badge) and hides non-functional `VIEW` buttons.
+	- Previous Prescriptions section remains strictly separate from customer identity documents and its viewing action does not mutate identity document statuses.
+- **Order Status Parity with Listing** (Oct 15 2026):
+	- Order details payload in `src/app/api/orders/[id]/helpers.ts` dynamically derives `fulfillment_status` and `status` from `orderDoc` in MongoDB instead of hardcoding `'fulfilled'`.
+	- `detectOrderStatus` in `src/components/order-details/utils/status.ts` accurately maps fulfillment and order statuses to `STATUS_MAP` semantics matching table `StatusCell`.
+	- Order cancellation (`/api/orders/cancel`) and updates (`/api/orders/update-status`) persist changes directly to MongoDB so listing and details remain in lockstep.
 - Validate feature-flag or temporary-hidden actions are documented before release toggles change.
 - Keep date formatting and status rendering deterministic for medical audit use cases.
 - **Communication panel actions are now activity-logged** (May 1 2026):

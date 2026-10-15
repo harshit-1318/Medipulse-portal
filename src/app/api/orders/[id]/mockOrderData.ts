@@ -1,20 +1,20 @@
 export const DEFAULT_CONSULTATION_FLAGS = {
-  has_full_photo: true,
-  has_id_card: true,
+  has_full_photo: false,
+  has_id_card: false,
   has_video_recording: false,
-  consultation_reviewed: true,
-  image_id_verified: true,
-  scr_accessed: true,
-  sms_sent: true,
+  consultation_reviewed: false,
+  image_id_verified: false,
+  scr_accessed: false,
+  sms_sent: false,
   postal_sent: false,
 };
 
 export const DEFAULT_CUSTOMER_DOCUMENTS = {
-  id_card: 'https://images.unsplash.com/photo-1544717305-2782549b5136?w=600&auto=format&fit=crop&q=60',
-  full_photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&auto=format&fit=crop&q=60',
+  id_card: null,
+  full_photo: null,
   review_full_photo: null,
   previous_prescriptions: [],
-  previous_prescriptions_count: 1,
+  previous_prescriptions_count: 0,
   video_recordings: [],
 };
 

@@ -15,8 +15,9 @@
 	- Order list status must use the same precedence as order details.
 	- If either status source reports `on_hold` (including `on hold`), display **On Hold**.
 	- List mapping should read root, nested `orderInfo`, and Shopify raw payload fields (`raw_data.fulfillment_status`) because some list responses carry stale top-level `status` values.
-- Documents column contract (Apr 27 2026):
-	- `OrderType.documentItemsStatus` carries `{ id, fullPhoto, video }` booleans.
+- Documents column & status parity contract (Oct 15 2026):
+	- `OrderType.documentItemsStatus` carries `{ id, fullPhoto, video }` booleans derived independently by centralized `getDocumentItemsStatus()`.
+	- `mapper.ts` maps `documentItemsStatus` directly from `rawDocStatus` instead of falling back to aggregate `hasDocs`, preventing non-identity tags (e.g. prescription tags) from improperly affecting customer identity document statuses.
 	- `DocsCell` renders three stacked rows (`ID`, `Full Photo`, `Video`) with Uploaded/Not Uploaded per row.
 	- Existing `documentsUploaded` remains for legacy aggregate behavior and filters (ID + Full Photo only).
 	- Docs column sorting is intentionally disabled in the table UI; docs visibility is per-item display only and should not control table ordering.

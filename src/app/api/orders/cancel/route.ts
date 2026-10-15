@@ -23,7 +23,10 @@ export async function POST(request: Request) {
         { orderNumber: orderId },
         { orderNumber: `#${cleanId}` },
         { orderNumber: cleanId },
+        { shopify_order_id: cleanId },
+        { shopify_order_id: String(cleanId) },
         { shopify_order_id: Number(cleanId) || 0 },
+        { store_order_id: cleanId },
       ],
     };
 
@@ -35,6 +38,7 @@ export async function POST(request: Request) {
       query,
       {
         status: 'cancelled',
+        fulfillment_status: 'cancelled',
         updatedAt: new Date(),
       },
       { new: true }
