@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ExportModal } from "../../actions";
 
 interface Props {
@@ -10,12 +10,19 @@ interface Props {
 
 export function FilterBadgesGroup({ activeFilterBadges, removeFilterBadge, showFilters, setShowFilters }: Props) {
     const [showExportModal, setShowExportModal] = useState(false);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    const badges = mounted ? activeFilterBadges : [];
 
     return (
         <div className="flex items-center gap-3">
-            {activeFilterBadges.length > 0 && (
+            {badges.length > 0 && (
                 <div className="hidden md:flex items-center gap-2 mr-2 animate-in fade-in slide-in-from-right-4 duration-500">
-                    {activeFilterBadges.slice(0, 3).map((badge) => {
+                    {badges.slice(0, 3).map((badge) => {
                         const Icon = badge.icon;
                         const isRemovable = badge.isRemovable !== false;
 
@@ -37,9 +44,9 @@ export function FilterBadgesGroup({ activeFilterBadges, removeFilterBadge, showF
                             </span>
                         );
                     })}
-                    {activeFilterBadges.length > 3 && (
+                    {badges.length > 3 && (
                         <span className="px-2.5 py-1 text-[11px] font-bold text-slate-500 bg-slate-50 border border-slate-200 rounded-full shadow-sm">
-                            +{activeFilterBadges.length - 3} more
+                            +{badges.length - 3} more
                         </span>
                     )}
                 </div>

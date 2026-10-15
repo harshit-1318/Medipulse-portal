@@ -51,7 +51,7 @@ export const getOrders = async (
         const list = enrichOrdersList(response);
 
         const mappedOrders = list.map((o) => {
-            return mapBackendOrderToFrontend(o, filters.documents as string, filters.repeatedOrders as string);
+            return mapBackendOrderToFrontend(o, undefined, filters.repeatedOrders as string);
         });
 
         const total = Number(response?.total || (response?.orders ? response.orders.length : list.length));

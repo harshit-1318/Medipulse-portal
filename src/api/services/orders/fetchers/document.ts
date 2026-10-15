@@ -12,7 +12,7 @@ export const getUploadedOrders = async (page: number = 1, limit: number = 20): P
         const data = response;
         const list: any[] = Array.isArray(data?.orders) ? data.orders : Array.isArray(data) ? data : [];
         const total = Number(data?.total || list.length);
-        const orders: OrderType[] = list.map((o) => mapBackendOrderToFrontend(o, "Uploaded"));
+        const orders: OrderType[] = list.map((o) => mapBackendOrderToFrontend(o));
         return { orders, total };
     } catch (error) {
         console.error("❌ [getUploadedOrders] Error:", error);
@@ -30,7 +30,7 @@ export const getNotUploadedOrders = async (page: number = 1, limit: number = 20)
         const data = response;
         const list: any[] = Array.isArray(data?.orders) ? data.orders : Array.isArray(data) ? data : [];
         const total = Number(data?.total || list.length);
-        const orders: OrderType[] = list.map((o) => mapBackendOrderToFrontend(o, "Not Uploaded"));
+        const orders: OrderType[] = list.map((o) => mapBackendOrderToFrontend(o));
         return { orders, total };
     } catch (error) {
         console.error("❌ [getNotUploadedOrders] Error:", error);

@@ -65,7 +65,11 @@ export function applyProductAndDocFilters(query: Record<string, any>, searchPara
       targetAnd.push({
         $or: [
           { hasIdCard: true },
+          { has_id_card: true },
           { hasFullPhoto: true },
+          { has_full_photo: true },
+          { hasVideoRecording: true },
+          { has_video_recording: true },
           { documentsUploaded: true },
           { documentStatus: 'uploaded' },
           { tags: { $in: ['prescription_uploaded', 'documents_uploaded', 'uploaded'] } },
@@ -74,7 +78,11 @@ export function applyProductAndDocFilters(query: Record<string, any>, searchPara
     } else if (docStatus === 'not_uploaded' || docStatus === 'not uploaded' || docStatus === 'not-uploaded') {
       targetAnd.push({
         hasIdCard: { $ne: true },
+        has_id_card: { $ne: true },
         hasFullPhoto: { $ne: true },
+        has_full_photo: { $ne: true },
+        hasVideoRecording: { $ne: true },
+        has_video_recording: { $ne: true },
         documentsUploaded: { $ne: true },
         documentStatus: { $ne: 'uploaded' },
         tags: { $nin: ['prescription_uploaded', 'documents_uploaded', 'uploaded'] },

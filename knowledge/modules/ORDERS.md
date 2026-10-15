@@ -17,16 +17,18 @@
 	- List mapping should read root, nested `orderInfo`, and Shopify raw payload fields (`raw_data.fulfillment_status`) because some list responses carry stale top-level `status` values.
 - Documents column & status parity contract (Oct 15 2026):
 	- `OrderType.documentItemsStatus` carries `{ id, fullPhoto, video }` booleans derived independently by centralized `getDocumentItemsStatus()`.
-	- `mapper.ts` maps `documentItemsStatus` directly from `rawDocStatus` instead of falling back to aggregate `hasDocs`, preventing non-identity tags (e.g. prescription tags) from improperly affecting customer identity document statuses.
+	- `mapper.ts` maps `documentItemsStatus` directly from `rawDocStatus` instead of falling back to aggregate `hasDocs` or arbitrary `forceDocuments` defaults, guaranteeing that individual document statuses (`id`, `fullPhoto`, `video`) are strictly preserved across all views including `/orders/document/not-uploaded`.
 	- `DocsCell` renders three stacked rows (`ID`, `Full Photo`, `Video`) with Uploaded/Not Uploaded per row.
 	- Existing `documentsUploaded` remains for legacy aggregate behavior and filters (ID + Full Photo only).
 	- Docs column sorting is intentionally disabled in the table UI; docs visibility is per-item display only and should not control table ordering.
+	- Not Uploaded Documents Hook & Sort Parity: `useNotUploadedDocsData` inherits `sortBy: "date"` and `sort: "desc"` from `DEFAULT_ORDER_FILTERS`, displaying newest orders first (15 Oct 2026) matching All Orders instead of legacy oldest-first ascending sort. `STORAGE_VERSION` bumped to `7` in `orderFilterUtils.ts` to clear stale localStorage sort caches.
 - Re-Sync endpoint behavior:
 	- `resyncOrder` / `resyncOrderFromShopify` calls `POST /orders/:id/resync` to trigger an order data re-sync from the connected e-commerce store.
 - Default Sort & Column Headers Contract (Sep 10 2026):
 	- Default sort across order lists is `sortBy: "date"`, `sort: "desc"` (Order Date descending / newest first).
 	- `OrderTableHeader` uses `Hash` (`#`) icon for `id` and `shopify_order_id` columns instead of misleading `ExternalLink`.
 	- `OrderTableHeader` uses `mounted` state check to render neutral `ArrowUpDown` during SSR and initial client hydration, eliminating Next.js hydration mismatch errors when client sorting differs from SSR defaults.
+	- `FilterBadgesGroup` uses `mounted` state check to gate active filter badge rendering during SSR and initial client hydration, eliminating Next.js hydration mismatch errors when client URL filter queries or localStorage filter persistence restore active filters.
 	- `useOrderTableEffects` fallback sorting fixed to `"date"` instead of `"createdAt"` to match the column ID in `OrderColumns`.
 	- `normalizeSortBy` in `urlBase.ts` normalizes `"createdAt"` to `"date"`, and `"shopify_order_id"`, `"orderId"`, `"order_id"` to `"id"`.
 	- `OrderTable.tsx` uses `resolveSortId` backed by `VALID_SORT_COLUMNS` to ensure non-existent column IDs (e.g. `shopify_order_id`) are never passed to TanStack Table.

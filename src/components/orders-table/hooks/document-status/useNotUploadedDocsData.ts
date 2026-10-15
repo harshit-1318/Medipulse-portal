@@ -9,7 +9,6 @@ import { getInitialOrderFilters, getUrlParamInt, getDashboardStorageKey } from '
 const DEFAULT_FILTERS: OrderFilters = {
     ...DEFAULT_ORDER_FILTERS,
     documents: "Not Uploaded",
-    sort: "asc",
 };
 
 export function useNotUploadedDocsData() {

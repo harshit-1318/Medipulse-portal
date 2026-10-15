@@ -19,6 +19,28 @@ describe('mapBackendOrderToFrontend - Core Mapping', () => {
         expect(result.documents).toBe('Not Uploaded');
     });
 
+    it('does not overwrite documentItemsStatus with arbitrary defaults when forceDocuments is set', () => {
+        const orderWithIdOnly = {
+            has_id_card: true,
+            has_full_photo: false,
+            has_video_recording: false,
+        };
+
+        const notUploadedResult = mapBackendOrderToFrontend(orderWithIdOnly, 'Not Uploaded');
+        expect(notUploadedResult.documentItemsStatus).toEqual({
+            id: true,
+            fullPhoto: false,
+            video: false,
+        });
+
+        const uploadedResult = mapBackendOrderToFrontend(orderWithIdOnly, 'Uploaded');
+        expect(uploadedResult.documentItemsStatus).toEqual({
+            id: true,
+            fullPhoto: false,
+            video: false,
+        });
+    });
+
     it('maps status as On Hold when status is on_hold but fulfillment is fulfilled', () => {
         const result = mapBackendOrderToFrontend({
             fulfillment_status: 'fulfilled',

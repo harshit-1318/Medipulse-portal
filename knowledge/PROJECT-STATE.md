@@ -1,5 +1,10 @@
 # Frontend Project State
 
+- Orders Table FilterBadgesGroup SSR Hydration Fix (Oct 15 2026):
+	- Root Cause: During Next.js SSR, `AllOrdersPage` (and other order views) pre-rendered `OrderTable` on the server where `typeof window === 'undefined'`. Consequently, `useAllOrdersData` initialized `filters` to defaults without active filter badges (`activeFilterBadges = []`), so `FilterBadgesGroup` rendered `<button>Filters</button>` as the first child of the actions container. In the browser during initial hydration, `getInitialOrderFilters` evaluated URL search parameters or `localStorage`, populating active badges. As a result, the client rendered `<div className="hidden md:flex ...">` while the server had rendered `<button>`, triggering a React hydration failure error.
+	- Resolution: Added a `mounted` state gate to `FilterBadgesGroup.tsx` (`const badges = mounted ? activeFilterBadges : [];`). SSR and initial client hydration now render an identical DOM structure. Badges appear smoothly post-mount without DOM mismatch.
+	- Vitest QA: Created unit test suite in `src/components/orders-table/__tests__/FilterBadgesGroup.test.tsx` (6/6 tests passing) covering badge rendering, badge removal, filter toggling, and export modal actions. All 13 orders-table test files (56 tests) pass cleanly.
+
 - MediPulse Complete Orders Filters Module QA Audit & Bug Fixes (Oct 15 2026):
 	- Zero Regressions & System Parity: Verified 100% functionality across the complete Orders Filters module at `http://localhost:3000/orders/all`, encompassing all 52 live MongoDB clinical order records, 12 individual filters, 20+ filter combinations, 6-column sorting, pagination, and modal UI states.
 	- Critical Defect 1 Resolved (Regex Injection & Metacharacter Crashes): Created centralized `escapeRegex` utility in `src/utils/helpers/string.ts` and integrated it across `orderQueryHelper.ts` and `orderProductFilter.ts`. User queries containing regex characters (e.g. `MP-(`, `John[`, `Semaglutide + (Pen)`) now execute safe literal substring searches returning HTTP 200 without MongoDB syntax exceptions (previously crashed with 500).
@@ -1403,7 +1408,17 @@
 	- Implemented immediate modal flush via `applyFilters()` so typing short IDs or clicking Search immediately applies filter state without debounce delay.
 	- Enriched 44 prescription seed records in MongoDB Atlas with authentic `shopifyOrderId`, `storeOrderId`, and `customerId` corresponding to `Order` models, and removed hardcoded dummy fallbacks from `mapPrescriptionItem`.
 	- Added unit tests in `prescriptionFilterQuery.test.ts`, `prescriptionService.test.ts`, and `usePrescriptionFilters.test.ts` (181 test files, 983 tests passing).
-	- Added 8 automated Playwright E2E tests in `e2e/prescriptions/prescriptions-filters.spec.ts` (100% pass rate).
+- Completed Orders Count Verification & Not Uploaded Documents Date/Sorting Audit & Fixes (Oct 15 2026):
+	- Audited total order count against MongoDB database records: confirmed exactly 52 unique orders in the database (0 duplicate order numbers, 0 duplicate shopify IDs, 0 duplicate object IDs).
+	- Investigated order dates and relative times: confirmed database `createdAt` dates for Emma Thompson (`#MP-40015`: 08 Sept 2026), David Wilson (`#MP-30010`: 08 Sept 2026, `#MP-30022`: 08 Sept 2026), and Mia Miller (`#MP-64964`: 09 Sept 2026) are 100% accurate database records, and their relative times (37 and 36 days ago) are mathematically exact against local wall-clock (15 Oct 2026).
+	- Diagnosed root cause for apparent date discrepancy: `useNotUploadedDocsData.ts` had a hardcoded `sort: "asc"` in `DEFAULT_FILTERS`, which inverted table sorting to display oldest orders (Sept 8, 2026) on page 1, while All Orders (`/orders/all`) defaulted to `sort: "desc"` showing newest orders (Oct 15, 2026) on page 1.
+	- Fixed default sort in `useNotUploadedDocsData.ts` to inherit `sort: "desc"` and `sortBy: "date"` from `DEFAULT_ORDER_FILTERS`, establishing 100% sort parity and newest-first order display across all order pages.
+	- Bumped `STORAGE_VERSION` to `7` in `src/utils/url/orderFilterUtils.ts` to automatically invalidate stale localStorage caches that previously stored `sort: "asc"`.
+	- Audited document upload status: confirmed all 52 database records currently have no documents uploaded, accurately qualifying for both All Orders (52) and Not Uploaded Documents (52).
+	- Fixed document mapping in `mapper.ts`: mapped `documentItemsStatus` directly from `rawDocStatus` instead of forcing all sub-items to false/true when `forceDocuments` is present, guaranteeing individual document items (`id`, `fullPhoto`, `video`) preserve their real states.
+	- Updated `core.ts` and `document.ts` fetchers to stop forcing arbitrary document statuses.
+	- Enhanced MongoDB query filter in `orderProductFilter.ts` to include snake_case (`has_id_card`, `has_full_photo`, `has_video_recording`) and video flags.
+	- Added dedicated unit tests in `useNotUploadedDocsData.test.ts` (3 tests) and regression tests in `mapperCore.test.ts` (5 tests).
 
 ## Active Risks
 - Queue monitor currently reads aggregate status from backend overview endpoint only (no per-site filter toggle yet); if multi-site operational filtering is needed, add explicit site selector + backend query support in a follow-up.

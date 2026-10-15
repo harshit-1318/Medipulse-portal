@@ -16,11 +16,7 @@ export function mapBackendOrderToFrontend(o: any, forceDocuments?: any, filterHi
     if (forceDocuments === "Uploaded") hasDocs = true;
     if (forceDocuments === "Not Uploaded") hasDocs = false;
 
-    const documentItemsStatus = {
-        id: forceDocuments === "Uploaded" ? true : (forceDocuments === "Not Uploaded" ? false : rawDocStatus.id),
-        fullPhoto: forceDocuments === "Uploaded" ? true : (forceDocuments === "Not Uploaded" ? false : rawDocStatus.fullPhoto),
-        video: forceDocuments === "Not Uploaded" ? false : rawDocStatus.video,
-    };
+    const documentItemsStatus = rawDocStatus;
 
     let internalId = o.orderId || o.name || o.order_name;
 
