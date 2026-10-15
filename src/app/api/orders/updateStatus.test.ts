@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import * as apiAuth from '@/lib/auth/apiAuth';
 import { POST } from './update-status/route';
 
 vi.mock('@/lib/db/mongodb', () => ({
@@ -21,6 +22,11 @@ vi.mock('@/lib/db/models/Order', () => ({
 describe('POST /api/orders/update-status', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.spyOn(apiAuth, 'verifyApiAuth').mockResolvedValue({
+      authorized: true,
+      user: { role: 'admin' } as any,
+      errorResponse: null,
+    });
   });
 
   it('updates order to on_hold when mark_on_hold is passed', async () => {

@@ -2,8 +2,14 @@ import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/db/mongodb';
 import { Order } from '@/lib/db/models/Order';
 import { User } from '@/lib/db/models/User';
+import { verifyApiAuth } from '@/lib/auth/apiAuth';
 
 export async function GET(request: Request) {
+  const auth = await verifyApiAuth(request, { requireSuperAdmin: true });
+  if (!auth.authorized) {
+    return auth.errorResponse!;
+  }
+
   try {
     await connectToDatabase();
 
@@ -21,8 +27,8 @@ export async function GET(request: Request) {
         primary_domain: 'localhost',
         url: 'localhost',
         is_active: true,
-        totalUsers: totalUsers || 12,
-        totalOrders: totalOrders || 2,
+        totalUsers: totalUsers ?? 0,
+        totalOrders: totalOrders ?? 0,
         createdAt: new Date().toISOString(),
       },
     ];
@@ -58,6 +64,11 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const auth = await verifyApiAuth(request, { requireSuperAdmin: true });
+  if (!auth.authorized) {
+    return auth.errorResponse!;
+  }
+
   try {
     await connectToDatabase();
     const body = await request.json().catch(() => ({}));

@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { connectToDatabase } from '@/lib/db/mongodb';
 import { Customer } from '@/lib/db/models/Customer';
+import { verifyApiAuth } from '@/lib/auth/apiAuth';
 
 const SAMPLE_CUSTOMERS = [
   { name: 'John Doe', email: 'john@example.com', phone: '+447123456789', status: 'active', totalOrders: 3 },
@@ -10,6 +11,13 @@ const SAMPLE_CUSTOMERS = [
 ];
 
 export async function GET(request: NextRequest) {
+  const auth = await verifyApiAuth(request, {
+    requiredRoles: ['super_admin', 'admin', 'prescriber', 'pharmacist', 'customer_support'],
+  });
+  if (!auth.authorized) {
+    return auth.errorResponse!;
+  }
+
   try {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1', 10);

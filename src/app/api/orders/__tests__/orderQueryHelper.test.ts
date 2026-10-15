@@ -34,10 +34,11 @@ describe('buildOrderQuery', () => {
     const result = buildOrderQuery(params);
 
     expect(result.query.customerName).toEqual({ $regex: 'John', $options: 'i' });
-    expect(result.query.customerEmail).toEqual({ $regex: 'john@example.com', $options: 'i' });
+    expect(result.query.customerEmail).toEqual({ $regex: 'john@example\\.com', $options: 'i' });
     expect(result.query.$and).toBeDefined();
     expect(result.query.$and.some((c: any) => c.$or?.some((o: any) => o.orderNumber?.$regex?.includes('1024')))).toBe(true);
   });
+
 
   it('handles customerId search', () => {
     const params = new URLSearchParams({ customerId: '650375' });
@@ -149,4 +150,42 @@ describe('buildOrderQuery', () => {
     }));
     expect(res.query).toEqual({});
   });
+
+  it('safely escapes regex metacharacters in user inputs', () => {
+    const res = buildOrderQuery(new URLSearchParams({
+      orderId: 'MP-(100)',
+      customerName: 'John[Doe]',
+      productName: 'Semaglutide + (Pen)',
+      customerId: '123*',
+    }));
+    expect(res.query.$and).toBeDefined();
+    // Verify orderId regex has escaped parenthesis
+    expect(res.query.$and.some((c: any) => c.$or?.some((o: any) => o.orderNumber?.$regex?.includes('\\(')))).toBe(true);
+    // Verify customerName has escaped brackets
+    expect(res.query.customerName?.$regex).toBe('John\\[Doe\\]');
+    // Verify productName has escaped plus and parens
+    expect(res.query.$and.some((c: any) => c.$or?.some((o: any) => o['items.name']?.$regex?.includes('\\+')))).toBe(true);
+  });
+
+  it('safely handles invalid date format without crashing or casting invalid date', () => {
+    const res = buildOrderQuery(new URLSearchParams({
+      startDate: 'invalid-date',
+      endDate: 'bad-date',
+    }));
+    expect(res.query.createdAt).toBeDefined();
+    expect(res.query.createdAt.$gt).toBeInstanceOf(Date);
+  });
+
+  it('applies boundary check for short category tags like ED to avoid false positives', () => {
+    const res = buildOrderQuery(new URLSearchParams({
+      product_category: 'ed',
+    }));
+    expect(res.query.$and).toBeDefined();
+    const catClause = res.query.$and.find((c: any) => c.$or?.some((o: any) => o['items.name']?.$regex?.includes('sildenafil')));
+    expect(catClause).toBeDefined();
+    const tagSubclause = catClause.$or.find((o: any) => o.tags?.$regex);
+    expect(tagSubclause.tags.$regex).toContain('ed');
+    expect(tagSubclause.tags.$regex).toContain('(^|[^a-zA-Z0-9])');
+  });
 });
+

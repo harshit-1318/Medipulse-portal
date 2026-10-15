@@ -27,3 +27,12 @@ export const capitalize = (text: string): string => {
     if (!text) return text;
     return text.charAt(0).toUpperCase() + text.slice(1);
 };
+
+/**
+ * Escape special regex characters in a string for safe MongoDB regex queries
+ */
+export const escapeRegex = (str: string): string => {
+    if (!str || typeof str !== "string") return "";
+    return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+};
+

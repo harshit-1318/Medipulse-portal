@@ -1,3 +1,5 @@
+import { escapeRegex } from '@/utils/helpers/string';
+
 const CATEGORY_REGEX_MAP: Record<string, string> = {
   'weight-loss': 'wegovy|weight|obesity|semaglutide|injectable|mounjaro|tirzepatide|zepbound|ozempic|rybelsus|saxenda|mysimba|xenical|orlistat',
   'ed': 'sildenafil|tadalafil|viagra|cialis|levitra|spedra|vardenafil',
@@ -21,10 +23,11 @@ export function applyProductAndDocFilters(query: Record<string, any>, searchPara
   // Product Category
   const cat = (searchParams.get('product_category') || searchParams.get('category') || searchParams.get('productCategory') || '').toLowerCase().trim();
   if (cat && cat !== 'all') {
-    const pattern = CATEGORY_REGEX_MAP[cat] || cat;
+    const pattern = CATEGORY_REGEX_MAP[cat] || escapeRegex(cat);
+    const tagPattern = (cat.length <= 3) ? `(^|[^a-zA-Z0-9])${escapeRegex(cat)}([^a-zA-Z0-9]|$)` : escapeRegex(cat);
     targetAnd.push({
       $or: [
-        { tags: { $regex: cat, $options: 'i' } },
+        { tags: { $regex: tagPattern, $options: 'i' } },
         { 'items.name': { $regex: pattern, $options: 'i' } },
       ],
     });
@@ -45,13 +48,15 @@ export function applyProductAndDocFilters(query: Record<string, any>, searchPara
   // Product Name
   const prodName = (searchParams.get('productName') || searchParams.get('product_name') || searchParams.get('product') || '').trim();
   if (prodName) {
+    const escapedProd = escapeRegex(prodName);
     targetAnd.push({
       $or: [
-        { 'items.name': { $regex: prodName, $options: 'i' } },
-        { tags: { $regex: prodName, $options: 'i' } },
+        { 'items.name': { $regex: escapedProd, $options: 'i' } },
+        { tags: { $regex: escapedProd, $options: 'i' } },
       ],
     });
   }
+
 
   // Documents
   const docStatus = (searchParams.get('documentStatus') || searchParams.get('documents') || '').toLowerCase().trim();

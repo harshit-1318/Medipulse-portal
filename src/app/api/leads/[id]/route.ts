@@ -2,12 +2,18 @@ import { NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 import { connectToDatabase } from '@/lib/db/mongodb';
 import { Lead } from '@/lib/db/models/Lead';
+import { verifyApiAuth } from '@/lib/auth/apiAuth';
 
 interface RouteContext {
   params: Promise<{ id: string }>;
 }
 
 export async function GET(request: Request, { params }: RouteContext) {
+  const auth = await verifyApiAuth(request, {
+    requiredRoles: ['super_admin', 'admin', 'customer_support'],
+  });
+  if (!auth.authorized) return auth.errorResponse!;
+
   try {
     const { id } = await params;
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
@@ -41,6 +47,11 @@ export async function GET(request: Request, { params }: RouteContext) {
 }
 
 export async function PATCH(request: Request, { params }: RouteContext) {
+  const auth = await verifyApiAuth(request, {
+    requiredRoles: ['super_admin', 'admin', 'customer_support'],
+  });
+  if (!auth.authorized) return auth.errorResponse!;
+
   try {
     const { id } = await params;
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
@@ -79,6 +90,11 @@ export async function PUT(request: Request, ctx: RouteContext) {
 }
 
 export async function DELETE(request: Request, { params }: RouteContext) {
+  const auth = await verifyApiAuth(request, {
+    requiredRoles: ['super_admin', 'admin', 'customer_support'],
+  });
+  if (!auth.authorized) return auth.errorResponse!;
+
   try {
     const { id } = await params;
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {

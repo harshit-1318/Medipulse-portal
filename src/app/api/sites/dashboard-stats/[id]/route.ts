@@ -3,12 +3,18 @@ import { connectToDatabase } from '@/lib/db/mongodb';
 import { Order } from '@/lib/db/models/Order';
 import { User } from '@/lib/db/models/User';
 import { ActivityLog } from '@/lib/db/models/ActivityLog';
+import { verifyApiAuth } from '@/lib/auth/apiAuth';
 
 interface RouteContext {
   params: Promise<{ id: string }>;
 }
 
 export async function GET(request: Request, { params }: RouteContext) {
+  const auth = await verifyApiAuth(request, { requireSuperAdmin: true });
+  if (!auth.authorized) {
+    return auth.errorResponse!;
+  }
+
   try {
     const { id } = await params;
     const siteId = decodeURIComponent(id || '').trim();

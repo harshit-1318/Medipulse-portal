@@ -3,6 +3,7 @@ import { PATCH as statusPATCH } from './status/route';
 import { PATCH as assignPATCH } from './assign/route';
 import { GET as notesGET, POST as notesPOST } from './notes/route';
 import { GET as activityGET } from './activity/route';
+import * as apiAuth from '@/lib/auth/apiAuth';
 
 vi.mock('@/lib/db/mongodb', () => ({
   connectToDatabase: vi.fn().mockResolvedValue(true),
@@ -46,6 +47,18 @@ describe('Lead Detail Sub-Routes', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.spyOn(apiAuth, 'verifyApiAuth').mockResolvedValue({
+      authorized: true,
+      user: { role: 'admin' } as any,
+      errorResponse: null,
+    });
+  });
+
+  it('rejects unauthenticated requests with 401', async () => {
+    vi.restoreAllMocks();
+    const req = new Request('http://localhost:3000/api/leads/status', { method: 'PATCH' });
+    const res = await statusPATCH(req, { params: Promise.resolve({ id: validId }) });
+    expect(res.status).toBe(401);
   });
 
   it('PATCH /leads/[id]/status updates status', async () => {

@@ -3,8 +3,22 @@ import { connectToDatabase } from '@/lib/db/mongodb';
 import { Order } from '@/lib/db/models/Order';
 import { Customer } from '@/lib/db/models/Customer';
 import type { GlobalSearchOrder, GlobalSearchCustomer } from '@/types/globalSearch';
+import { verifyApiAuth } from '@/lib/auth/apiAuth';
+
+const SEARCH_ROLES = [
+  'super_admin',
+  'admin',
+  'prescriber',
+  'pharmacist',
+  'pharmacy_staff',
+  'customer_support',
+  'driver',
+];
 
 export async function GET(request: Request) {
+  const auth = await verifyApiAuth(request, { requiredRoles: SEARCH_ROLES });
+  if (!auth.authorized) return auth.errorResponse!;
+
   try {
     const { searchParams } = new URL(request.url);
     const q = (searchParams.get('q') || '').trim();

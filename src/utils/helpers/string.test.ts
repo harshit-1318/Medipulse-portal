@@ -1,8 +1,24 @@
 import { describe, it, expect } from 'vitest';
-import { slugify, cn, capitalize } from './string';
+import { slugify, cn, capitalize, escapeRegex } from './string';
 
 describe('string helpers', () => {
+    describe('escapeRegex', () => {
+        it('escapes special regex characters correctly', () => {
+            expect(escapeRegex('MP-(100)')).toBe('MP-\\(100\\)');
+            expect(escapeRegex('test[123]')).toBe('test\\[123\\]');
+            expect(escapeRegex('price+$100?*')).toBe('price\\+\\$100\\?\\*');
+            expect(escapeRegex('user^name.with|pipe')).toBe('user\\^name\\.with\\|pipe');
+        });
+
+        it('handles empty or non-string input safely', () => {
+            expect(escapeRegex('')).toBe('');
+            expect(escapeRegex(null as any)).toBe('');
+            expect(escapeRegex(undefined as any)).toBe('');
+        });
+    });
+
     describe('slugify', () => {
+
         it('converts basic text to url safe slug', () => {
             expect(slugify('MediPulse UK')).toBe('medipulse-uk');
             expect(slugify('Hello World!')).toBe('hello-world');

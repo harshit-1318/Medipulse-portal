@@ -1,9 +1,17 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { connectToDatabase } from '@/lib/db/mongodb';
 import { Prescription } from '@/lib/db/models/Prescription';
+import { verifyApiAuth } from '@/lib/auth/apiAuth';
 import { SAMPLE_RX, mapPrescriptionItem, buildPrescriptionFilterQuery } from './helpers';
 
 export async function GET(request: NextRequest) {
+  const auth = await verifyApiAuth(request, {
+    requiredRoles: ['super_admin', 'admin', 'prescriber', 'pharmacist', 'pharmacy_staff'],
+  });
+  if (!auth.authorized) {
+    return auth.errorResponse!;
+  }
+
   try {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1', 10);

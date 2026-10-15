@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import * as apiAuth from '@/lib/auth/apiAuth';
 import { POST as cancelPOST } from './cancel/route';
 import { POST as docReminderPOST } from './[id]/document-reminder/route';
 import { POST as rxReminderPOST } from './[id]/prescription-reminder/route';
@@ -29,6 +30,11 @@ vi.mock('@/lib/db/models/Order', () => ({
 describe('Order Actions & Video API Routes', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.spyOn(apiAuth, 'verifyApiAuth').mockResolvedValue({
+      authorized: true,
+      user: { role: 'admin' } as any,
+      errorResponse: null,
+    });
   });
 
   it('POST /orders/cancel updates order to cancelled', async () => {

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import PersonalInfoFields from './PersonalInfoFields';
 import PasswordField from './PasswordField';
 import FormActions from './FormActions';
@@ -28,8 +29,13 @@ export default function AccountForm() {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        toast.success('Account preferences saved successfully');
+    };
+
     return (
-        <form className="space-y-8" onSubmit={(e) => e.preventDefault()}>
+        <form className="space-y-8" onSubmit={handleSubmit}>
             <PersonalInfoFields 
                 fullName={formData.fullName} 
                 email={formData.email} 

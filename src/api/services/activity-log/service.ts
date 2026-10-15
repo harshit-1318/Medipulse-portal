@@ -1,6 +1,6 @@
 import apiClient from "../../apiClient";
 import type { ActivityFilterParams, ActivityLogsResponse } from "./types";
-import { mapToActivityLog, mapToActivityLogBySite } from "./mappers";
+import { mapToActivityLog } from "./mappers";
 import { buildActivityLogParams } from "./params";
 import { getUserActivitySummary } from "./userSummary";
 
@@ -35,39 +35,6 @@ export const getActivityLogs = async (
         };
     } catch (error) {
         console.error("❌ [getActivityLogs] Error:", error);
-        return {
-            activityLogs: [],
-            total: 0,
-            page,
-            limit,
-        };
-    }
-};
-
-export const getActivityLogsBySite = async (
-    siteId: string,
-    page: number = 1,
-    limit: number = 20,
-    search: string = "",
-): Promise<ActivityLogsResponse> => {
-    try {
-        const response: any = await apiClient.get({
-            url: `/activity-log/${siteId}`,
-            method: "GET",
-            params: { page, limit, search },
-        });
-
-        const rawLogs = Array.isArray(response) ? response : [];
-        const activityLogs = rawLogs.map(mapToActivityLogBySite);
-
-        return {
-            activityLogs,
-            total: activityLogs.length,
-            page,
-            limit,
-        };
-    } catch (err) {
-        console.error("❌ [getActivityLogsBySite] Error:", err);
         return {
             activityLogs: [],
             total: 0,

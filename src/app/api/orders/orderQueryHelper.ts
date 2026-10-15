@@ -1,3 +1,4 @@
+import { escapeRegex } from '@/utils/helpers/string';
 import { applyStatusFilter } from './orderStatusFilter';
 import { applyProductAndDocFilters } from './orderProductFilter';
 import { applyDateFilter, parseDateBoundary } from './orderDateFilter';
@@ -30,12 +31,13 @@ export function buildOrderQuery(searchParams: URLSearchParams): OrderQueryParams
   const orderId = searchParams.get('orderId');
   if (orderId) {
     const cleanId = orderId.replace('#', '').trim();
-    const pattern = cleanId.replace(/[\s-]+/g, '[- ]?');
+    const escapedId = escapeRegex(cleanId);
+    const pattern = escapedId.replace(/[\s-]+/g, '[- ]?');
     andClauses.push({
       $or: [
         { orderNumber: { $regex: pattern, $options: 'i' } },
-        { shopify_order_id: { $regex: cleanId, $options: 'i' } },
-        { store_order_id: { $regex: cleanId, $options: 'i' } },
+        { shopify_order_id: { $regex: escapedId, $options: 'i' } },
+        { store_order_id: { $regex: escapedId, $options: 'i' } },
       ],
     });
   }
@@ -43,39 +45,42 @@ export function buildOrderQuery(searchParams: URLSearchParams): OrderQueryParams
   const customerId = searchParams.get('customerId');
   if (customerId) {
     const cleanCid = customerId.replace(/^[#\s]+/, '').trim();
+    const escapedCid = escapeRegex(cleanCid);
     andClauses.push({
       $or: [
-        { store_order_id: { $regex: cleanCid, $options: 'i' } },
-        { shopify_order_id: { $regex: cleanCid, $options: 'i' } },
-        { customerId: { $regex: cleanCid, $options: 'i' } },
+        { store_order_id: { $regex: escapedCid, $options: 'i' } },
+        { shopify_order_id: { $regex: escapedCid, $options: 'i' } },
+        { customerId: { $regex: escapedCid, $options: 'i' } },
       ],
     });
   }
 
   const customerName = searchParams.get('customerName');
-  if (customerName) query.customerName = { $regex: customerName.trim(), $options: 'i' };
+  if (customerName) query.customerName = { $regex: escapeRegex(customerName.trim()), $options: 'i' };
 
   const customerEmail = searchParams.get('customerEmail');
-  if (customerEmail) query.customerEmail = { $regex: customerEmail.trim(), $options: 'i' };
+  if (customerEmail) query.customerEmail = { $regex: escapeRegex(customerEmail.trim()), $options: 'i' };
 
   const generalCustomer = searchParams.get('customer');
   if (generalCustomer && !customerName && !customerEmail && !customerId) {
     const val = generalCustomer.trim();
     const cleanDigits = val.replace(/^[#\s]+/, '');
     if (val.includes('@')) {
-      query.customerEmail = { $regex: val, $options: 'i' };
+      query.customerEmail = { $regex: escapeRegex(val), $options: 'i' };
     } else if (/^\d+$/.test(cleanDigits)) {
+      const escapedDigits = escapeRegex(cleanDigits);
       andClauses.push({
         $or: [
-          { store_order_id: { $regex: cleanDigits, $options: 'i' } },
-          { shopify_order_id: { $regex: cleanDigits, $options: 'i' } },
-          { customerId: { $regex: cleanDigits, $options: 'i' } },
+          { store_order_id: { $regex: escapedDigits, $options: 'i' } },
+          { shopify_order_id: { $regex: escapedDigits, $options: 'i' } },
+          { customerId: { $regex: escapedDigits, $options: 'i' } },
         ],
       });
     } else {
-      query.customerName = { $regex: val, $options: 'i' };
+      query.customerName = { $regex: escapeRegex(val), $options: 'i' };
     }
   }
+
 
   applyDateFilter(query, searchParams);
 

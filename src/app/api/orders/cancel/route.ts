@@ -1,9 +1,17 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/db/mongodb';
 import { Order } from '@/lib/db/models/Order';
+import { verifyApiAuth } from '@/lib/auth/apiAuth';
 import mongoose from 'mongoose';
 
 export async function POST(request: Request) {
+  const auth = await verifyApiAuth(request, {
+    requiredRoles: ['super_admin', 'admin', 'prescriber', 'pharmacist', 'customer_support'],
+  });
+  if (!auth.authorized) {
+    return auth.errorResponse!;
+  }
+
   try {
     const body = await request.json().catch(() => ({}));
     const orderId = String(body.orderId || body.id || '').trim();

@@ -2,8 +2,16 @@ import { NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 import { connectToDatabase } from '@/lib/db/mongodb';
 import { Order } from '@/lib/db/models/Order';
+import { verifyApiAuth } from '@/lib/auth/apiAuth';
 
 export async function POST(request: Request) {
+  const auth = await verifyApiAuth(request, {
+    requiredRoles: ['super_admin', 'admin', 'prescriber', 'pharmacist', 'pharmacy_staff', 'customer_support', 'driver'],
+  });
+  if (!auth.authorized) {
+    return auth.errorResponse!;
+  }
+
   try {
     const body = await request.json().catch(() => ({}));
     const orderId = String(body.order_id || body.orderId || body.id || '').trim();

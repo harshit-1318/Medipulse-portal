@@ -1,5 +1,6 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { GET } from './route';
+import * as apiAuth from '@/lib/auth/apiAuth';
 
 vi.mock('@/lib/db/mongodb', () => ({
   connectToDatabase: vi.fn().mockResolvedValue(true),
@@ -36,6 +37,22 @@ vi.mock('@/lib/db/models/Order', () => ({
 }));
 
 describe('Order [id] API Route Handler', () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+    vi.spyOn(apiAuth, 'verifyApiAuth').mockResolvedValue({
+      authorized: true,
+      user: { role: 'admin' } as any,
+      errorResponse: null,
+    });
+  });
+
+  it('rejects unauthenticated requests with 401', async () => {
+    vi.restoreAllMocks();
+    const req = new Request('http://localhost:3000/api/orders/MP-12345');
+    const res = await GET(req, { params: Promise.resolve({ id: 'MP-12345' }) });
+    expect(res.status).toBe(401);
+  });
+
   it('returns 404 when order is not found in database', async () => {
     const req = new Request('http://localhost:3000/api/orders/nonexistent-99999');
     const res = await GET(req, { params: Promise.resolve({ id: 'nonexistent-99999' }) });

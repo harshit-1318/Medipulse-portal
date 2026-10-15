@@ -1,12 +1,20 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { connectToDatabase } from '@/lib/db/mongodb';
 import { Order } from '@/lib/db/models/Order';
+import { verifyApiAuth } from '@/lib/auth/apiAuth';
 import mongoose from 'mongoose';
 
 export async function POST(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
+  const auth = await verifyApiAuth(request, {
+    requiredRoles: ['super_admin', 'admin', 'prescriber', 'pharmacist', 'pharmacy_staff', 'customer_support'],
+  });
+  if (!auth.authorized) {
+    return auth.errorResponse!;
+  }
+
   try {
     const { id } = await context.params;
     const cleanId = (id || '').trim().replace(/^#/, '');

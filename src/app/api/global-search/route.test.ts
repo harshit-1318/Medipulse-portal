@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { GET } from './route';
+import * as apiAuth from '@/lib/auth/apiAuth';
 
 vi.mock('@/lib/db/mongodb', () => ({
   connectToDatabase: vi.fn().mockResolvedValue(true),
@@ -45,6 +46,18 @@ vi.mock('@/lib/db/models/Customer', () => ({
 describe('GET /api/global-search', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.spyOn(apiAuth, 'verifyApiAuth').mockResolvedValue({
+      authorized: true,
+      user: { role: 'admin' } as any,
+      errorResponse: null,
+    });
+  });
+
+  it('rejects unauthenticated requests with 401', async () => {
+    vi.restoreAllMocks();
+    const req = new Request('http://localhost:3000/api/global-search?q=alice');
+    const res = await GET(req);
+    expect(res.status).toBe(401);
   });
 
   it('returns empty results when query length is less than 2', async () => {

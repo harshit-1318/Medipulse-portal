@@ -2,11 +2,15 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { connectToDatabase } from '@/lib/db/mongodb';
 import { DocmanJob } from '@/lib/db/models/DocmanJob';
 import mongoose from 'mongoose';
+import { verifyApiAuth } from '@/lib/auth/apiAuth';
 
 export async function GET(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
+  const auth = await verifyApiAuth(request, { requiredRoles: ['super_admin', 'admin'] });
+  if (!auth.authorized) return auth.errorResponse!;
+
   try {
     const { id } = await context.params;
     await connectToDatabase();
@@ -43,6 +47,9 @@ export async function DELETE(
   request: NextRequest,
   context: { params: Promise<{ id: string }> }
 ) {
+  const auth = await verifyApiAuth(request, { requiredRoles: ['super_admin', 'admin'] });
+  if (!auth.authorized) return auth.errorResponse!;
+
   try {
     const { id } = await context.params;
     await connectToDatabase();

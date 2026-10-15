@@ -1,10 +1,14 @@
 import { NextResponse } from 'next/server';
+import { verifyApiAuth } from '@/lib/auth/apiAuth';
 
 interface RouteContext {
   params: Promise<{ id: string }>;
 }
 
 export async function PATCH(request: Request, { params }: RouteContext) {
+  const auth = await verifyApiAuth(request, { requireSuperAdmin: true });
+  if (!auth.authorized) return auth.errorResponse!;
+
   try {
     const { id } = await params;
     const body = await request.json().catch(() => ({}));

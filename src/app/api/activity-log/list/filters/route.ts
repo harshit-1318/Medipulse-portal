@@ -7,9 +7,6 @@ export async function GET(request: Request) {
   try {
     await connectToDatabase();
 
-    // Clean up any legacy dummy placeholder logs
-    await ActivityLog.deleteMany({ _id: { $regex: /^act_/ } }).catch(() => {});
-
     // Ensure currently active authenticated session is logged if missing
     const cookieHeader = request.headers.get('cookie') || '';
     const cookies = Object.fromEntries(
