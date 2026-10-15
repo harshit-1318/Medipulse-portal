@@ -7,6 +7,7 @@ interface Props {
     setFiltersEnabled: (v: boolean) => void;
     filters: any;
     updateFilter: (key: string, value: any) => void;
+    applyFilters?: () => void;
     clearFilters: () => void;
     localOrderId: string;
     setLocalOrderId: (v: string) => void;
@@ -21,6 +22,7 @@ export function PrescriptionFiltersModal({
     setFiltersEnabled,
     filters,
     updateFilter,
+    applyFilters,
     clearFilters,
     localOrderId,
     setLocalOrderId,
@@ -84,7 +86,10 @@ export function PrescriptionFiltersModal({
                         Clear All
                     </button>
                     <button
-                        onClick={() => setFiltersEnabled(false)}
+                        onClick={() => {
+                            applyFilters?.();
+                            setFiltersEnabled(false);
+                        }}
                         className="px-7 py-2 text-[13.5px] rounded-xl bg-[#00a294] text-white font-bold hover:bg-[#008f82] shadow-md shadow-[#00a294]/25 hover:shadow-lg hover:shadow-[#00a294]/35 transition-all duration-200 active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
                     >
                         Search

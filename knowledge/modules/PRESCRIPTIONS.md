@@ -12,9 +12,16 @@
 ## Notes
 - Keep protected route coverage in middleware aligned with prescription pages.
 - Validate filter and status mappings against backend response formats.
-- Standardized UI Design System Contract (Sep 10 2026):
-  - Page header uses clean bold `h1` without icon badge box, matching Orders Filters.
-  - Table header uses 14px font, `#` Hash icon for Order ID (`createdAt`/`shopifyOrderId`), and standardized indigo sort arrows (`text-indigo-600` / `ArrowUpDown`).
-  - Table card uses standardized Filters button (`text-[14px] font-semibold rounded-lg` with indigo active state and 16px icon) and active chips matching `FilterBadgesGroup`.
-  - Pagination container is unconditionally rendered at bottom of table card.
-  - Filters modal uses standard `rounded-3xl` container, teal header with subtitle, teal icon section headers, clean `h-9.5` inputs, and `Clear All` + `Search` buttons.
+- Filter & Search Architecture (Oct 15 2026):
+  - Filters modal flushes text inputs immediately on "Search" click via `applyFilters()`, bypassing debounce lag.
+  - API Param Mapping:
+    - `orderId`: `#` prefix stripped, special regex chars escaped, matches `orderNumber`, `shopifyOrderId`, and `storeOrderId`.
+    - `customerId`: trims whitespace, escapes regex, matches `customerId`, `storeOrderId`, and `shopifyOrderId`.
+    - `prescriber`: unified search matching `pharmacistName`, `pharmacistEmail`, `pharmacistRegNo`, and `gphcNumber`.
+    - `orderDate`: parsed via `parseDateBoundary` into single-day UTC boundaries (`$gte` start of day, `$lte` end of day) on `orderDate` and `createdAt`. Defensively falls back on malformed input to avoid Mongoose CastErrors.
+    - `reviewDate`: parsed via `parseDateBoundary` into single-day UTC boundaries on `generatedAt`. Kept strictly independent from `orderDate`.
+  - Sorting: Sort direction normalized via `normalizeSortOrder()`. Maps `orderDate`, `createdAt`, `customerId`, `pharmacistName`, `generatedAt`, `shopifyOrderId`.
+- Testing:
+  - Unit tests: `src/app/api/orders/prescription-list/__tests__/prescriptionFilterQuery.test.ts`, `src/api/services/prescription/__tests__/prescriptionService.test.ts`, `src/components/prescriptions/hooks/__tests__/usePrescriptionFilters.test.ts`
+  - E2E tests: `e2e/prescriptions/prescriptions-filters.spec.ts`
+

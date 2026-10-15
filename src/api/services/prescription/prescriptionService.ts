@@ -1,9 +1,9 @@
 import apiClient from "@/api/apiClient";
 import type { Prescription, PrescriptionResponse } from "@/types/prescription";
+import { normalizeSortOrder } from "@/utils/url/urlBase";
 
 export const getPrescriptions = async (page: number = 1, limit: number = 20, filters: any = {}): Promise<PrescriptionResponse> => {
     try {
-
         const hasFilters = !!(
             filters.orderId || filters.prescriber || filters.customerId ||
             filters.startDate || filters.reviewStartDate
@@ -16,44 +16,44 @@ export const getPrescriptions = async (page: number = 1, limit: number = 20, fil
         const params: any = {
             page,
             limit,
-            sort: filters.sort || "asc"
+            sort: normalizeSortOrder(filters.sort)
         };
 
         if (isSearchMode) {
             params.type = "prescriptions";
 
-            // Handle Sorting for Search API - Explicitly mapping as per requirements
             const sortMapping: Record<string, string> = {
-                orderDate: "createdAt",
+                orderDate: "orderDate",
                 customerId: "customerId",
                 createdAt: "createdAt",
                 pharmacistName: "pharmacistName",
                 generatedAt: "generatedAt",
+                shopifyOrderId: "shopifyOrderId",
             };
 
             if (filters.sortBy) {
                 params.sortBy = sortMapping[filters.sortBy] || filters.sortBy;
             }
 
-            // Handle Filters
-            if (filters.orderId) params.orderId = filters.orderId;
-
-            if (filters.prescriber) {
-                const val = filters.prescriber.trim();
-                if (/^\d+$/.test(val)) {
-                    params.regNo = val;
-                } else if (val.includes('@')) {
-                    params.pharmacistEmail = val;
-                } else {
-                    params.pharmacistName = val;
-                }
+            if (filters.orderId && String(filters.orderId).trim()) {
+                params.orderId = String(filters.orderId).trim();
             }
 
-            if (filters.customerId) params.customerId = filters.customerId;
+            if (filters.customerId && String(filters.customerId).trim()) {
+                params.customerId = String(filters.customerId).trim();
+            }
 
-            // Map dates correctly based on which filter is active (Single Date Only)
-            const sDate = filters.reviewStartDate || filters.startDate;
-            if (sDate) params.start_date = sDate;
+            if (filters.prescriber && String(filters.prescriber).trim()) {
+                params.prescriber = String(filters.prescriber).trim();
+            }
+
+            if (filters.startDate) {
+                params.orderDate = filters.startDate;
+            }
+
+            if (filters.reviewStartDate) {
+                params.reviewDate = filters.reviewStartDate;
+            }
         }
 
         const response: any = await apiClient.get({

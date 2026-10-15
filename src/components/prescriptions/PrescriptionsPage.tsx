@@ -10,7 +10,7 @@ function PrescriptionsContent() {
         data, loading, page, setPage, sorting, setSorting, 
         filtersEnabled, setFiltersEnabled, filters,
         localOrderId, setLocalOrderId, localPrescriber, setLocalPrescriber, localCustomerId, setLocalCustomerId,
-        updateFilter, clearFilters, activeFilterChips, removeFilter
+        updateFilter, applyFilters, clearFilters, activeFilterChips, removeFilter
     } = usePrescriptionsPage();
 
     return (
@@ -35,7 +35,7 @@ function PrescriptionsContent() {
                 </AnimatePresence>
 
                 <PrescriptionFilters 
-                    filters={filters} updateFilter={updateFilter} clearFilters={clearFilters}
+                    filters={filters} updateFilter={updateFilter} applyFilters={applyFilters} clearFilters={clearFilters}
                     localOrderId={localOrderId} setLocalOrderId={setLocalOrderId}
                     localPrescriber={localPrescriber} setLocalPrescriber={setLocalPrescriber}
                     localCustomerId={localCustomerId} setLocalCustomerId={setLocalCustomerId}

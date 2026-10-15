@@ -50,6 +50,16 @@ export function usePrescriptionFilters(filters: any, setFilters: (f: any) => voi
     usePrescriptionDebouncedFilters(localPrescriber, filters.prescriber, 3, "prescriber", updateFilter);
     usePrescriptionDebouncedFilters(localCustomerId, filters.customerId, 3, "customerId", updateFilter);
 
+    const applyFilters = useCallback(() => {
+        setPage(1);
+        setFilters((prev: any) => ({
+            ...prev,
+            orderId: localOrderId.trim(),
+            prescriber: localPrescriber.trim(),
+            customerId: localCustomerId.trim(),
+        }));
+    }, [localOrderId, localPrescriber, localCustomerId, setPage, setFilters]);
+
     return {
         localOrderId,
         setLocalOrderId,
@@ -58,6 +68,7 @@ export function usePrescriptionFilters(filters: any, setFilters: (f: any) => voi
         localCustomerId,
         setLocalCustomerId,
         updateFilter,
+        applyFilters,
         clearFilters,
         activeFilterChips: [
             ...(filters.orderId ? [{ key: 'orderId', label: 'Order ID', value: filters.orderId, icon: 'ExternalLink' }] : []),

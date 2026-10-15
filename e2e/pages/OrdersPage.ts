@@ -173,7 +173,21 @@ export class OrdersPage {
   async applyFilterAndSearch(action: (modal: ActiveFiltersModal) => Promise<void>): Promise<void> {
     await this.openActiveFilters();
     await action(this.modal);
+    const responsePromise = this.page.waitForResponse(
+      (resp) =>
+        (resp.url().includes('/api/orders/search') || resp.url().includes('/api/orders/order-list') || resp.url().includes('/api/orders')) &&
+        resp.status() === 200,
+      { timeout: 8000 }
+    ).catch(() => null);
     await this.modal.clickSearch();
+    const finalResp = await responsePromise;
+    if (finalResp) {
+      try {
+        this.lastSearchApiResponse = await finalResp.json();
+      } catch {
+        // ignore non-json
+      }
+    }
     await this.waitForTableLoad();
   }
 
@@ -184,3 +198,4 @@ export class OrdersPage {
     await this.waitForTableLoad();
   }
 }
+

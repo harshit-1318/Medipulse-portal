@@ -50,6 +50,9 @@ export function generateSeedRecord(index, dateStr) {
 
   const rx = {
     orderNumber: orderNum,
+    shopifyOrderId: order.shopify_order_id,
+    storeOrderId: order.store_order_id,
+    customerId: order.store_order_id,
     patientName: customerName,
     patientEmail: customerEmail,
     medication: med.name,

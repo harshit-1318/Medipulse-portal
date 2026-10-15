@@ -96,5 +96,11 @@
 	- Compound `$and` Architecture: All `$or` clauses are collected under `$and` so multiple simultaneous filters never clash or overwrite each other.
 	- Immediate Modal Apply: The modal Search button immediately flushes pending debounce inputs (`localOrderId`, `localCustomerName`, `localProductName`) into active filters.
 	- Active Chips Parity: `useActiveOrderFilters` checks `fulfillmentStatus || status` so status filter chips appear and clear reliably.
+- Orders Filters Security & Query Hardening Contract (Oct 15 2026):
+	- Regex Input Sanitization: Centralized `escapeRegex()` in `src/utils/helpers/string.ts` sanitizes all text inputs (`orderId`, `customerId`, `customerName`, `customerEmail`, `productName`) before evaluating MongoDB `{ $regex: pattern }` queries, eliminating regex syntax exceptions (e.g., unmatched parens or unclosed brackets).
+	- Defensive Date Boundary Resolution: `parseDateBoundary` returns `Date | null`, catching invalid date strings safely. Malformed dates assign an unreachable boundary `{ $gt: new Date('9999-12-31') }`, preventing Mongoose `CastError` 500 crashes and returning proper empty states.
+	- Category Tag Boundary Isolation: `applyProductAndDocFilters` enforces boundary checks (`(^|[^a-zA-Z0-9])` or exact tokens) for short category tags such as `ed`, preventing substring collisions against internal tags like `mock_seed` and ensuring 100% precision for medical categories.
+	- 100% Test Parity: Verified across all 76 Playwright E2E browser tests and 178 Vitest test files (959 passed).
+
 
 

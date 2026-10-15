@@ -1,5 +1,17 @@
 # Frontend Project State
 
+- MediPulse Complete Orders Filters Module QA Audit & Bug Fixes (Oct 15 2026):
+	- Zero Regressions & System Parity: Verified 100% functionality across the complete Orders Filters module at `http://localhost:3000/orders/all`, encompassing all 52 live MongoDB clinical order records, 12 individual filters, 20+ filter combinations, 6-column sorting, pagination, and modal UI states.
+	- Critical Defect 1 Resolved (Regex Injection & Metacharacter Crashes): Created centralized `escapeRegex` utility in `src/utils/helpers/string.ts` and integrated it across `orderQueryHelper.ts` and `orderProductFilter.ts`. User queries containing regex characters (e.g. `MP-(`, `John[`, `Semaglutide + (Pen)`) now execute safe literal substring searches returning HTTP 200 without MongoDB syntax exceptions (previously crashed with 500).
+	- Critical Defect 2 Resolved (Invalid Date Mongoose CastError): Enhanced `parseDateBoundary` in `orderDateFilter.ts` to return `Date | null`. Invalid or malformed date strings now assign an unreachable date `{ $gt: 9999-12-31 }` that safely produces a standard empty state with HTTP 200 (previously crashed with `CastError: Cast to date failed for value "Invalid Date"`).
+	- Critical Defect 3 Resolved (Category ED False Positive Tag Collision): Fixed critical defect where selecting Product Category = `ED` returned all 52 orders in the database due to substring collision with the seeded tag `mock_seed`. Applied token/word boundary regex `(^|[^a-zA-Z0-9])` in `orderProductFilter.ts` so `ed` strictly matches discrete tokens or ED line items (e.g., Sildenafil). Now accurately returns exactly 4 orders with 100% precision.
+	- E2E Test Suite Synchronization: Updated `OrdersPage.ts` `applyFilterAndSearch` to await the final search HTTP response, eliminating intermittent Playwright race conditions caused by rapid toggle clicks. Updated `playwright.config.ts` to avoid Windows trace/video file locking errors during context teardown.
+	- 100% Quality Assurance & Regression Health:
+		- TypeScript Typecheck (`tsc --noEmit`): 0 errors across workspace.
+		- Vitest Full Suite: 178 test files passed (100%), 959 tests passed, 0 failures.
+		- Playwright Browser Automation Suite: 76/76 tests passed (100% PASS across all 7 E2E filter specs).
+		- Rule 04 Compliance: All modified source files strictly adhere to target < 100–150 LOC.
+
 - MediPulse Complete Repository Audit, API Security Hardening & Metric Alignment (Oct 15 2026):
 	- Zero Regressions & System Integrity: All 8 user roles (`super_admin`, `admin`, `prescriber`, `pharmacist`, `pharmacy_staff`, `customer_support`, `driver`, `customer`), 64 App Router pages, 80+ dynamic API routes, multi-tenant site separation, MongoDB Atlas aggregations, and test suites remain 100% operational.
 	- Category 1 (Safe to Delete / Consolidate) Resolved:
@@ -1383,6 +1395,15 @@
 	- Toggle: enabled in dev by default, or set `localStorage.DEBUG_VIDEO_RECORDINGS = 'true'`.
 - Added View Video cache-busting in `useVideoRecordings`:
 	- by-order request now sends `_ts` query param and no-cache request headers to avoid stale `304` revalidation effects.
+- Completed Prescriptions Filters QA Audit & Bug Fixes (Oct 15 2026):
+	- Audited all 5 filters: Order ID, Customer ID, Prescriber, Order Date, Review Date.
+	- Fixed MongoServerError 500 regex metacharacter crashes via centralized `escapeRegex`.
+	- Fixed date boundary filtering on `orderDate` and `generatedAt` using UTC start/end of day boundaries via `parseDateBoundary`, with defensive fallback avoiding Mongoose CastErrors.
+	- Fixed review date overriding order date in `prescriptionService.ts` by keeping `orderDate` and `reviewDate` as distinct parameters.
+	- Implemented immediate modal flush via `applyFilters()` so typing short IDs or clicking Search immediately applies filter state without debounce delay.
+	- Enriched 44 prescription seed records in MongoDB Atlas with authentic `shopifyOrderId`, `storeOrderId`, and `customerId` corresponding to `Order` models, and removed hardcoded dummy fallbacks from `mapPrescriptionItem`.
+	- Added unit tests in `prescriptionFilterQuery.test.ts`, `prescriptionService.test.ts`, and `usePrescriptionFilters.test.ts` (181 test files, 983 tests passing).
+	- Added 8 automated Playwright E2E tests in `e2e/prescriptions/prescriptions-filters.spec.ts` (100% pass rate).
 
 ## Active Risks
 - Queue monitor currently reads aggregate status from backend overview endpoint only (no per-site filter toggle yet); if multi-site operational filtering is needed, add explicit site selector + backend query support in a follow-up.

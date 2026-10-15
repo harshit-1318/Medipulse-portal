@@ -1,8 +1,10 @@
 import { test as base, expect } from '@playwright/test';
 import { OrdersPage } from '../pages/OrdersPage';
+import { PrescriptionsPage } from '../pages/PrescriptionsPage';
 
 type CustomFixtures = {
   ordersPage: OrdersPage;
+  prescriptionsPage: PrescriptionsPage;
 };
 
 let cachedAuth: { cookies: any[]; token: string; user: any } | null = null;
@@ -74,6 +76,38 @@ export const test = base.extend<CustomFixtures>({
     try {
       if (!page.isClosed()) {
         await ordersPage.resetAllFilters();
+      }
+    } catch {
+      // Ignore if page closed
+    }
+  },
+
+  prescriptionsPage: async ({ page, context, request }, use) => {
+    const auth = await getAuthCredentials(request);
+
+    await context.addCookies(auth.cookies);
+
+    await page.addInitScript((data) => {
+      window.localStorage.setItem('token', data.token);
+      window.localStorage.setItem('accessToken', data.token);
+      window.localStorage.setItem('jwt', data.token);
+      window.localStorage.setItem('X-SITE-ID', '65e0123456789abcdef00001');
+      window.localStorage.setItem('X-SITE-KEY', 'default');
+      window.localStorage.setItem('X-SITE-HOST', 'localhost:3000');
+      window.localStorage.setItem('user', JSON.stringify(data.user));
+    }, { token: auth.token, user: auth.user });
+
+    const rxPage = new PrescriptionsPage(page);
+    await rxPage.setupApiInterceptor();
+    await rxPage.goto();
+
+    await rxPage.resetFilters();
+
+    await use(rxPage);
+
+    try {
+      if (!page.isClosed()) {
+        await rxPage.resetFilters();
       }
     } catch {
       // Ignore if page closed

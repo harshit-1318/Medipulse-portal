@@ -16,17 +16,27 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1', 10);
     const limit = parseInt(searchParams.get('limit') || '20', 10);
-    const sortBy = searchParams.get('sortBy') || 'createdAt';
+    const rawSortBy = searchParams.get('sortBy') || 'createdAt';
+    const sortMapping: Record<string, string> = {
+      orderDate: 'orderDate',
+      createdAt: 'createdAt',
+      customerId: 'customerId',
+      pharmacistName: 'pharmacistName',
+      generatedAt: 'generatedAt',
+      shopifyOrderId: 'shopifyOrderId',
+    };
+    const sortField = sortMapping[rawSortBy] || rawSortBy;
     const sort = searchParams.get('sort') === 'desc' ? -1 : 1;
 
     await connectToDatabase();
-    const { query, orderId, customerId, regNo, pharmacistName, pharmacistEmail } =
-      buildPrescriptionFilterQuery(searchParams);
+    const filterRes = buildPrescriptionFilterQuery(searchParams);
+    const { query, orderId, customerId, regNo, pharmacistName, pharmacistEmail, prescriber, orderDate, reviewDate } = filterRes;
+    const hasFilters = Boolean(orderId || customerId || regNo || pharmacistName || pharmacistEmail || prescriber || orderDate || reviewDate);
 
     let total = await Prescription.countDocuments(query);
-    let raw = await Prescription.find(query).sort({ [sortBy]: sort }).skip((page - 1) * limit).limit(limit).lean();
+    let raw = await Prescription.find(query).sort({ [sortField]: sort }).skip((page - 1) * limit).limit(limit).lean();
 
-    if (total === 0 && !orderId && !customerId && !regNo && !pharmacistName && !pharmacistEmail) {
+    if (total === 0 && !hasFilters) {
       const seeded = await Prescription.insertMany(SAMPLE_RX);
       raw = seeded.map((p) => p.toObject());
       total = raw.length;
