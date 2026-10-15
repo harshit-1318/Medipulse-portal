@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { BRANDING } from '@/utils/branding';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeftToLine, ArrowRightToLine } from 'lucide-react';

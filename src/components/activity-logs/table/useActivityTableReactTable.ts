@@ -6,7 +6,7 @@ import {
     type SortingState,
     useReactTable,
 } from "@tanstack/react-table";
-import type { ActivityLogType } from "@/api/services/log/logService";
+import type { ActivityLogType } from "@/api/services/activity-log";
 import { useActivityColumns } from "./useActivityColumns";
 
 export function useActivityTableReactTable(

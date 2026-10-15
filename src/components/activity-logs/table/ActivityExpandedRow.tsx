@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Check, Copy, Info } from "lucide-react";
 import { HighlightText } from "../utils/HighlightText";
 import { m } from "framer-motion";
-import type { ActivityLogType } from "@/api/services/log/logService";
+import type { ActivityLogType } from "@/api/services/activity-log";
 
 export function ActivityExpandedRow({ log }: { log: ActivityLogType }) {
     const [copiedId, setCopiedId] = useState<string | null>(null);

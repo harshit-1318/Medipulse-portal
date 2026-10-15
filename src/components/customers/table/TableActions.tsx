@@ -1,4 +1,3 @@
-import { Filter } from 'lucide-react';
 import ActiveFilterChips, { type ActiveFilterChipData } from '../filters/ActiveFilterChips';
 
 interface Props {

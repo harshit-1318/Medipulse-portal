@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
-import { getActivityLogs } from "@/api/services/log/logService";
+import { getActivityLogs } from "@/api/services/activity-log";
 import { getDashboardStats, getSiteDetail, type SiteDetail } from "@/api/services/super-admin/superAdminService";
 
 export function useSiteDetail(siteId: string) {

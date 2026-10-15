@@ -1,4 +1,4 @@
-import { type Page, type Locator, expect } from '@playwright/test';
+import { type Page, type Locator } from '@playwright/test';
 import { ActiveFiltersModal } from './ActiveFiltersModal';
 
 export interface OrderRowData {

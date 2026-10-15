@@ -23,7 +23,6 @@
     "@types/react-dom": "^19.2.3",
     "axios": "^1.13.5",
     "bcryptjs": "^3.0.3",
-    "clsx": "^2.1.1",
     "framer-motion": "^12.34.3",
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.575.0",
@@ -37,7 +36,6 @@
     "survey-creator-core": "^2.5.20",
     "survey-creator-react": "^2.5.20",
     "survey-react-ui": "^2.5.20",
-    "tailwind-merge": "^3.5.0",
     "tailwindcss": "^4.2.1",
     "typescript": "^5.9.3",
     "zustand": "^5.0.11"

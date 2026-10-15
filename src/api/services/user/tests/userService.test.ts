@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import apiClient from '@/api/apiClient';
 import { createUser, getUsers, findById, updateUserById, deleteUser } from '../userService';
-import { UserApi } from '../userTypes';
 
 vi.mock('@/api/apiClient', () => ({
   default: { get: vi.fn(), post: vi.fn(), delete: vi.fn(), request: vi.fn() },

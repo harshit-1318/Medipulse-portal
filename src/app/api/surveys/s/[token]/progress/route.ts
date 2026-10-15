@@ -7,7 +7,7 @@ interface RouteContext {
 export async function PATCH(request: Request, { params }: RouteContext) {
   try {
     const { token } = await params;
-    const body = await request.json().catch(() => ({}));
+    await request.json().catch(() => ({}));
 
     return NextResponse.json({
       status: 'SUCCESS',

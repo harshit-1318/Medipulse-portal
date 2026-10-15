@@ -9,7 +9,6 @@
   - `Logo.tsx`: SVG vector white-label logo with theme toggle support
   - `Pagination.tsx`: Paginated controls with item/page calculations
   - `QueryProvider.tsx`: Global React Query client provider with site init guard
-  - `RouteLoadingProgress.tsx`: Top progress bar for route transitions
 - Component Tests: src/components/common/__tests__/
   - `Logo.test.tsx`: Theme-based logo rendering
   - `Pagination.test.tsx`: Page derivation and navigation triggers

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Truck, CheckCircle2, Clock, MapPin } from 'lucide-react';
 import { useUserInfo } from '@/store';
 

@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor, act } from '@testing-library/react';
 import { useActivityLogs } from '../../hooks/useActivityLogs';
-import * as logService from '@/api/services/log/logService';
+import * as logService from '@/api/services/activity-log';
 
-vi.mock('@/api/services/log/logService', () => ({
+vi.mock('@/api/services/activity-log', () => ({
     getActivityLogs: vi.fn().mockResolvedValue({
         activityLogs: [],
         total: 0,

@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { ActivityTableBody } from "../../table/ActivityTableBody";
-import type { ActivityLogType } from "@/api/services/log/logService";
+import type { ActivityLogType } from "@/api/services/activity-log";
 
 const makeLog = (overrides: Partial<ActivityLogType> = {}): ActivityLogType => ({
     id: overrides.id ?? "log-id",

@@ -1,4 +1,4 @@
-import { type Page, type Locator, expect } from '@playwright/test';
+import { type Page, type Locator } from '@playwright/test';
 
 export class ActiveFiltersModal {
   readonly page: Page;
@@ -92,13 +92,6 @@ export class ActiveFiltersModal {
 
   async getEndDate(): Promise<string> {
     return await this.endDateInput.inputValue();
-  }
-
-  private getDropdownContainer(dropdownLabel: string): Locator {
-    return this.modalContainer
-      .locator('div')
-      .filter({ has: this.page.locator(`label:has-text("${dropdownLabel}")`) })
-      .first();
   }
 
   async selectDropdownOption(dropdownLabel: string, optionLabel: string): Promise<void> {

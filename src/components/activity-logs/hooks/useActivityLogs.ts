@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
-import { type ActivityLogType, getActivityLogs } from "@/api/services/log/logService";
+import { type ActivityLogType, getActivityLogs } from "@/api/services/activity-log";
 import { useUrlSync } from '@/hooks';
 import { getUrlParamInt, getInitialStateFromUrl, getDashboardStorageKey } from '@/utils/url';
 

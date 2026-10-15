@@ -1,5 +1,5 @@
 import { createColumnHelper } from "@tanstack/react-table";
-import type { ActivityLogType } from "@/api/services/log/logService";
+import type { ActivityLogType } from "@/api/services/activity-log";
 
 const columnHelper = createColumnHelper<ActivityLogType>();
 

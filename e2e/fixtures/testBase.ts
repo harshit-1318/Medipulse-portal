@@ -1,6 +1,5 @@
 import { test as base, expect } from '@playwright/test';
 import { OrdersPage } from '../pages/OrdersPage';
-import { reportCollector } from '../utils/reportCollector';
 
 type CustomFixtures = {
   ordersPage: OrdersPage;
@@ -44,7 +43,7 @@ async function getAuthCredentials(request: any) {
 }
 
 export const test = base.extend<CustomFixtures>({
-  ordersPage: async ({ page, context, request }, use, testInfo) => {
+  ordersPage: async ({ page, context, request }, use) => {
     const auth = await getAuthCredentials(request);
 
     // Add authentication cookies to browser context

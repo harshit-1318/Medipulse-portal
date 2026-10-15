@@ -24,10 +24,10 @@ export async function GET(request: Request) {
       status: 'SUCCESS',
       success: true,
       data: {
-        totalOrders: totalOrders || 2,
-        onHoldOrders: onHoldOrders || 1,
-        prescriptionsUploaded: prescriptionsUploaded || 0,
-        urgentOrders: urgentOrders || 0,
+        totalOrders: totalOrders ?? 0,
+        onHoldOrders: onHoldOrders ?? 0,
+        prescriptionsUploaded: prescriptionsUploaded ?? 0,
+        urgentOrders: urgentOrders ?? 0,
       },
       message: 'Dashboard stats fetched successfully',
     });

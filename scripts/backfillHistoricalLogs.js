@@ -1,8 +1,10 @@
 import mongoose from 'mongoose';
 
-const MONGODB_URI =
-  process.env.MONGODB_URI ||
-  'mongodb+srv://harshit:HARSHIT-1318@cluster0.f9gfmb5.mongodb.net/?appName=Cluster0';
+const MONGODB_URI = process.env.MONGODB_URI;
+if (!MONGODB_URI) {
+  console.error('Error: MONGODB_URI environment variable is required.');
+  process.exit(1);
+}
 
 async function backfill() {
   console.log('Connecting to MongoDB...');

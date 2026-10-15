@@ -2,7 +2,7 @@
 export { Header, Sidebar, Breadcrumb, SearchBar, AccountDropdown, AccountDropdownMenu, NoticeButton } from './layout';
 
 // Common Components
-export { Logo, Pagination, QueryProvider, RouteLoadingProgress } from './common';
+export { Logo, Pagination, QueryProvider } from './common';
 
 // Auth Components
 export { IdleSessionManager, IdleWarningModal, LoginForm, ThemeToggle } from './auth';

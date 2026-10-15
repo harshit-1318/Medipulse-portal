@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 import { useReactTable, getCoreRowModel, type SortingState } from '@tanstack/react-table';
@@ -73,7 +73,7 @@ describe('OrderTableHeader', () => {
     });
 
     it('renders hash icon for order ID column instead of external link', () => {
-        const { container } = render(<TestTable sorting={[{ id: 'date', desc: true }]} />);
+        render(<TestTable sorting={[{ id: 'date', desc: true }]} />);
         const thElements = screen.getAllByRole('columnheader');
         
         // First column is ORDER ID

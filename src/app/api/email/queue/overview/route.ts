@@ -1,6 +1,11 @@
 import { NextResponse } from 'next/server';
+import { verifyApiAuth } from '@/lib/auth/apiAuth';
 
 export async function GET(request: Request) {
+  const auth = await verifyApiAuth(request, { requiredRoles: ['super_admin', 'admin'] });
+  if (!auth.authorized) {
+    return auth.errorResponse!;
+  }
   try {
     const { searchParams } = new URL(request.url);
     const limit = Number(searchParams.get('limit') || 25);

@@ -1,4 +1,4 @@
-import type { ActivityLogType } from "@/api/services/log/logService";
+import type { ActivityLogType } from "@/api/services/activity-log";
 import { Pagination } from "@/components/common/Pagination";
 import ActivityFilters from "./ActivityFilters";
 import { useActivityFilters } from "./filters";

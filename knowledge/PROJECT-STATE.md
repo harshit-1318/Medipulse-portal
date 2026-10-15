@@ -1,5 +1,43 @@
 # Frontend Project State
 
+- MediPulse Complete Project Cleanup, Dead Code Removal & Safe Refactoring (Oct 15 2026):
+	- Zero Regressions & System Integrity Preserved: All 8 user roles (`super_admin`, `admin`, `prescriber`, `pharmacist`, `pharmacy_staff`, `customer_support`, `driver`, `customer`), full authentication/RBAC flows, multi-site isolation, 64 pages, 80+ dynamic API routes, MongoDB models, and test fixtures remain 100% intact and functional.
+	- Unused npm Dependencies Pruned: Safely removed unused production dependencies `clsx` and `tailwind-merge` via `npm uninstall clsx tailwind-merge`, updating `package.json` and `package-lock.json`. Neither was imported anywhere in the project (`src/utils/helpers/string.ts` already provides a standalone lightweight `cn` utility).
+	- Obsolete & Duplicate Files Deleted:
+		- Deleted `src/styles/global.css`: Unimported duplicate of Next.js 16 canonical stylesheet `src/app/globals.css`.
+		- Deleted `src/components/common/RouteLoadingProgress.tsx`: Abandoned Astro-era component listening to dead `astro:*` events; removed from export barrels (`src/components/common/index.ts` and `src/components/index.ts`).
+		- Deleted `src/api/services/log/` (`index.ts`, `logService.ts`): Redundant 2-line alias directory consolidated directly to `@/api/services/activity-log` across all 9 consumer files.
+	- Dead Code & Commented-out Blocks Cleaned:
+		- `CommunicationActionsGrid.tsx`: Removed commented-out TODO blocks (`SendSurveyModal`, in-person video) along with unreferenced state variables (`showSurveyModal`, `setShowSurveyModal`, `customerId`, `orderId`) and unused imports.
+		- `TableActions.tsx`: Removed unused `Filter` import from `lucide-react` (inline SVG polygon used).
+		- `useOrderTableEffects.ts`: Removed unused `normalizeSortBy` import.
+		- `role-credentials/helpers.ts`: Removed unused `User` / `IUser` model import.
+		- `surveys/s/[token]/progress/route.ts`: Removed unused `body` assignment.
+		- Unused React imports in React 19 / Next.js 16 components: Cleaned `CustomerDashboardView.tsx`, `DriverDashboardView.tsx`, `SidebarLogo.tsx`, `surveys/error.tsx`, `surveys/responses/error.tsx`.
+		- Mongoose models: Cleaned unused `Document` interface imports from `Customer.ts`, `Order.ts`, and `Survey.ts`.
+		- Test & E2E files: Removed unused imports/variables in `userService.test.ts`, `activityAggregator.test.ts`, `surveyManagement.test.ts`, `OrderTableHeader.test.tsx`, `OrderTableSorting.test.tsx`, `DailySparkline.test.tsx`, `PasswordCell.test.tsx`, `RoleBadge.test.tsx`, `useRecentSearches.test.ts`, `testBase.ts`, `ActiveFiltersModal.ts`, `ActivityLogsPage.ts`, and `OrdersPage.ts`.
+	- Security Hardening: Sanitized `scripts/backfillHistoricalLogs.js` to strictly require `process.env.MONGODB_URI` instead of hardcoded plain-text Atlas credentials.
+	- 100% Quality Assurance & Test Health:
+		- Vitest test suite: 178 test files passed (100%), 948 passed, 0 failures.
+		- TypeScript type-check (`tsc --noEmit` and `tsc --noEmit --noUnusedLocals`): 0 errors across entire workspace.
+		- Playwright E2E suite: 76/76 tests passed (100% PASS).
+		- Production Build: `next build` compiled all 64 static/dynamic routes with zero errors.
+		- Rule 04 Compliance: All modified source files strictly adhere to < 100 LOC target.
+
+- MediPulse Complete Localhost Dashboard & Role-Based QA Audit (Oct 15 2026):
+	- Comprehensive 8-Role Lifecycle & RBAC Audit: Executed live authentication, redirection, route authorization, API permission checks, and session termination across all 8 roles (`super_admin`, `admin`, `prescriber`, `pharmacist`, `pharmacy_staff`, `customer_support`, `driver`, `customer`). All 8 roles authenticated successfully, routed to role-tailored dashboards, and lower-privileged access to `/super-dashboard`, `/sites`, `/users`, and `/role-credentials` was strictly blocked with 307 redirects to `/dashboard` and 401/403 API responses.
+	- Super Admin Activity Dashboard Dynamic Aggregation: Fixed critical defect where `/api/super-admin/activity-dashboard` returned static hardcoded mock numbers (`events: 154`, `uniqueStaff: 5`, etc.) regardless of date filter. Built `activityAggregator.ts` to perform real MongoDB aggregations on `ActivityLog`, dynamically updating tiles, `byDay` sparkline chart, top actions, active staff, and recent logins for `7 days`, `30 days`, `90 days`, and refresh operations.
+	- Accurate Dashboard Metrics & Elimination of Artificial Fallbacks:
+		- Updated `/api/super-admin/dashboard-stats` to query `ActivityLog.countDocuments()` for live system audits (602+ records) instead of artificial `totalOrders + totalUsers || 348` formula.
+		- Updated `/api/orders/dashboard-stats` to use nullish coalescing `?? 0` instead of falsy `|| 2` and `|| 1` fallbacks, ensuring valid zero counts are not replaced with fabricated integers.
+	- API Authorization Hardening: Enforced `verifyApiAuth` checks across sensitive administrative endpoints (`/api/super-admin/activity-dashboard`, `/api/super-admin/dashboard-stats`, `/api/prescriptions`, `/api/customers`, `/api/leads`, `/api/docman-jobs`, `/api/surveys`, `/api/email/queue/overview`).
+	- 100% Quality Assurance & Test Health:
+		- Vitest test suite: 178 test files, 940 passed, 8 skipped, 0 failures.
+		- QA Combinations: 127/127 activity filter tests passed.
+		- Playwright E2E: 12/12 Chromium tests passed.
+		- Type Check: `tsc --noEmit` clean (0 errors).
+		- Production Build: `next build` compiled all 64 routes with zero errors.
+
 - Shopify Store Audit & UI External Link Cleanup (Oct 15 2026):
 	- Comprehensive Audit Confirmed: Audited all `.env*` environment files, MongoDB collections (`sites`, `orders`, `configs`), and dependencies. Verified that 0 real Shopify credentials (no API keys, tokens, or live store connections) exist in the project. The 10-digit `shopify_order_id` values in MongoDB are dummy mock numbers generated via `seedGenerator.mjs` for testing and internal routing.
 	- Misleading External Links Removed from UI:

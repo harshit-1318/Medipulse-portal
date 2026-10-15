@@ -1,4 +1,3 @@
-import React from 'react';
 import { ShoppingBag, ClipboardList, ShieldCheck, HelpCircle } from 'lucide-react';
 import { useUserInfo } from '@/store';
 

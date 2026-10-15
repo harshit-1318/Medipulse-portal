@@ -1,8 +1,15 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/db/mongodb';
 import { Prescription } from '@/lib/db/models/Prescription';
+import { verifyApiAuth } from '@/lib/auth/apiAuth';
 
 export async function GET(request: Request) {
+  const auth = await verifyApiAuth(request, {
+    requiredRoles: ['super_admin', 'admin', 'prescriber', 'pharmacist', 'pharmacy_staff'],
+  });
+  if (!auth.authorized) {
+    return auth.errorResponse!;
+  }
   try {
     await connectToDatabase();
     let prescriptions = await Prescription.find().limit(50).lean();

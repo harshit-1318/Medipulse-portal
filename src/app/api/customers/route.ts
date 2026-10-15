@@ -1,8 +1,15 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/db/mongodb';
 import { Customer } from '@/lib/db/models/Customer';
+import { verifyApiAuth } from '@/lib/auth/apiAuth';
 
 export async function GET(request: Request) {
+  const auth = await verifyApiAuth(request, {
+    requiredRoles: ['super_admin', 'admin', 'prescriber', 'pharmacist', 'customer_support'],
+  });
+  if (!auth.authorized) {
+    return auth.errorResponse!;
+  }
   try {
     await connectToDatabase();
 

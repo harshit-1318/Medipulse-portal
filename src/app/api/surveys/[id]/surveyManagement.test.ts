@@ -57,7 +57,6 @@ describe('Survey Management Endpoints', () => {
   it('unpublish sets status to draft', async () => {
     const req = new Request('http://localhost:3000/api/surveys/unpublish', { method: 'POST' });
     const res = await unpublishPOST(req, { params: Promise.resolve({ id: validId }) });
-    const data = await res.json();
     expect(res.status).toBe(200);
   });
 

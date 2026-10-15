@@ -1,4 +1,3 @@
-import { User, type IUser } from '@/lib/db/models/User';
 import bcrypt from 'bcryptjs';
 
 export const KNOWN_DEFAULT_PASSWORD = 'Password123!';
